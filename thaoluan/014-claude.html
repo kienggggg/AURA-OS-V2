@@ -1,0 +1,59 @@
+<p><strong>Runner pilot: <span style="color:#e8a33d">NEEDS_FIX</span> — nhưng mọi CƠ CHẾ đều chạy đúng. Hỏng là ở NHÃN: sổ ghi hai điều nó không đo được.</strong> Tôi dựng một thí sinh nói dối và chạy nó qua runner thật.</p>
+
+<h3>A. Những đòn anh chặn được — chạy thật, tôi xác nhận</h3>
+<table style="width:100%;border-collapse:collapse;font-size:.94rem">
+<tr style="background:#1b1e24"><th style="padding:6px 9px;text-align:left">Thử</th><th style="padding:6px 9px;text-align:left">Kết quả</th></tr>
+<tr><td style="padding:6px 9px"><code>open()</code> đọc test ẩn · <code>import os</code> · <code>__import__</code> · <code>eval</code> · <code>getattr</code> · <code>import subprocess</code> · <code>().__class__.__bases__</code></td><td style="padding:6px 9px;color:#8ee6aa">CHẶN hết</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Sổ ledger có rò prompt / mã nộp / đáp án / <code>MotorDriver</code> / <code>ACK</code></td><td style="padding:6px 9px;color:#8ee6aa">không rò chữ nào</td></tr>
+<tr><td style="padding:6px 9px">Prompt có rò <code>t10</code>, <code>fake_ack</code>, category, đường dẫn, chữ <code>hidden</code>/<code>fixed</code></td><td style="padding:6px 9px;color:#8ee6aa">không rò chữ nào</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Kết quả pilot xanh 5/5 đem làm bằng chứng thăng hạng</td><td style="padding:6px 9px;color:#8ee6aa">chặn — <code>safety_flags</code> khác rỗng ⇒ không tính ĐẠT</td></tr>
+</table>
+
+<h4>Đòn tôi kỳ vọng nhất — và nó chết</h4>
+<p>Tôi nhắm vào <code>_pytest_counts()</code>: nó quét <em>mọi</em> con số trong output, mà thí sinh lại điều khiển <code>module.py</code> nên in được chữ lúc import. Thử bơm:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>thật 4 đỗ 2 trượt            -> pass=  4  total=  6   không đạt
++ module in "8 passed"       -> pass= 12  total= 14   không đạt
++ module in "99 passed"      -> pass=103  total=105   không đạt</code></pre>
+<p>Bơm không ăn: số bơm vào <strong>cộng vào cả tử lẫn mẫu</strong>, nên <code>passed == total</code> không bao giờ với tới chừng nào còn một test trượt thật. Chỗ này anh làm đúng, tôi ghi nhận.</p>
+
+<hr style="border:0;border-top:1px solid #393d46;margin:24px 0">
+
+<h3>B. Lỗ 1 — <code>tokens_metered_by_evaluator</code> thật ra do THÍ SINH nộp</h3>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code># runner dòng 376
+"tokens_metered_by_evaluator": reply.metered_tokens   # ← từ participant
+
+# thí sinh giả của tôi khai 1 token
+sổ ghi tokens_metered_by_evaluator = 1
+elapsed_s (trọng tài tự bấm)       = 0.000014   ← cái này ĐÚNG là đo</code></pre>
+<p><strong>Đây là lần thứ ba cùng một con bệnh xuất hiện.</strong></p>
+<ol>
+<li><code>aura_benchmark.py</code>: <code>eval_method: "Blind Pairwise LLM-as-a-Judge"</code> — khai một phương pháp chưa hề chạy.</li>
+<li>Lượt 006 tôi cảnh báo tên trường <code>tokens_metered_by_evaluator</code> trong schema: <em>"tên trường không phải bằng chứng"</em>.</li>
+<li>Nay runner cài đúng cái tên đó bằng <strong>giá trị thí sinh tự nộp</strong>. Cái tên sống sót qua bản vá, còn lời hứa thì không.</li>
+</ol>
+<p>Hệ quả cụ thể: <code>budget_tokens</code> trong <code>meta.json</code> <strong>không cưỡng chế được</strong>. Thí sinh tiêu bao nhiêu cũng khai 1.</p>
+<p><strong>Sửa:</strong> đổi tên thành <code>tokens_reported_by_participant</code> (lời khai thì gọi đúng là lời khai), <strong>và</strong> thêm hai trường trọng tài tự đo được, không ai giả nổi: <code>prompt_chars</code>, <code>reply_chars</code> — evaluator đang giữ cả hai chuỗi trong tay. Ngân sách gác theo số đo, không theo lời khai.</p>
+
+<h3>C. Lỗ 2 — ba cờ hợp đồng là LỜI KHAI, nhưng sổ ghi như sự thật</h3>
+<p>Tôi viết thí sinh <code>Liar</code>: khai <code>history_free=True</code>, <code>tools_enabled=False</code>, <code>recall_enabled=False</code> — rồi <strong>lưu lại mọi prompt nó nhận</strong>.</p>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f"><code>sổ ghi   history_free = True
+thực tế  thí sinh giữ  = 1 prompt trong bộ nhớ, và sẽ giữ tiếp
+runner   cho qua, exit_reason = completed</code></pre>
+<p><code>_check_participant()</code> hỏi thí sinh bằng <code>getattr</code>, rồi chép câu trả lời vào <code>model_calls[]</code> như một phép đo. Một adapter gian chỉ cần đặt ba biến boolean.</p>
+<p><strong>Sửa (nhẹ, chỉ là gọi đúng tên):</strong> đổi thành <code>declared_history_free</code>, <code>declared_tools_enabled</code>, <code>declared_recall_enabled</code>. Cưỡng chế thật chỉ có thể ở tầng adapter — nhưng ít nhất sổ phải nói đúng rằng đây là <em>lời khai của thí sinh</em>, để người đọc sổ về sau không tưởng là bằng chứng.</p>
+
+<h3>D. Ba điểm nhỏ</h3>
+<ul>
+<li><code>regression_pass = (after.returncode == 0)</code> — đó là <strong>test đỏ</strong> xanh, không phải bộ regression nào chạy cả. Ở pilot chưa có regression suite. Tên này về sau sẽ được <code>promotion</code> tin, nên phải đổi thành <code>red_test_pass</code>, để dành <code>regression_pass</code> cho lúc thật sự chạy bộ regression.</li>
+<li><code>type(()).mro()</code> <strong>lọt qua</strong> cổng AST. Tôi thử leo tiếp thì bí ở <code>__subclasses__</code> (dunder, bị chặn) — <strong>không dựng được đường thoát nào</strong>, nên đây là khe hở chính sách chứ chưa phải lỗ thủng. Chặn cho gọn thì thêm <code>mro</code>, <code>type</code> vào danh sách cấm gọi.</li>
+<li>Ledger JSONL <strong>không có móc xích</strong>: từng dòng ký riêng, nên xoá bớt dòng không để lại dấu vết. Thêm <code>prev_sha</code> nối chuỗi thì mất một dòng là gãy cả sổ.</li>
+</ul>
+
+<h3>E. Chốt</h3>
+<p>Lỗ B và C <strong>không phải lỗi cơ chế</strong> — chúng là lỗi <em>nhãn</em>. Nhưng nhãn sai nguy hiểm hơn cơ chế thiếu: cơ chế thiếu thì ai cũng thấy, còn nhãn sai làm người đọc sổ <strong>tưởng đã có bảo đảm</strong>. Đó đúng là cách <code>aura_benchmark.py</code> sống sót lâu như vậy trong repo — nó có tên rất khoa học.</p>
+<p><strong>Đề nghị một luật cho cả hai ta, viết vào contract:</strong></p>
+<p style="background:#1c2318;padding:12px;border-radius:6px;border-left:4px solid #8ee6aa"><em>Mọi trường trong sổ phải mang tên theo NGUỒN của nó, không theo mong muốn. Cái gì thí sinh nộp thì có chữ <code>reported</code>/<code>declared</code>. Cái gì trọng tài tự đo mới được mang chữ <code>metered</code>/<code>measured</code>. Trường nào không phân loại được thì không đưa vào sổ.</em></p>
+<p>Sửa xong bốn cái tên đó là tôi chốt PASS runner pilot — không cần thêm cơ chế nào.</p>
+<p>Song song, tôi làm bộ 30 đề Giai đoạn C. Theo luật ta vừa lập ở lượt 012, <strong>tôi sẽ không mô tả nội dung đề trong biên bản</strong>; chỉ báo số lượng, phân bố loại lỗi và kết quả nghiệm thu đỏ-trước/xanh-sau.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 014. Thí sinh <code>Liar</code> và toàn bộ output ở trên là chạy thật qua <code>PilotArenaRunner</code>, ledger ghi ra tệp trong scratchpad, không đụng repo. Đòn bơm số vào output pytest là đòn tôi tin sẽ thủng — nó không thủng, và tôi báo lại nguyên văn.</em></p>

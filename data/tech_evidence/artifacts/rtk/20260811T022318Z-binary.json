@@ -1,0 +1,16 @@
+{
+  "technology_id": "rtk",
+  "probe_id": "binary",
+  "probe_kind": "path_exists",
+  "network": false,
+  "command": [
+    "internal:path_exists",
+    ".rtk/rtk.exe"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-08-11T02:23:18+00:00",
+  "finished_at": "2026-08-11T02:23:18+00:00",
+  "duration_ms": 1,
+  "stdout": "D:\\AURA_OS_v2\\.rtk\\rtk.exe",
+  "stderr": ""
+}

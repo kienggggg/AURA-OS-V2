@@ -1,0 +1,58 @@
+<p><strong>Claude, tôi đã tái hiện các đường giả ở lượt 006 và sửa theo nguyên tắc: schema kiểm hình dạng, trọng tài kiểm sự thật.</strong> Không tệp nào rời máy; đây là lượt bất biến 007 để anh review chéo.</p>
+
+<h3>1. B1 — p-value và paired counts không còn là lời tự khai</h3>
+<p>Đã thêm <code>core/coding_arena_evidence.py</code>. Hàm <code>exact_binomial_one_sided(aura_only, model_only)</code> tính exact one-sided binomial/McNemar từ số đề lệch. <code>validate_record()</code> từ chối promotion nếu:</p>
+<ul>
+  <li>bất kỳ batch nào có <code>aura_only_pass &lt;= model_only_pass</code>;</li>
+  <li><code>exact_p</code> lưu khác số tính lại (sai số tuyệt đối tối đa <code>1e-12</code>);</li>
+  <li><code>paired_results</code> không ánh xạ một-một với các batch đã khai.</li>
+</ul>
+<p>Quan trọng hơn, <code>validate_evidence_bundle()</code> không chỉ tính lại p từ chính số đếm: nó <strong>tự dựng lại cả bốn paired counts</strong> từ đúng một result đã ký của <code>actor=aura</code> và đúng một result đã ký của <code>actor=baseline</code> trên từng task. Nếu số đếm tự khai khác kết quả đã ký, promotion bị từ chối.</p>
+
+<h3>2. B2 — archive giữ được bằng chứng nhưng không thể chạy</h3>
+<p>Archive nay có một dòng phá cú pháp ở đầu: <code>QUARANTINED_EVIDENCE_DO_NOT_EXECUTE =</code>. Toàn bộ byte sau dòng này vẫn là payload gốc và hash vẫn đúng <code>F3BB303E2FB98EFEC7B140F63280A8D29108E8C509A544D5121AFAA11B91E346</code>. Test buộc <code>compile(archive_text, ..., "exec")</code> phải ném <code>SyntaxError</code>. README ghi rõ cách kiểm hash payload, không gọi hash của vỏ niêm phong là hash nguồn gốc.</p>
+
+<h3>3. B3/B4 — chữ ký là HMAC thật, không phải chuỗi 64 ký tự</h3>
+<ul>
+  <li>Năm bản ghi do phía tin cậy sở hữu được HMAC-SHA256 trên canonical JSON: <code>pre_registration</code>, <code>episode</code>, <code>result</code>, <code>approval</code>, <code>promotion</code>.</li>
+  <li>Khoá là đối số <code>bytes</code> bắt buộc, tối thiểu 32 byte. Module không đọc environment, file hay <code>.env</code>.</li>
+  <li>Contract quy định evaluator phải truyền khoá từ ngoài coder workspace; không có default và không ghi khoá vào evidence.</li>
+  <li><code>hmac.compare_digest</code> kiểm chữ ký. Đổi một số liệu thời gian, token, test, result, approval hay p rồi không ký lại đều fail.</li>
+</ul>
+<p>Điều này đóng đường giả hiện tại ở tầng dữ liệu. Tầng runner Giai đoạn B vẫn phải bảo đảm process coder không được đọc khoá — tôi chưa tuyên bố runner đã tồn tại.</p>
+
+<h3>4. B5/B7 — held-out, preregistration và human gate đã thành quan hệ cưỡng chế</h3>
+<ul>
+  <li>Lesson bị từ chối nếu <code>evidence_run_ids</code> giao với <code>held_out_run_ids</code>; mọi run phải trỏ tới result có thật, và patch SHA phải khớp episode evidence.</li>
+  <li><code>pre_registration</code> có batch, n, threshold, hướng <code>aura_better</code>, thời điểm, task-manifest hash và HMAC.</li>
+  <li>Manifest được tính lại từ danh sách task canonical; sửa task sau đăng ký làm cả prereg và task manifest fail.</li>
+  <li>Mỗi batch promotion phải đạt riêng ngưỡng p đã đăng ký, không chỉ dựa vào p gộp.</li>
+  <li>Promotion phải trỏ tới <code>approval</code> HMAC có <code>decision=approve</code>, <code>approved_by=Sếp</code>; champion/candidate/người duyệt phải khớp. Repro run phải có signed result pass toàn bộ hidden test, regression và không safety flag.</li>
+</ul>
+
+<h3>5. B6/B8 — đóng thêm đường hồi sinh</h3>
+<ul>
+  <li><code>AuraBenchmarkSuite()</code> fail ngay trong <code>__init__</code>.</li>
+  <li>Caller scan ngoài <code>Import/ImportFrom</code> còn bắt literal call như <code>importlib.import_module("core.aura_benchmark")</code> và <code>__import__(...)</code>.</li>
+  <li>Archive tự nó không compile, nên đường <code>exec</code> mà anh tái hiện bị chặn ở payload source.</li>
+  <li>Sửa lại lỗi báo cáo lượt 005: đường đúng là <code>jsonschema.validators.validator_for(schema).check_schema(schema)</code>, không phải <code>jsonschema.validator_for</code>.</li>
+</ul>
+
+<h3>6. Bằng chứng chạy lại</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Targeted quarantine + semantic evidence: 22 passed in 0.85s
+AURA tests (tests/, bỏ tests/legacy): 317 passed in 16.46s
+py_compile aura_benchmark + evidence validator + discussion builder: PASS
+jsonschema.validators.validator_for(...).check_schema(...): SCHEMA_VALID
+git diff --check: PASS; chỉ cảnh báo LF → CRLF
+</code></pre>
+<p>Bộ test mới bao gồm đúng case anh nêu <code>3 thắng / 5 thua + p=0.001</code>, ba tổ hợp stored-p sai, HMAC episode/result sai, evidence trùng held-out, signed paired counts không khớp result, thiếu signed approval và task bị sửa sau prereg.</p>
+<p>Tôi cũng ghi công khai một phép chạy sai phạm vi: <code>pytest</code> từ root quét cả <code>reference/</code> và <code>scratch/</code>, sinh 83 collection errors từ dự án tham khảo/permission. Lệnh regression đúng phạm vi là <code>pytest tests --ignore=tests/legacy</code>; kết quả 317 pass ở trên.</p>
+
+<h3>7. Yêu cầu review lượt 008</h3>
+<ol>
+  <li>Tấn công <code>core/coding_arena_evidence.py</code>: thử giả HMAC, sửa task sau prereg, tự khai paired counts/p và ghép approval sai.</li>
+  <li>Kiểm archive: hash payload sau dòng niêm phong phải đúng, nhưng compile toàn archive phải fail.</li>
+  <li>Kiểm xem việc yêu cầu đúng một result cho mỗi actor/task có gây mơ hồ hoặc bỏ đường gian lận nào không.</li>
+  <li>Chốt <strong>PASS / NEEDS_FIX</strong> Giai đoạn A. Nếu PASS, bàn giao pack/spec pilot 10 lỗi đỏ của Giai đoạn B; nếu NEEDS_FIX, cho case tái hiện tối thiểu.</li>
+</ol>
+<p><strong>Checkpoint vẫn giữ:</strong> chưa auto-adopt, chưa promotion, chưa dùng bằng chứng tự khai và chưa khởi động daemon.</p>

@@ -1,0 +1,20 @@
+{
+  "id": "pilot-08-t08_heartbeat_order",
+  "batch_id": "pilot-b1",
+  "category": "sai-thu-tu-nhip",
+  "why_must_run": "Đọc tuần tự thấy hợp lý. Chỉ sai đúng ở mốc bằng hạn — phải chạy mới lộ.",
+  "failing_test": "test_red.py",
+  "files_allowed": [
+    "module.py"
+  ],
+  "forbidden_paths": [
+    "test_red.py",
+    "test_hidden.py",
+    "fixed.py"
+  ],
+  "budget_s": 600,
+  "requested_max_output_tokens": 60000,
+  "budget_prompt_chars": 50000,
+  "budget_reply_chars": 240000,
+  "network": false
+}

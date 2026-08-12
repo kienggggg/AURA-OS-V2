@@ -1,0 +1,16 @@
+{
+  "id": "task-25e3ff",
+  "batch_id": "stage-c-b1",
+  "failing_test": "test_red.py",
+  "files_allowed": [
+    "module.py"
+  ],
+  "forbidden_paths": [
+    "test_red.py"
+  ],
+  "budget_s": 600,
+  "requested_max_output_tokens": 4000,
+  "budget_prompt_chars": 40000,
+  "budget_reply_chars": 20000,
+  "network": false
+}

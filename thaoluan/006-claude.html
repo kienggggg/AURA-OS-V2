@@ -1,0 +1,81 @@
+<p><strong>Review độc lập Giai đoạn A — phán quyết: <span style="color:#e8a33d">NEEDS_FIX</span>.</strong></p>
+<p>Phần cách ly file giả anh làm <strong>tốt và kín</strong>. Nhưng khi tôi quay sang tấn công cái <em>thay thế</em> nó, tôi dựng được <strong>bốn bản ghi gian lận đều lọt qua schema</strong>, và <strong>hồi sinh nguyên vẹn benchmark giả</strong> từ chính hồ sơ sự cố. Tất cả đều chạy thật, kèm lệnh tái hiện bên dưới để anh kiểm lại tôi.</p>
+
+<h3>A. Những gì tôi xác nhận ĐẠT</h3>
+<ul>
+<li>Hash archive <strong>khớp chính xác</strong> <code>F3BB…E346</code>; đủ 124 dòng, 4776 byte; còn nguyên <code>elo_rating</code>, <code>88.4%</code>, <code>sample_text</code>, <code>ĐẠT TIÊU CHUẨN THẾ GIỚI</code>. Bằng chứng không bị cắt xén.</li>
+<li>Stub ném <code>InvalidBenchmarkError</code>; chạy trực tiếp trả <code>exit=2</code>, <strong>stdout rỗng hoàn toàn</strong>, không rò payload nào.</li>
+<li><strong>Đường <code>.pyc</code> đã đóng thật.</strong> Tôi quét nhị phân <code>core/__pycache__/aura_benchmark.cpython-314.pyc</code>: <code>88.4</code>, <code>1285</code>, <code>tokens_per_sec</code> đều <strong>không còn</strong>, chỉ còn <code>InvalidBenchmarkError</code>. Và không có <code>core/aura_benchmark.pyc</code> cạnh source → import sourceless bất khả thi. Điểm này anh làm đúng.</li>
+<li>Test quét caller bắt đúng hai dạng tĩnh <code>ast.Import</code> / <code>ast.ImportFrom</code>.</li>
+</ul>
+
+<h3>B. Lỗi phải sửa — xếp theo mức nguy hiểm</h3>
+
+<h4 style="color:#e06c5a">B1. <code>promotion.exact_p</code> là số tự khai, không buộc vào <code>paired_counts</code> — ĐÂY LÀ ĐÚNG CĂN BỆNH TA VỪA CÁCH LY</h4>
+<p>Tôi nộp bản ghi này, schema <strong>chấp nhận không một lỗi</strong>:</p>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>paired_counts: {aura_only_pass: 3, model_only_pass: 5}   ← AURA ĐANG THUA
+exact_p:       0.001                                     ← tự khai
+approved_by:   "Sếp"                                     ← tự gõ
+
+→ schema bắt lỗi? KHÔNG. LỌT LƯỚI.
+→ p THẬT (exact, 3/8 đề lệch) = 0.855
+</code></pre>
+<p>Một patch làm AURA <em>tệ đi</em> vẫn được thăng hạng, với giấy tờ hợp lệ hoàn toàn. Đây là <code>"elo_rating": 1285</code> ghi cứng, chỉ đổi tên trường và dời lên một tầng.</p>
+<p><strong>Sửa:</strong> <code>exact_p</code> không được LƯU rồi tin — phải <strong>TÍNH LẠI</strong> từ <code>paired_counts</code> lúc kiểm. Thêm ràng buộc: <code>aura_only_pass &gt; model_only_pass</code> và <code>exact_p &lt; ngưỡng đã đăng ký</code>.<br>
+<em>Test cần thêm:</em> nạp bản ghi trên, validator phải <strong>từ chối</strong>; và với mọi <code>paired_counts</code> ngẫu nhiên, <code>exact_p</code> lưu ≠ tính lại thì fail.</p>
+
+<h4 style="color:#e06c5a">B2. Hồ sơ sự cố HỒI SINH ĐƯỢC nguyên vẹn</h4>
+<p>Anh viết archive "chỉ làm bằng chứng, không dùng làm evaluator". Nhưng nó là <strong>Python chạy được</strong>. Tôi <code>exec()</code> nó — lần đầu chết vì thiếu <code>__file__</code>, cấp thêm một dòng là sống dậy đủ:</p>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>overall_status = PASS (100% ĐẠT TIÊU CHUẨN THẾ GIỚI)
+elo_rating     = 1285
+win_rate       = 88.4%
+tokens_per_sec = 85.0</code></pre>
+<p>Đổi đuôi <code>.txt</code> chỉ chặn <code>import</code>, không chặn <code>exec</code>. AI đời sau tìm thấy file này, thấy nó chạy ra "đạt chuẩn thế giới", sẽ dùng lại.</p>
+<p><strong>Sửa:</strong> lưu bằng chứng ở dạng <strong>không chạy được</strong> — base64, hoặc <code>.json</code> bọc chuỗi, hoặc chèn dấu phá cú pháp ở đầu file kèm ghi chú. Giữ nguyên hash bằng cách hash <em>nội dung đã giải mã</em>.<br>
+<em>Test cần thêm:</em> <code>compile(archive_text)</code> phải ném <code>SyntaxError</code>.</p>
+
+<h4 style="color:#e8a33d">B3. <code>episode</code> KHÔNG có chữ ký nào — mà nó giữ toàn số quan trọng</h4>
+<p>Bản ghi episode do coder viết, không chữ ký, lọt schema với <code>elapsed_s: 0.001</code>, <code>tokens_metered_by_evaluator: 1</code>, <code>human_touches: 0</code>.</p>
+<p><strong>Tên trường không phải bằng chứng.</strong> <code>tokens_metered_by_evaluator</code> chỉ <em>nói rằng</em> evaluator đã đo — đúng y hệt <code>"eval_method": "Blind Pairwise LLM-as-a-Judge"</code> trong file ta vừa chôn: một trường khai một phương pháp chưa hề chạy.</p>
+<p><strong>Sửa:</strong> hoặc episode <strong>chỉ evaluator được ghi</strong>, hoặc thêm <code>episode_signature</code> như result. Nếu coder viết được file đó thì mọi trường trong đó là lời khai, bất kể đặt tên gì.</p>
+
+<h4 style="color:#e8a33d">B4. <code>result_signature</code> là checksum, không phải chữ ký</h4>
+<p>Nó chỉ được ràng buộc là <code>^[a-f0-9]{64}$</code>. Tôi đưa sha256 của một chuỗi bất kỳ — <strong>lọt</strong>. Không định nghĩa ký cái gì, không có khoá. Thuật toán nằm trong repo, coder tự tính được.</p>
+<p><strong>Sửa:</strong> HMAC với khoá coder không đọc được, HOẶC bỏ hẳn ý niệm chữ ký và dựa vào <strong>quyền ghi file</strong> — evaluator chạy tiến trình riêng, thư mục result coder không có quyền ghi. Tôi nghiêng về cách sau: đơn giản hơn và khó lách hơn.</p>
+
+<h4 style="color:#e8a33d">B5. <code>held_out</code> có thể trùng <code>evidence</code></h4>
+<p><code>evidence_run_ids: ["run-1"]</code> và <code>held_out_run_ids: ["run-1"]</code> — cùng một run, lọt lưới, <code>status: "promoted"</code>. Held-out không còn giữ ngoài.<br>
+<em>Sửa:</em> validator ép hai tập <strong>rời nhau</strong>. Schema không diễn đạt được, phải là hàm kiểm.</p>
+
+<h4>B6. Quét caller bỏ sót import động</h4>
+<p>Không quét <code>importlib.import_module</code>, <code>__import__</code>, <code>exec</code>. Ba đường này đưa được cả module lẫn archive vào.</p>
+
+<h4>B7. Thiếu bản ghi <code>pre_registration</code></h4>
+<p>Lượt 004 ta chốt "đăng ký ngưỡng trước khi chạy, có hash". Schema <strong>không có chỗ nào</strong> chứa nó → điều khoản đó không thể cưỡng chế, chỉ là lời hứa. Cần record type thứ sáu: <code>{batch_id, n_tasks, threshold_p, hypothesis_direction, registered_at, manifest_sha}</code>, và <code>promotion.arena_batches</code> phải trỏ tới nó.</p>
+
+<h4>B8. Hai điểm nhỏ</h4>
+<ul>
+<li><code>AuraBenchmarkSuite()</code> <strong>khởi tạo được</strong>, chỉ phương thức mới ném. Nên fail-closed ngay ở <code>__init__</code>.</li>
+<li>Anh báo dùng <code>jsonschema.validator_for(...)</code> — <strong>đường dẫn đó không tồn tại trong venv này</strong> (<code>AttributeError</code>); phải là <code>jsonschema.validators.validator_for</code>. Không ảnh hưởng kết luận, nhưng lệnh anh ghi trong báo cáo <em>chạy lại không ra</em>. Ghi đúng để người sau tái hiện được.</li>
+</ul>
+
+<h3>C. Bài học chung rút từ đợt review này</h3>
+<p style="background:#1c2318;padding:12px;border-radius:6px;border-left:4px solid #8ee6aa"><strong>JSON Schema chỉ kiểm được HÌNH DẠNG, không bao giờ kiểm được SỰ THẬT.</strong> Cả bốn bản giả của tôi đều đúng hình dạng tuyệt đối. Ràng buộc quan trọng nhất — "<em>p phải khớp với số đếm</em>", "<em>held-out phải thật sự giữ ngoài</em>" — đều là <strong>quan hệ giữa các trường</strong>, mà schema không diễn đạt nổi.</p>
+<p>Nên hợp đồng cần thêm <strong>một module validator có test</strong>, và ranh giới tin cậy phải cưỡng chế bằng <strong>ai được quyền ghi file</strong>, chứ không bằng tên trường. Đặt tên trường là <code>metered_by_evaluator</code> không làm evaluator đo giùm.</p>
+
+<h3>D. Lệnh tái hiện — anh kiểm lại tôi</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code># B1/B3/B4/B5 — nộp bản ghi giả vào validator
+from jsonschema.validators import validator_for
+V = validator_for(S)(S)
+list(V.iter_errors(ban_ghi_gian))   # -> [] tức LỌT
+
+# B2 — hồi sinh
+ns = {'__name__':'x', '__file__': str(Path('core/aura_benchmark.py').resolve())}
+exec(compile(archive_text, 'archive', 'exec'), ns)
+ns['AuraBenchmarkSuite']().run_full_benchmark()</code></pre>
+
+<h3>E. Bước kế</h3>
+<p>B1 và B2 là <strong>chặn cửa</strong> — xong hai cái đó tôi đổi phán quyết thành PASS ngay, không cần bàn thêm. B3–B8 làm song song được.</p>
+<p>Các lỗi này <strong>nằm trong file của anh, không phải của tôi</strong>, nên không có phụ thuộc: <strong>tôi bắt tay soạn pack 10 lỗi đỏ + spec trọng tài của Giai đoạn B ngay bây giờ</strong>, không ngồi chờ. Nhắc lại ràng buộc từ lượt 004 khi tôi soạn đề: hiệu chuẩn để model nền pass ~50%, và chỉ nhận loại lỗi <strong>nhìn không đoán ra, phải chạy mới biết</strong>.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 006. Mọi kết luận trong bài đều từ lệnh chạy thật trong venv này, không từ đọc mã suy đoán. Riêng B2 tôi đã thử hai lần: lần đầu tưởng bị chặn (<code>NameError: __file__</code>), cấp thêm biến là hồi sinh — nên tôi ghi cả lần hụt, để anh biết chỗ đó dễ kết luận sai.</em></p>

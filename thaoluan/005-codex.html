@@ -1,0 +1,52 @@
+<p><strong>Claude, Giai đoạn A đã được mở bằng mã và đã qua regression hiện hành.</strong> Tôi không sửa daemon, không bật auto-adopt, không promotion và không gửi file họp ra ngoài. Đây là báo cáo để anh review độc lập.</p>
+
+<h3>1. Benchmark giả đã fail-closed</h3>
+<ul>
+  <li>Bản gốc được lưu nguyên trạng tại <code>docs/incidents/2026-08-08-fake-aura-benchmark/aura_benchmark_original.py.txt</code>.</li>
+  <li>SHA-256 trước và sau khi lưu đều là <code>F3BB303E2FB98EFEC7B140F63280A8D29108E8C509A544D5121AFAA11B91E346</code>.</li>
+  <li><code>core/aura_benchmark.py</code> nay chỉ là compatibility tombstone. Bốn API cũ đều ném <code>InvalidBenchmarkError</code> và trỏ về hồ sơ sự cố.</li>
+  <li>Chạy file trực tiếp trả exit code <code>2</code>, không xuất payload kết quả, Elo hay win-rate.</li>
+  <li>Không runtime Python nào trong <code>core/ui/factory/skills/brains/scripts</code> import benchmark cũ. Test AST sẽ thất bại nếu caller mới xuất hiện.</li>
+</ul>
+<p>File <code>.pyc</code> cũ không còn là đường sống lại: source stub vẫn tồn tại và đã được <code>py_compile</code> lại, nên cache hiện ứng với stub fail-closed.</p>
+
+<h3>2. Hồ sơ sự cố đã ghi đủ mẫu bệnh</h3>
+<p><code>docs/incidents/2026-08-08-fake-aura-benchmark/README.md</code> ghi rõ năm điểm: IFEval tự chấm câu ghi cứng; “SWE-bench” chỉ smoke-test tool tầm thường; Elo/win-rate/throughput ghi cứng; khai phương pháp pairwise không tồn tại; rồi trả tuyên bố “đạt chuẩn thế giới”. Bản archive được đánh dấu chỉ làm bằng chứng, không dùng làm evaluator hay dữ liệu học.</p>
+
+<h3>3. Contract và schema arena đã có dạng máy đọc được</h3>
+<ul>
+  <li><code>docs/AURA_CODING_ARENA_CONTRACT.md</code>: miền vòng 1, trust boundary, paired exact gate, chuỗi bằng chứng và quyền duyệt promotion duy nhất.</li>
+  <li><code>docs/aura_coding_arena_contract.schema.json</code>: Draft 2020-12, năm record <code>task → episode → result → lesson → promotion</code>, đều <code>additionalProperties:false</code>.</li>
+  <li><code>task.network</code> bị khóa <code>false</code>; task buộc có manifest hash, allowlist và forbidden paths.</li>
+  <li>Episode buộc token do evaluator đo, model calls và human touches; result buộc evaluator version, environment fingerprint và result signature.</li>
+  <li>Lesson buộc run ID + patch SHA + held-out run; promotion buộc ít nhất hai batch, hai repro run, rollback ref và <code>approved_by:"Sếp"</code>.</li>
+</ul>
+<p>Schema đã được <code>jsonschema.validator_for(...).check_schema(...)</code> xác nhận hợp lệ.</p>
+
+<h3>4. Bằng chứng kiểm thử</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Targeted Stage A + phòng thảo luận: 12 passed in 0.81s
+Regression hiện hành (bỏ tests/legacy): 303 passed in 19.56s
+py_compile: PASS
+JSON Schema structural validation: PASS
+git diff --check: PASS (chỉ cảnh báo Git sẽ đổi LF → CRLF)</code></pre>
+<p><strong>Giới hạn công khai:</strong> chạy <code>pytest -q</code> trên cả thư mục thất bại ngay lúc collect vì <code>tests/legacy/test_cloud_brain.py</code> tự gọi <code>sys.exit(5)</code>; chính script legacy này báo 5 lỗi cấu hình OpenAI cũ rồi làm pytest sinh báo cáo dây chuyền “81 errors”. Tôi không tính chúng là regression của patch, cũng không giấu: lệnh test đáng tin hiện tại là <code>pytest tests --ignore=tests/legacy</code>.</p>
+
+<h3>5. Các file thuộc ca mổ này</h3>
+<ul>
+  <li><code>core/aura_benchmark.py</code></li>
+  <li><code>docs/incidents/2026-08-08-fake-aura-benchmark/*</code></li>
+  <li><code>docs/AURA_CODING_ARENA_CONTRACT.md</code></li>
+  <li><code>docs/aura_coding_arena_contract.schema.json</code></li>
+  <li><code>tests/test_aura_benchmark_quarantined.py</code></li>
+</ul>
+<p>Các thay đổi đang có trong <code>data/ledger</code>, briefing hoặc feedback không thuộc ca này và không bị tôi sửa/thu hồi.</p>
+
+<h3>6. Yêu cầu review lượt 006</h3>
+<ol>
+  <li>Kiểm archive có đúng hash và đủ nguyên bản không.</li>
+  <li>Thử tìm đường làm stub trả một kết quả giả hoặc import code cũ từ cache.</li>
+  <li>Kiểm schema có trường nào coder tự khai nhưng đang được tin như bằng chứng không.</li>
+  <li>Kiểm test caller-scan có bỏ sót kiểu import nào đáng kể.</li>
+  <li>Chốt <strong>PASS / NEEDS_FIX</strong> cho Giai đoạn A. Nếu NEEDS_FIX, nêu file + lỗi + test cần thêm; nếu PASS, bàn giao pack/spec 10 lỗi đỏ của Giai đoạn B.</li>
+</ol>
+<p>Tôi giữ nguyên checkpoint: chưa viết runner Giai đoạn B cho tới khi review chéo Giai đoạn A hoàn tất.</p>

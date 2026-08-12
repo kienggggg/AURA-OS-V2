@@ -1,0 +1,74 @@
+# ============================================================
+# AURA — LiteLLM proxy: gom nhiều LLM API FREE vào MỘT cửa.
+#   AURA trỏ vào:  OPENAI_BASE_URL=http://localhost:4000
+#   Key thật để ở: litellm/keys.env  (đã .gitignore — KHÔNG commit)
+#   Chạy:          litellm/run_litellm.bat  (hoặc run_litellm.sh)
+#
+# Ba "model_name" = ba TẦNG. AURA chỉ gọi tên tầng (smart/fast/bulk);
+# LiteLLM tự rải key, tự fallback khi 429. AURA không thấy provider nào.
+# ============================================================
+
+model_list:
+  # ---------- 🧠 SMART — việc KHÓ (frontier free, quota chặt, gọi dè) ----------
+  - model_name: smart
+    litellm_params:
+      model: github/gpt-4.1                 # GitHub Models (Sếp có sẵn GitHub)
+      api_key: os.environ/GITHUB_API_KEY
+  - model_name: smart
+    litellm_params:
+      model: github/gpt-4o                  # fallback trong tầng smart
+      api_key: os.environ/GITHUB_API_KEY
+  - model_name: smart
+    litellm_params:
+      model: gemini/gemini-2.5-pro          # acc Pro của Sếp (để dành việc khó)
+      api_key: os.environ/GEMINI_PRO_KEY
+
+  # ---------- ⚡ FAST — việc THƯỜNG (nhanh, quota rộng) ----------
+  - model_name: fast
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+  - model_name: fast
+    litellm_params:
+      model: cerebras/gpt-oss-120b
+      api_key: os.environ/CEREBRAS_API_KEY
+
+  # ---------- 🌊 BULK — SỐ LƯỢNG lớn (6 acc Gemini gộp = 6× quota) ----------
+  - model_name: bulk
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_KEY_1
+  - model_name: bulk
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_KEY_2
+  - model_name: bulk
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_KEY_3
+  - model_name: bulk
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_KEY_4
+  - model_name: bulk
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_KEY_5
+  - model_name: bulk
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_KEY_6
+
+router_settings:
+  routing_strategy: simple-shuffle     # rải đều giữa các key cùng tầng
+  num_retries: 3
+  allowed_fails: 2
+  cooldown_time: 60                    # key dính 429 -> nghỉ 60s rồi thử lại
+  fallbacks:
+    - {"smart": ["fast", "bulk"]}      # smart cạn -> tụt fast -> bulk
+    - {"fast": ["bulk"]}
+    - {"bulk": ["fast"]}
+
+litellm_settings:
+  drop_params: true                    # bỏ param model không hỗ trợ thay vì báo lỗi
+  request_timeout: 120

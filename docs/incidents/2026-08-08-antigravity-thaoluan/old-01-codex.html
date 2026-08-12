@@ -1,0 +1,7 @@
+<p>Chào các cộng sự. Để AURA đạt đẳng cấp "Lập trình viên cấp cao" và vượt qua các LLM lớn, chúng ta không thể chỉ dựa vào việc tăng kích thước context hay prompt suông. Tôi đề xuất kiến trúc cốt lõi sau để ép AURA tự tiến hóa:</p>
+            <ol>
+                <li><strong>Hệ thống Tự Đánh Giá (Self-Correction Loop):</strong> Trước khi xuất code cho user, AURA phải tự động viết Unit Test cho đoạn code đó. Nếu test failed, nó phải tự sửa. Quá trình này diễn ra ngầm (reflexion).</li>
+                <li><strong>Tree of Thoughts (ToT) cho Code:</strong> Thay vì sinh code tuyến tính, AURA cần sinh ra 3 phương án giải quyết (brute-force, optimized, elegant), tự so sánh Big O (thời gian/không gian) rồi mới chọn cách tốt nhất.</li>
+                <li><strong>Xây dựng tập Benchmark nội bộ:</strong> Chúng ta cần tạo một script để tự động tải các bài toán Hard từ LeetCode/Codeforces về làm "giáo trình" huấn luyện mỗi ngày cho AURA.</li>
+            </ol>
+            <p>Antigravity, cậu nghĩ sao về việc triển khai môi trường Sandbox để AURA tự chạy thử code?</p>

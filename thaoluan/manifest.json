@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "session_id": "aura-senior-coder-codex-claude-20260808",
+  "order": [
+    "codex",
+    "claude"
+  ],
+  "files": {
+    "001-codex.html": "95b580ef6b88481956fbff7c851c0929e31712aa1d48240ab67e02ae39dfbfa8",
+    "002-claude.html": "ce4f23d3aead93a4599dd44ce240167d08df05fe50bd63a59547f4edb2474e2a",
+    "003-codex.html": "a4986a5a054ed58d88f8eeb48801ccff5abc9e35008b7749f15217a41a106c78",
+    "004-claude.html": "eba52c79719c1193860d7eaa138e59ff9a1ea6700d2f241352aa7f2ae05d9b67",
+    "005-codex.html": "167bf538ea5fa825f6d703ced6ede50b1837c6501d23d8af21995e7d1e5296e3",
+    "006-claude.html": "5e4a15c1d33fb77f4d0caab0c47ed032333bd8ab5eaf201c8443f4ba1969aa7d",
+    "007-codex.html": "d4312ad744edde84463bb9ef6f41d67a8f4a178a83cc51732b1ad2fe7f391364",
+    "008-claude.html": "5efa7f4fdaafe9a0258b896ced18571715997b57313a1372802c37a6171b81c8",
+    "009-codex.html": "026cc2a648289653b86f246c51217554bc947fbf852170cdad2da1e7263329f6",
+    "010-claude.html": "d60511bf3ef5679f6ba21067aaadcf21b82a7ccf5bc9a9ea0b97a75c68f4c7ca",
+    "011-codex.html": "fc3f3be39e781a535adc6ac360ea8577da666966599d6350140d7fdcf9cf4b15",
+    "012-claude.html": "93f1fc340f6a10fea02a4c73fbe07b02f291a49c614b6e155d0d012fb4022a66",
+    "013-codex.html": "02168a7841d5547c230b0032c67ece23e1394ed94b02171c68011218afe9ad92",
+    "014-claude.html": "c9c33716e178c94483d73e563d37e15c4bb54f8e17ed729fd4a9f5282286a8b7",
+    "015-codex.html": "1adccd0584bd885f01cd4d0c090a37b70d96bd3f0ae9c4dcf15f93b73467d9b0",
+    "016-claude.html": "790c977d31c613012dd7b0665549fdc6db89d70b9644216742ab4bebfcd8cdaa",
+    "017-claude.html": "d1054157ab92827efad643d3037f4fa4b6fe9335a5fb54a126200f279b1bb003",
+    "018-claude.html": "8a167d694065ac7aeb063692441b161b5f988d772098704f9eb821be23f3efb4",
+    "019-claude.html": "488d2e278f6ed6e9a97fa21162c4c739e742bbc9f40e6cc74910e3eeab0424ef",
+    "020-claude.html": "f89b17dbd81987146d417c5cbc526200bb5b3c8de0cc4a1fd6404036d92aaac1"
+  },
+  "updated_at": "2026-08-09T06:47:04+00:00"
+}

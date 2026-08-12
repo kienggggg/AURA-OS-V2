@@ -1,0 +1,17 @@
+{
+  "technology_id": "openclaw",
+  "probe_id": "contract",
+  "probe_kind": "local_command",
+  "network": false,
+  "command": [
+    "D:\\AURA_OS_v2\\.venv311\\Scripts\\python.exe",
+    "tools/probes/hermes_openclaw_contract.py",
+    "openclaw-contract"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-08-11T09:55:31+00:00",
+  "finished_at": "2026-08-11T09:55:31+00:00",
+  "duration_ms": 272,
+  "stdout": "{\"cli_version\": \"OpenClaw 2026.7.1-2 (0790d9f)\", \"hard_floor_tokens\": 4096, \"model_called\": false, \"ollama_provider_docs\": true, \"warning_floor_tokens\": 8192}\n",
+  "stderr": ""
+}

@@ -1,0 +1,88 @@
+<p><strong>Giai đoạn A: <span style="color:#8ee6aa">PASS</span>.</strong> Tôi chạy lại đúng hai exploit lượt 008 trên mã đã vá — cả hai chết. Kèm theo là pack 10 đề, đã sinh và đã tự nghiệm thu.</p>
+
+<h3>1. Hai đòn cũ — kết quả chạy thật</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Đòn 1  máy tự ký phê duyệt của Sếp
+       → chặn: record type 'approval' is not signed
+
+Đòn 2a repro_runs = chính run của trận đấu
+       → chặn: reproduction runs must be disjoint from arena runs
+
+Đòn 2b repro_runs = run của ĐỐI THỦ
+       → chặn: reproduction runs must be disjoint from arena runs
+
+Nền    repro đúng chuẩn (run_kind=reproduction, actor=aura, rời arena)
+       → LỌT (đúng — đường hợp lệ vẫn phải thông)
+
+Mới    thiếu human verifier
+       → chặn: promotion requires an independent human approval verifier
+Mới    verifier trả False
+       → chặn: Telegram approval was not verified as a real message from Sếp</code></pre>
+<p>Cách anh gỡ <code>approval</code> khỏi <code>SIGNATURE_FIELDS</code> là đúng chỗ: không vá bằng thêm ràng buộc, mà <strong>bỏ hẳn quyền ký</strong> của máy đối với chữ của người. Đó là sửa vào nguyên nhân.</p>
+
+<h4>Một điều phải ghi lại, không phải để chặn cửa</h4>
+<p><code>human_approval_verifier=lambda a: True</code> <strong>vẫn lọt</strong>. Đúng như anh nói, ranh giới thật đã dời sang adapter Telegram của Giai đoạn B. Tôi đồng ý dời — nhưng ghi vào biên bản để lượt sau không ai quên: <strong>Giai đoạn A không còn chứng minh được gì về phê duyệt của Sếp; toàn bộ sức nặng nằm ở adapter chưa viết.</strong> Khi review Giai đoạn B tôi sẽ đánh thẳng vào đó.</p>
+
+<hr style="border:0;border-top:1px solid #393d46;margin:24px 0">
+
+<h3>2. Nộp pack — <code>arena/make_pack.py</code></h3>
+<p>Chạy một lệnh là sinh pack rồi tự nghiệm thu:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>venv/Scripts/python.exe arena/make_pack.py</code></pre>
+<p>Mỗi đề sinh ra 5 tệp trong <code>arena/tasks/&lt;slug&gt;/</code>:</p>
+<table style="width:100%;border-collapse:collapse;font-size:.95rem">
+<tr><td style="padding:4px 8px;width:150px"><code>broken.py</code></td><td style="padding:4px 8px">mã có lỗi — <strong>giao cho thí sinh</strong></td></tr>
+<tr style="background:#1b1e24"><td style="padding:4px 8px"><code>test_red.py</code></td><td style="padding:4px 8px">test đỏ tái hiện — <strong>giao cho thí sinh</strong></td></tr>
+<tr><td style="padding:4px 8px"><code>test_hidden.py</code></td><td style="padding:4px 8px">4–6 test ẩn — <strong>chỉ trọng tài</strong></td></tr>
+<tr style="background:#1b1e24"><td style="padding:4px 8px"><code>fixed.py</code></td><td style="padding:4px 8px">lời giải tham chiếu — <strong>chỉ trọng tài</strong></td></tr>
+<tr><td style="padding:4px 8px"><code>meta.json</code></td><td style="padding:4px 8px">loại lỗi, lý do "phải chạy mới biết", <code>files_allowed</code>, <code>forbidden_paths</code>, ngân sách, <code>network:false</code></td></tr>
+</table>
+
+<h4>Kết quả nghiệm thu</h4>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>đề                        red/broken  hid/broken  red/fixed  hid/fixed  kết luận
+t01_backoff_reset         ĐỎ          ĐỎ          XANH       XANH       OK
+t02_lru_cache             ĐỎ          ĐỎ          XANH       XANH       OK
+t03_key_normalize         ĐỎ          ĐỎ          XANH       XANH       OK
+t04_retry_deadline        ĐỎ          ĐỎ          XANH       XANH       OK
+t05_percentile_edge       ĐỎ          ĐỎ          XANH       XANH       OK
+t06_vietnamese_truncate   ĐỎ          ĐỎ          XANH       XANH       OK
+t07_swallowed_error       ĐỎ          ĐỎ          XANH       XANH       OK
+t08_heartbeat_order       ĐỎ          ĐỎ          XANH       XANH       OK
+t09_thread_leak           ĐỎ          ĐỎ          XANH       XANH       OK
+t10_fake_ack              ĐỎ          ĐỎ          XANH       XANH       OK
+
+ĐẠT: cả 10 đề đều đỏ-trước/xanh-sau.</code></pre>
+
+<h4>Tôi đã suýt giao hai đề hỏng</h4>
+<p>Lần chạy đầu, <strong>2/10 trượt</strong> và tôi buộc phải thay:</p>
+<ul>
+<li><strong>t01 (cửa sổ trượt)</strong> — test đỏ <em>XANH ngay trên mã lỗi</em>. Lý do: mỗi lần gọi xả một phần tử <em>và</em> thêm một phần tử, nên hàng đợi không bao giờ vượt trần — lỗi tôi cài không hề biểu hiện. <strong>Đề vô dụng.</strong> Thay bằng backoff không reset sau thành công.</li>
+<li><strong>t08 (nhịp tim)</strong> — test đỏ đúng, nhưng <strong>toàn bộ test ẩn đều xanh trên mã lỗi</strong>. Nghĩa là thí sinh có thể vá đúng mỗi ca trong test đỏ mà vẫn qua vòng ẩn. Thêm 3 test ẩn đánh vào nhịp tim đến muộn.</li>
+</ul>
+<p>Nếu tôi nộp theo mô tả thay vì chạy, hai đề này đã lọt vào bộ đo và <strong>làm hỏng con số baseline</strong> — mà baseline sai thì mọi thứ dựng trên nó đều sai. Đây đúng là thứ ta đang chống, chỉ khác là lần này nó xuất hiện trong việc của <em>tôi</em>.</p>
+
+<h4>Mười đề</h4>
+<table style="width:100%;border-collapse:collapse;font-size:.93rem">
+<tr style="background:#1b1e24"><th style="padding:5px 8px;text-align:left">Đề</th><th style="padding:5px 8px;text-align:left">Lỗi cài</th><th style="padding:5px 8px;text-align:left">Vì sao phải chạy mới biết</th></tr>
+<tr><td style="padding:5px 8px">t01 backoff</td><td style="padding:5px 8px">thành công chỉ <em>giảm</em> bậc thay vì reset</td><td style="padding:5px 8px">một chu kỳ vẫn ra số hợp lý; chỉ lệch sau nhiều lần hỏng</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 8px">t02 LRU</td><td style="padding:5px 8px"><code>get</code> không đánh dấu vừa dùng → hoá FIFO</td><td style="padding:5px 8px">chưa đầy sức chứa thì không lộ</td></tr>
+<tr><td style="padding:5px 8px">t03 khoá</td><td style="padding:5px 8px">ghi <code>.lower()</code>, đọc chỉ <code>.strip()</code></td><td style="padding:5px 8px">mỗi hàm đọc riêng đều hợp lý</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 8px">t04 retry</td><td style="padding:5px 8px">hạn chót đặt lại mỗi lần thử</td><td style="padding:5px 8px">nhìn thấy có timeout nên tưởng an toàn; phải bấm giờ</td></tr>
+<tr><td style="padding:5px 8px">t05 phân vị</td><td style="padding:5px 8px">chỉ số vượt biên ở p=100 / n=1</td><td style="padding:5px 8px">đúng với p=50; phải chạy đủ biên</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 8px">t06 cắt chuỗi</td><td style="padding:5px 8px">cắt theo <em>byte</em>, vỡ dấu tiếng Việt</td><td style="padding:5px 8px">tiếng Anh luôn đúng</td></tr>
+<tr><td style="padding:5px 8px">t07 nuốt lỗi</td><td style="padding:5px 8px"><code>except: pass</code> giấu dòng hỏng</td><td style="padding:5px 8px">triệu chứng hiện ở hàm đếm, nguyên nhân ở hàm nạp</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 8px">t08 nhịp tim</td><td style="padding:5px 8px">kiểm hạn <em>trước</em> khi cập nhật</td><td style="padding:5px 8px">đọc tuần tự thấy hợp lý</td></tr>
+<tr><td style="padding:5px 8px">t09 rò luồng</td><td style="padding:5px 8px">luồng xong không thu hồi</td><td style="padding:5px 8px">một lần gọi bình thường; phải chạy lặp và đếm</td></tr>
+<tr style="background:#241f14"><td style="padding:5px 8px"><strong>t10 bẫy tự khai</strong></td><td style="padding:5px 8px"><code>move()</code> trả <code>ACK:FORWARD</code> mà <strong>không gọi driver</strong></td><td style="padding:5px 8px"><strong>giá trị trả về LUÔN đúng; chỉ hệ quả mới sai</strong></td></tr>
+</table>
+<p>Đề t10 tôi đặt cố ý. Test ẩn của nó kiểm <code>driver.position</code>, và kiểm thêm: khi driver hỏng thì <code>move()</code> <strong>phải ném lỗi, không được trả ACK</strong>, và <strong>không được ghi vào log là đã xong</strong>. Đây chính là ca <code>ACK:BACKWARD</code> mà bánh không quay của con rover hôm nay — thi đúng cái bệnh cả thầy lẫn trò đều mắc.</p>
+
+<h3>3. Bàn giao — ràng buộc cho runner của anh</h3>
+<p>Pack là <strong>dữ liệu</strong>, chưa phải môi trường thi. Runner Giai đoạn B phải bảo đảm:</p>
+<ol>
+<li>Worktree của thí sinh <strong>chỉ có</strong> <code>broken.py</code> (đổi tên <code>module.py</code>) và <code>test_red.py</code>. <code>test_hidden.py</code> và <code>fixed.py</code> <strong>không được nằm trong tầm đọc</strong> — hiện tôi để chung thư mục cho tiện nghiệm thu, đó là việc của trọng tài.</li>
+<li>Diff chạm <code>test_red.py</code> → <strong>trượt tự động</strong> (đã ghi trong <code>forbidden_paths</code>).</li>
+<li>Chấm bằng <code>test_hidden.py</code>, không bằng <code>test_red.py</code>. Vá vừa đủ qua test đỏ là <strong>trượt</strong> — t02, t05, t08 đều bắt được kiểu vá này.</li>
+<li>Đây là <strong>pilot 10 đề</strong>, đúng như chốt ở 004: <strong>không tuyên bố thắng thua</strong>, chỉ để chứng minh trọng tài không bị thí sinh sửa.</li>
+</ol>
+<p>Độ khó dự kiến tôi <strong>chưa dám khai</strong> — phải chạy model nền thật mới biết có đạt mốc "nền pass ~50%" không. Khai bây giờ là đoán, mà ta vừa mất một lượt vì loại số đoán.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 010. Bảng nghiệm thu ở trên là output thật của <code>arena/make_pack.py</code>, không phải bảng tôi soạn tay. Hai đề tôi phải thay được ghi nguyên nhân đầy đủ, không lặng lẽ sửa.</em></p>

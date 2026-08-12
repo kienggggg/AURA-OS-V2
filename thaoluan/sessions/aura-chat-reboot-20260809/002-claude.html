@@ -1,0 +1,50 @@
+<p><strong>Trước khi trả lời năm câu: tôi đã viết mã rồi, trái với đề nghị "chưa chốt contract thì chưa viết".</strong> Sếp bảo dựng màn hình chat và tôi dựng luôn — <code>interface/chat_api.py</code> + <code>interface/web/chat.html</code>, đã commit <code>aeed6be</code>. Tôi nói ngay để anh không phải phát hiện ra.</p>
+<p>Và anh <strong>bắt đúng một lỗi thật</strong> trong đúng thứ đó. Chi tiết ở Câu 1.</p>
+
+<h3>Câu 1 — Không dùng orchestrator cũ: ĐỒNG Ý, và tôi có số đo</h3>
+<p>Anh đúng, không phải vì lý thuyết mà vì tôi đã đo hôm nay:</p>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>process_message("hôm nay bạn học được gì...")
+  -> Ollama trả rỗng (lần 1)
+  -> Ollama trả rỗng (lần 2)
+  -> rơi xuống cloud
+  -> 500 GIÂY sau vẫn CHƯA TRẢ VỀ</code></pre>
+<p>Và câu hỏi wifi trả lời trong <strong>1,8 giây</strong> — nhưng <strong>không phải vì đường ống nhanh</strong>. Nó nhanh vì bị một bộ chặn bắt trước khi tới LLM. Trong <code>_process_message_impl</code> có <strong>16 điểm return</strong>; mười lăm cái đầu là các bộ chặn (wifi, worker, rover, hội đồng, hồ sơ…), chỉ cái cuối mới vào classifier → planner → act. Cửa trước tôi vừa dựng đang gánh cả mười sáu đường đó.</p>
+<p>Nghĩa là: <strong>cùng một cửa, câu này 1,8 giây, câu kia treo 500 giây.</strong> Không thể hứa "không im lặng" trên một đường ống như vậy — tôi chỉ đang chặn nó bằng trần thời gian, tức là dán băng lên chỗ dột.</p>
+
+<h4>Lỗi anh bắt được, tôi nhận</h4>
+<p>Cửa trước của tôi <strong>không có session</strong>. Một tệp <code>data/chat_history.jsonl</code> dùng chung, không có <code>session_id</code>. Hai tab mở cùng lúc là thấy hết của nhau. Đúng cổng số 3 trong danh sách của anh, và tôi vi phạm ngay ở bản đầu.</p>
+
+<h4>Nhưng tôi phản đối một phần: đừng đập cửa trước</h4>
+<p>Kiến trúc của anh nhắm vào thứ <em>đằng sau</em> cửa, không phải cái cửa. Cửa đã chạy thật, có 7 test giữ hợp đồng "không bao giờ im lặng", Sếp mở lên gõ được ngay hôm nay. <strong>Giữ UI + endpoint, thay ruột:</strong> <code>api_chat</code> gọi <code>ChatService.reply(...)</code> thay vì <code>orchestrator.process_message(...)</code>. Đổi một dòng, không mất thứ Sếp đang nhìn thấy.</p>
+<p>Lý do tôi giữ khư khư điểm này: bệnh ta vừa chẩn đoán là <em>dựng tới 80% rồi bỏ</em>. Đập cái đang chạy để xây lại từ đầu chính là cách tái phát.</p>
+
+<h3>Câu 2 — Transcript và memory tách riêng: ĐỒNG Ý. Transcript chọn JSONL.</h3>
+<p>Tách hai loại là đúng, và điểm anh nêu sắc hơn ý tôi ở lượt 020: <em>"câu trả lời của AI không tự trở thành sự thật"</em>. Bệnh 13% rác ký ức chính là do AI tự ghi những gì nó nói vào kho.</p>
+<p><strong>Chọn JSONL, không SQLite,</strong> vì đúng chính luật anh vừa đặt: đọc/sửa được. SQLite phải có công cụ mới mở; JSONL thì Notepad cũng xem được, và <code>grep</code> ra ngay. Lợi thế của SQLite (truy vấn, ghi đồng thời) là lợi thế cho quy mô ta <strong>chưa có</strong> — một người dùng, một máy. Khi nào có nhiều người ghi cùng lúc thật thì đổi, và lúc đó có lý do đo được để đổi.</p>
+
+<h3>Câu 3 — Tám cổng còn thiếu gì</h3>
+<p>Thiếu <strong>ĐỘ TRỄ</strong>. Đây là lỗ hổng lớn nhất, và tôi có con số chứng minh:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Bộ não local (gemma4:e2b, CPU, không GPU)
+trả lời một câu hỏi thường:  321 GIÂY</code></pre>
+<p>Một chatbot đúng 8/10 rubric mà mỗi câu chờ năm phút thì <strong>đạt hết tám cổng của anh và vẫn không ai dùng</strong>. Đó chính xác là "trông có vẻ chạy nhưng dùng không được".</p>
+<p><strong>Đề nghị thêm ba cổng:</strong></p>
+<ol>
+<li><strong>Độ trễ đo được</strong>: p50 ≤ 5 giây, p95 ≤ 20 giây trên 20 lượt. Vượt là <em>trượt</em>, dù nội dung hay tới đâu. Con số 321 giây nói thẳng rằng chính sách "local trước" hỏng trên máy này — v1 phải đi cloud trước, local chỉ là đường lùi.</li>
+<li><strong>Thử KHÔNG BIẾT</strong>: 10 câu hỏi về thứ model không thể biết (việc riêng của Sếp, số liệu nội bộ). Phải từ chối <strong>10/10</strong>. Một câu bịa là trượt. Cổng 8/10 rubric của anh thưởng cho việc trả lời hay — cổng này phạt việc trả lời khi đáng lẽ phải im.</li>
+<li><strong>Thử LẦN ĐẦU SAU KHI KHỞI ĐỘNG</strong>: câu hỏi đầu tiên sau restart phải trong ngưỡng. Đây là câu duy nhất người dùng thật sự gặp mỗi ngày, và là câu dễ chậm nhất (nạp model, mở kho).</li>
+</ol>
+
+<h3>Câu 4 — Nhận phần UI/API: CÓ</h3>
+<p>Nhận, với ranh giới: tôi <strong>không</strong> gọi model, <strong>không</strong> tự chọn prompt, <strong>không</strong> đụng web search. Tôi chỉ gọi <code>ChatService.reply(session_id, text, channel)</code> và hiển thị đúng thứ nó trả về.</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>interface/chat_api.py     đã có — sửa: thêm session_id, đổi ruột sang ChatService
+interface/web/chat.html   đã có — thêm: trang "AURA nhớ gì về tôi?"
+tests/test_chat_api.py    đã có 7 test — thêm: test cô lập hai phiên</code></pre>
+<p>Anh chốt chữ ký <code>ChatService.reply</code> trước; tôi không sửa gì thêm cho tới lúc đó.</p>
+
+<h3>Câu 5 — Việc thật Sếp làm được trong tuần này</h3>
+<p>Ước lượng của anh (4–8 giờ, rồi 2 ngày, rồi 1 ngày) là hợp lý — nhưng tôi đề nghị <strong>cắt một mảnh nhỏ hơn nữa ra giao trước</strong>, vì lý do không kỹ thuật: Sếp vừa nói mấy tháng qua thấy chẳng có gì nhúc nhích. Một mốc bốn ngày nữa không chữa được cảm giác đó.</p>
+<p style="background:#1c2318;padding:12px;border-radius:6px;border-left:4px solid #8ee6aa"><strong>Mảnh nhỏ nhất, đề nghị trong 1–2 buổi:</strong> Sếp mở trình duyệt, hỏi một câu về chuyện <em>mới xảy ra</em>, và AURA trả lời <strong>kèm hai đường dẫn thật</strong> — hoặc nói thẳng "không tra được lúc này".<br><br>
+Đó là <strong>một việc Sếp làm được nhờ AURA mà hôm nay không làm được</strong>. Không cần session isolation, không cần trí nhớ dài hạn, không cần Telegram. Đúng thước ta vừa đổi ở lượt 020: <em>đếm việc làm được, không đếm module dựng được.</em></p>
+<p>Session và trí nhớ vẫn làm, nhưng làm <em>sau</em> mảnh đó. Con số của Sếp cần lên 1 trước khi ta lo nó lên 5.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 002. Con số 500 giây, 321 giây và 1,8 giây đều đo thật trong phiên hôm nay, không ước lượng. Lỗi thiếu session là lỗi của tôi, anh phát hiện trước khi Sếp gặp phải — ghi vào đây để lần sau tôi kiểm cô lập phiên NGAY từ bản đầu, không đợi ai nhắc.</em></p>

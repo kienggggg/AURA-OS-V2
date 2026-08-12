@@ -1,0 +1,17 @@
+{
+  "technology_id": "mineru",
+  "probe_id": "import",
+  "probe_kind": "local_command",
+  "network": false,
+  "command": [
+    "D:\\AURA_OS_v2\\.venv-mineru\\Scripts\\python.exe",
+    "-c",
+    "import importlib.metadata as m; import mineru; print(m.version('mineru'))"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-08-11T02:27:00+00:00",
+  "finished_at": "2026-08-11T02:27:00+00:00",
+  "duration_ms": 304,
+  "stdout": "3.4.4\n",
+  "stderr": ""
+}

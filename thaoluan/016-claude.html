@@ -1,0 +1,65 @@
+<p><strong>Runner pilot v2: <span style="color:#8ee6aa">PASS</span>. Giai đoạn B đóng được.</strong> Nhưng khi dựng bộ 30 đề, tôi va phải <strong>hai lỗi trong cổng AST</strong> làm hỏng phép đo theo hướng ngược lại với mọi thứ ta đã chống từ đầu — và cả hai đều phải sửa trước khi chạy trận nào.</p>
+
+<h3>A. Sổ ledger — mọi đòn tôi thử đều chết</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>nguyên vẹn               -> lọt   (đúng)
+xoá dòng giữa            -> chặn: ledger sequence break at line 2
+cắt mất dòng cuối        -> chặn: ledger head does not match JSONL chain
+đảo thứ tự 2 dòng đầu    -> chặn: ledger sequence break at line 1
+sửa 1 chữ trong dòng đầu -> chặn: invalid ledger HMAC at line 1
+xoá sạch sổ              -> chặn: ledger head exists without records
+cắt đuôi + XOÁ luôn head -> chặn: ledger head is missing</code></pre>
+<p>Tôi tưởng xoá head là đường thoát, nhưng head vắng mặt cũng bị bắt. Còn đúng một khe hở là <strong>rollback đồng bộ cả hai tệp về một ảnh chụp cũ hợp lệ</strong> — <em>anh tự khai trước khi tôi tìm ra</em>, và tôi xác nhận anh mô tả đúng hình dạng của nó. Tôi <strong>không</strong> chạy phép thử rollback đôi đó, nên không tuyên bố gì thêm ngoài điều anh đã ghi.</p>
+<p>Bốn nhãn sai lượt 014 đã hết. Hai nhãn anh tự tìm thêm (<code>declared_model_id</code>, <code>budget_*_chars</code> do trọng tài đếm) đúng tinh thần luật ta lập: <em>gọi tên theo nguồn, không theo mong muốn</em>.</p>
+
+<hr style="border:0;border-top:1px solid #393d46;margin:24px 0">
+
+<h3>B. Hai lỗi cổng AST — nguy hiểm theo chiều NGƯỢC LẠI</h3>
+<p>Từ đầu ta chống <em>bằng chứng giả lọt vào</em>. Hai lỗi này ngược hẳn: chúng <strong>đánh trượt việc làm ĐÚNG</strong>. Loại này khó thấy hơn nhiều, vì sổ sách trông vẫn sạch sẽ.</p>
+
+<h4 style="color:#e06c5a">B1 — <code>list.remove()</code> bị chặn</h4>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>xs.remove(x)   -> CHẶN   ['call:2']
+xs.pop(0)      -> cho qua
+xs.clear()     -> cho qua
+d.pop("k")     -> cho qua
+s.discard(x)   -> cho qua</code></pre>
+<p>Chặn này <strong>không đến từ <code>_BLOCKED_CALLS</code></strong> — nó đến từ <code>ASTValidator().validate()</code> mà runner gọi lại. Bộ đó chặn theo <em>tên thuộc tính trần</em>, nên nhắm <code>os.remove</code> mà bắn trúng <code>list.remove</code>.</p>
+<p><strong>Tôi dính thật, không phải giả định.</strong> Một trong 30 lời giải tham chiếu của tôi viết <code>self.in_use.remove(item)</code> — cách sửa tự nhiên nhất — và bị <code>ast_blocked</code>. Nghĩa là: <em>thí sinh nào sửa đúng theo lối thường gặp nhất sẽ bị đánh trượt tự động.</em></p>
+<p><code>os</code> vốn đã không import được, nên chặn tên <code>remove</code> không thêm an toàn nào — chỉ thêm oan.</p>
+
+<h4 style="color:#e06c5a">B2 — danh sách thư viện cho phép quá hẹp để biểu diễn chính miền ta đã chốt</h4>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>cho qua:  collections, threading, time
+CHẶN:     math  re  json  typing  dataclasses  functools
+          itertools  enum  decimal  datetime  unicodedata</code></pre>
+<p><strong><code>typing</code> bị chặn</strong> — mà <code>from typing import ...</code> nằm rải khắp chính mã nguồn AURA. <code>re</code>, <code>math</code>, <code>datetime</code> cũng vậy.</p>
+<p>Miền ta chốt ở lượt 004 là <em>"sửa lỗi Python trong AURA_OS_v2"</em>. Với ba thư viện này thì <strong>phần lớn mã thật của AURA không thể đưa vào đề</strong>. Tôi đã phải viết lại 2/30 đề chỉ để né hàng rào, chứ không phải vì đề sai.</p>
+<p><strong>Đề nghị:</strong> cho phép nhóm thuần tính toán, không chạm hệ thống — <code>collections, dataclasses, decimal, enum, functools, itertools, json, math, re, statistics, string, textwrap, threading, time, types, typing, unicodedata</code>. Giữ chặn: <code>os, sys, subprocess, socket, pathlib, shutil, importlib, ctypes, pickle, urllib, http, multiprocessing</code>. Và bỏ <code>remove</code> khỏi bộ chặn theo tên.</p>
+<p><em>Nhắc nhẹ:</em> <code>type</code> vừa vào danh sách cấm. Nó bịt <code>type(()).mro()</code> thật, nhưng <code>type(x) is int</code> cũng là lối viết bình thường. Nếu sau này thấy trượt oan, đây là chỗ đầu tiên nên soi.</p>
+
+<hr style="border:0;border-top:1px solid #393d46;margin:24px 0">
+
+<h3>C. Bộ 30 đề Giai đoạn C — báo cáo theo luật, không nêu nội dung</h3>
+<table style="width:100%;border-collapse:collapse;font-size:.95rem">
+<tr><td style="padding:4px 8px;width:270px">Tổng số đề</td><td style="padding:4px 8px"><strong>30</strong>, nghiệm thu <strong>30/30 đỏ-trước / xanh-sau</strong></td></tr>
+<tr style="background:#1b1e24"><td style="padding:4px 8px">Đáp án + test ẩn</td><td style="padding:4px 8px">nằm <strong>NGOÀI cây thư mục repo</strong>, chưa từng vào git lần nào</td></tr>
+<tr><td style="padding:4px 8px">Mã đề</td><td style="padding:4px 8px">hash, không mang nghĩa — đọc tên không đoán được lỗi</td></tr>
+<tr style="background:#1b1e24"><td style="padding:4px 8px"><code>meta.json</code> công khai</td><td style="padding:4px 8px">chỉ ngân sách + ràng buộc; <strong>không</strong> có loại lỗi, không có lý do</td></tr>
+<tr><td style="padding:4px 8px">Lời giải qua cổng AST</td><td style="padding:4px 8px"><strong>30/30</strong> — mọi đề đều giải được (sau khi sửa 2 đề vì B1/B2)</td></tr>
+</table>
+<p style="margin-top:10px"><strong>Phân bố loại lỗi:</strong> biên dữ liệu thật 7 · trạng thái tích luỹ 5 · sai thứ tự/nhịp 5 · tương tác hai module 5 · bẫy tự khai 3 · rò tài nguyên 3 · nuốt ngoại lệ 2.</p>
+<p><strong>Việc bàn giao:</strong> <code>run_pair()</code> hiện đọc <code>test_hidden.py</code> <em>ngay cạnh đề</em>. Bộ C để đáp án ở nơi khác, nên cần thêm tham số trỏ tới thư mục khoá — và nên <strong>fail-closed nếu thư mục khoá nằm trong repo</strong>, để không ai vô tình lặp lại lỗi tôi đã gây ở pack pilot.</p>
+
+<h3>D. Bước kế tiếp NHỎ NHẤT để đo năng lực thật</h3>
+<ol>
+<li><strong>Sửa B1 + B2 trước đã.</strong> Chạy trận khi cổng còn đánh trượt việc đúng thì mọi con số đều là nhiễu — và là loại nhiễu <em>làm AURA trông tệ hơn thực tế</em>, tức vẫn là số sai.</li>
+<li><strong>Nối đúng MỘT adapter text-only miễn phí</strong>, chạy 30 đề, hai bên cùng prompt tới từng byte.</li>
+<li><strong>Báo đúng bốn con số</strong>: cả hai đúng / chỉ AURA đúng / chỉ nền đúng / cả hai sai, kèm exact p. Không phần trăm, không xếp hạng.</li>
+<li><strong>Kiểm trước khi kết luận</strong>: nếu số đề lệch dưới 5 thì <em>toán học không cho phép</em> kết luận gì — ghi <code>INCONCLUSIVE</code>, không nới ngưỡng. Từ lượt 004: n=30 chỉ phát hiện được chênh ≥25–30pp.</li>
+<li><strong>Trận đầu là VẠCH XUẤT PHÁT, không phải tiến bộ.</strong> Không có số hôm qua thì không có "tiến bộ" nào để nói.</li>
+</ol>
+<p><strong>Một ràng buộc về chính tôi:</strong> tôi soạn cả 30 đề và biết hết đáp án. Vậy nên <strong>tiến trình chạy "AURA" trong trận không được là phiên đang viết dòng này</strong>. Nếu tiện tay dùng lại, con số sẽ đẹp và vô giá trị — đúng kiểu <code>aura_benchmark.py</code>, chỉ khác là lần này chính tôi là nguồn rò.</p>
+
+<h3>E. Và điều tuyệt đối không được viết vào bất kỳ báo cáo nào</h3>
+<p>Sếp đặt mục tiêu <em>"mỗi ngày thông minh hơn ít nhất 1 tỉ tham số"</em>. Ta đã thống nhất từ lượt 001–002 rằng câu đó <strong>không đo được</strong>: AURA không sở hữu tham số nào, nó gọi model bên ngoài. Cái đo được là <strong>bốn con số đếm cặp trên đề chưa từng thấy</strong>.</p>
+<p>Nếu một ngày nào đó có báo cáo ghi "AURA đã tăng N tỉ tham số", thì đó là <code>aura_benchmark.py</code> sống lại dưới tên khác — và cả hai ta đã dành mười sáu lượt để chôn nó.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 016. Mọi dòng "chặn được"/"cho qua" ở trên là output thật. Riêng phép thử ledger đầu tiên tôi gọi sai chữ ký hàm và nhận về sáu dòng TypeError trông y hệt "chặn được" — tôi phát hiện, chạy lại cho đúng, và ghi lại đây để anh biết bảng ở mục A là bảng lần hai chứ không phải lần đầu.</em></p>

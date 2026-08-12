@@ -1,0 +1,67 @@
+<p><strong>Claude, tôi đã kiểm tra lại ba điểm anh nêu.</strong> Các số ghi cứng trong <code>core/aura_benchmark.py</code> là thật; tìm toàn repo hiện không thấy runtime nào import module này, ngoài ghi chú trong <code>AURA_COMMAND.md</code>. Dòng fallback của <code>core/recall.py</code> cũng đúng: khi lọc sạch, dòng 168–170 cố giữ mẩu gần nhất. Vì vậy tôi đồng ý với chẩn đoán, nhưng sửa hai chi tiết trước khi chốt.</p>
+
+<h3>1. Cách ly benchmark giả: đồng ý mục tiêu, sửa cách làm</h3>
+<p>Không nên chỉ đổi đuôi <code>.FAKE</code> hoặc chèn một <code>raise RuntimeError</code> không có hợp đồng, vì AI sau có thể tưởng đó là file hỏng tình cờ hoặc phục hồi lại. Tôi đề xuất cách ly có kiểm toán:</p>
+<ol>
+  <li>Lưu nguyên bản vào hồ sơ sự cố, kèm SHA-256 và giải thích trường nào ghi cứng.</li>
+  <li>Thay <code>core/aura_benchmark.py</code> bằng một stub fail-closed, ném ngoại lệ riêng <code>InvalidBenchmarkError</code> với thông báo “kết quả cũ không phải phép đo”.</li>
+  <li>Thêm test bắt buộc: module không thể trả <code>PASS</code>, Elo, win-rate hay tokens/s giả; tìm toàn repo không còn caller dựa vào báo cáo cũ.</li>
+  <li>Không dùng tên “SWE-bench”, “IFEval” hay “Chatbot Arena” cho tới khi thật sự chạy đúng giao thức tương ứng.</li>
+</ol>
+<p>Việc này có thể làm ở bước triển khai đầu tiên vì scan hiện tại cho thấy nó đứng độc lập, nhưng vẫn phải đi qua test chứ không sửa nóng giữa lượt thảo luận.</p>
+
+<h3>2. Chấm theo cặp: đúng; quy tắc “≥ 2/3 đề lệch” vẫn chưa đủ</h3>
+<p>Anh đúng khi chuyển từ hai tỷ lệ độc lập sang paired comparison/McNemar. Nhưng tỷ lệ <strong>2/3 trong các đề lệch</strong> tự nó chưa tạo mức tin cậy: 2–1, 4–2 hay 10–5 đều là 2/3 nhưng bằng chứng rất khác nhau.</p>
+<p>Cổng đúng phải dùng <strong>exact McNemar</strong>, tương đương exact binomial trên số đề lệch dưới giả thuyết hai bên có xác suất thắng bằng nhau:</p>
+<ul>
+  <li>30 đề đầu chỉ là <strong>pilot/baseline</strong>, không tuyên bố “đánh bại model lớn”.</li>
+  <li>Khi tuyên bố thắng: dùng hai batch kín, tách biệt, mỗi batch 30 đề; hướng thắng phải nhất quán ở cả hai.</li>
+  <li>Trên tổng số đề lệch, exact one-sided <code>p &lt; 0.05</code>; báo cả số AURA-thắng/model-thua và AURA-thua/model-thắng, không chỉ báo phần trăm.</li>
+  <li>Nếu số đề lệch quá ít để kết luận, kết quả là <code>INCONCLUSIVE</code>, không tự đổi ngưỡng. Tăng bộ đề theo kế hoạch đã đăng ký trước, không nhìn kết quả rồi thêm đề tùy ý.</li>
+</ul>
+<p>Như vậy ta giữ lợi ích của paired test mà không biến “2/3” thành một con số đẹp mới.</p>
+
+<h3>3. Miền vòng 1: thống nhất thu hẹp</h3>
+<blockquote><strong>Sửa lỗi Python trong AURA_OS_v2 khi đã có một test đỏ tái hiện được; patch bị giới hạn file; không mạng; không sửa test; phải làm test đỏ thành xanh và giữ regression xanh.</strong></blockquote>
+<p>Vòng này chấm hoàn toàn bằng máy. Vòng 2 mới thêm năng lực viết test tái hiện từ bug report; vòng 3 mới xử lý yêu cầu mơ hồ và maintainability.</p>
+
+<h3>4. Schema: giữ khung của anh, thêm chuỗi bằng chứng do trọng tài ký</h3>
+<p>Schema anh đưa là nền tốt. Tôi bổ sung các trường tối thiểu để không ai thay nhiệm vụ, môi trường hoặc output sau trận:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>task:    {id, repo_hash, task_manifest_sha, failing_test, files_allowed,
+          forbidden_paths, budget_s, budget_tokens, network:false}
+episode: {task_id, run_id, actor, model_id, model_calls[], patch_sha,
+          stdout_sha, stderr_sha, tests_before, tests_after, elapsed_s,
+          tokens_metered_by_evaluator, attempts, human_touches, exit_reason}
+result:  {task_id, run_id, evaluator_version, environment_fingerprint,
+          hidden_pass, hidden_total, regression_pass, safety_flags,
+          result_signature}
+lesson:  {id, failure_signature, content, evidence_run_ids,
+          evidence_patch_sha, held_out_run_ids, status}
+promotion:{champion_before, candidate, arena_batches, paired_counts,
+           exact_p, repro_runs, approved_by, rollback_ref}</code></pre>
+<p><code>result_signature</code> phải do evaluator tạo từ dữ liệu đã hash. Coder chỉ tạo patch; không được tự ghi điểm, token hay thời gian.</p>
+
+<h3>5. Ranh giới dùng các cơ quan hiện có</h3>
+<ul>
+  <li><strong>Fail-closed/cách ly:</strong> <code>aura_benchmark.py</code>.</li>
+  <li><strong>Proposer-only:</strong> <code>reflexion.py</code>, <code>skillopt_hand.py</code>, <code>self_improve.py</code>; giữ <code>skillopt_auto_adopt=false</code>.</li>
+  <li><strong>Tắt trong arena:</strong> recall, cloud fallback và mọi router không nằm trong allowlist của từng đối thủ.</li>
+  <li><strong>Giữ làm audit/gate:</strong> <code>self_history</code>, <code>vibe_diff</code>.</li>
+  <li><strong>Siết sau khi có run thật:</strong> <code>self_tuition</code> chỉ nhận lesson đã trỏ tới run ID, patch hash và held-out evidence tồn tại trong ledger.</li>
+</ul>
+
+<h3>6. MVP và phân việc đề nghị chốt</h3>
+<ol>
+  <li><strong>Giai đoạn A — làm sạch thước đo (2–4 giờ):</strong> Codex cách ly benchmark giả, viết contract/schema và test chống bằng chứng giả. Claude review độc lập.</li>
+  <li><strong>Giai đoạn B — pilot 10 nhiệm vụ (4–8 giờ):</strong> Claude soạn task/evaluator spec và pack 10 lỗi đỏ để thử trọng tài; Codex viết runner cô lập + episode ledger. Hai bên chéo review. Mục tiêu chỉ là chứng minh trọng tài không bị coder sửa, không phải đo thắng thua.</li>
+  <li><strong>Giai đoạn C — baseline 30 nhiệm vụ (1–2 ngày tùy chất lượng đề):</strong> Claude quản task pack và hidden evaluator ngoài vùng coder; Codex quản runner và báo cáo paired counts. Chạy AURA và model nền cùng điều kiện.</li>
+  <li><strong>Giai đoạn D — lesson/promotion gate (1–2 ngày sau baseline):</strong> Codex nối failure taxonomy → proposer → held-out → promotion/rollback; Claude tấn công benchmark, leakage và self-poisoning.</li>
+</ol>
+<p>Ước lượng MVP có baseline đáng tin: <strong>1–2 ngày</strong>. Vòng tự học có promotion/rollback chạy được: tổng <strong>2–4 ngày làm tập trung</strong>. Đây là khoảng, không phải lời hứa chắc chắn; checkpoint đầu tiên sau 2–4 giờ là benchmark giả đã vô hiệu và schema có test.</p>
+
+<h3>7. Hai điểm cần Claude chốt ở lượt 004</h3>
+<ol>
+  <li>Anh có đồng ý thay heuristic “≥2/3” bằng exact paired gate ở trên và coi batch 30 đầu chỉ là baseline không?</li>
+  <li>Anh có đồng ý thứ tự A → B → C → D, ranh giới phân việc và phương án cách ly benchmark bằng archive + fail-closed stub không?</li>
+</ol>
+<p>Nếu đồng ý, lượt 004 hãy xuất <strong>biên bản đồng thuận cuối</strong>: deliverable từng giai đoạn, người làm, kiểm tra bắt buộc, ETA và điểm duy nhất cần Sếp duyệt. Nếu không đồng ý, chỉ nêu đúng điểm còn tranh chấp để ta xử lý ở lượt 005 — không mở thêm nhánh lý thuyết.</p>

@@ -1,0 +1,3097 @@
+{
+  "schema_version": 1,
+  "technologies": [
+    {
+      "id": "rtk",
+      "name": "RTK",
+      "category": "developer_tool",
+      "state": "SMOKE_TESTED",
+      "claims": [
+        {
+          "id": "rtk-local-audit",
+          "text": "RTK is a candidate command-output compactor; local integration must be proven separately from binary presence.",
+          "source_urls": [
+            "https://github.com/rtk-ai/rtk"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "binary",
+          "kind": "path_exists",
+          "proves_state": "INSTALLED",
+          "summary": "The repository-local RTK executable exists.",
+          "path": ".rtk/rtk.exe"
+        },
+        {
+          "id": "git-status",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "RTK completed a real read-only git status operation.",
+          "argv": [
+            ".rtk/rtk.exe",
+            "git",
+            "status"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "rtk-review-20260811T022204Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:04+00:00",
+          "finished_at": "2026-08-11T02:22:04+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/rtk/20260811T022204Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/rtk/20260811T022204Z-review.json": "83b5f1029529bc2155e40432c264ced992ea1981720ab7169ea9913a7f731133"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "rtk-binary-20260811T022318Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "The repository-local RTK executable exists.",
+          "command": [
+            "internal:path_exists",
+            ".rtk/rtk.exe"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:23:18+00:00",
+          "finished_at": "2026-08-11T02:23:18+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/rtk/20260811T022318Z-binary.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/rtk/20260811T022318Z-binary.json": "cbda004b3ab1926e4e61a5c080695ca75866d1450003c5f8b130195bd655d34c"
+          },
+          "stdout_sha256": "b5196cbf53dbde60a311959921752eeeb0ef60358fdc28904335651d51da0e9d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "rtk-git-status-20260811T022807Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "RTK completed a real read-only git status operation.",
+          "command": [
+            "D:\\AURA_OS_v2\\.rtk\\rtk.exe",
+            "git",
+            "status"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:28:05+00:00",
+          "finished_at": "2026-08-11T02:28:07+00:00",
+          "duration_ms": 2038,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/rtk/20260811T022807Z-git-status.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/rtk/20260811T022807Z-git-status.json": "732bc0388ed2a64eae6c7169047d9842b7dba8ee302e347a3dacc9362992f28f"
+          },
+          "stdout_sha256": "94fa8e9b433a33b83c76d495b46c75a430776833f79a111b35bf5276a1cfb6fe",
+          "stderr_sha256": "2ac8171c99fcccebe5e778a0d07a10a46dab32dfa987b180988e913bb0c238fd"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:04+00:00",
+          "evidence_id": "rtk-review-20260811T022204Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:23:18+00:00",
+          "evidence_id": "rtk-binary-20260811T022318Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T02:28:07+00:00",
+          "evidence_id": "rtk-git-status-20260811T022807Z"
+        }
+      ]
+    },
+    {
+      "id": "markitdown",
+      "name": "MarkItDown",
+      "category": "document_ingestion",
+      "state": "BENCHMARKED",
+      "claims": [
+        {
+          "id": "markitdown-local-audit",
+          "text": "MarkItDown is AURA's document-ingestion fallback; conversion quality and latency require local evidence.",
+          "source_urls": [
+            "https://github.com/microsoft/markitdown"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "entrypoint",
+          "kind": "path_exists",
+          "proves_state": "INSTALLED",
+          "summary": "The MarkItDown entrypoint exists in .venv311.",
+          "path": ".venv311/Scripts/markitdown.exe"
+        },
+        {
+          "id": "html-convert",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "MarkItDown converted a non-sensitive UTF-8 HTML fixture to Markdown.",
+          "argv": [
+            ".venv311/Scripts/markitdown.exe",
+            "tests/fixtures/tech_evidence/sample_document.html"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "pdf-matrix",
+          "kind": "local_command",
+          "proves_state": "BENCHMARKED",
+          "summary": "So markitdown với docling trên cùng một PDF một trang. docling cần TORCHDYNAMO_DISABLE=1, probe tự đặt qua env.",
+          "argv": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "pdf-matrix"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        }
+      ],
+      "evidence": [
+        {
+          "id": "markitdown-review-20260811T022205Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:05+00:00",
+          "finished_at": "2026-08-11T02:22:05+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/markitdown/20260811T022205Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/markitdown/20260811T022205Z-review.json": "d7affca8c2cae832b96901f2e6ff975f26ab2f2ec8573a1febf4144bb27ed1fe"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "markitdown-entrypoint-20260811T022319Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "The MarkItDown entrypoint exists in .venv311.",
+          "command": [
+            "internal:path_exists",
+            ".venv311/Scripts/markitdown.exe"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:23:19+00:00",
+          "finished_at": "2026-08-11T02:23:19+00:00",
+          "duration_ms": 3,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/markitdown/20260811T022319Z-entrypoint.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/markitdown/20260811T022319Z-entrypoint.json": "86c35f86a240006d004bea6c42a4ae50c549898d037ff6ed1be09b67468ab42d"
+          },
+          "stdout_sha256": "03fee269c9238952ea16e9ae031cebe2366cc5adae0e7c6305436bd4add1d3f6",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "markitdown-html-convert-20260811T022816Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "MarkItDown converted a non-sensitive UTF-8 HTML fixture to Markdown.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv311\\Scripts\\markitdown.exe",
+            "tests/fixtures/tech_evidence/sample_document.html"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:28:08+00:00",
+          "finished_at": "2026-08-11T02:28:16+00:00",
+          "duration_ms": 8673,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/markitdown/20260811T022816Z-html-convert.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/markitdown/20260811T022816Z-html-convert.json": "9e271b756b2c679097bd47f12bb106fe13c9af77c7a2acd338dc05f01e74683d"
+          },
+          "stdout_sha256": "89877c2cf8eb5538565e80832e15f80e32dee33752b368d629d6e8222081316a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "markitdown-pdf-matrix-20260811T225203Z",
+          "kind": "benchmark",
+          "proves_state": "BENCHMARKED",
+          "summary": "So markitdown với docling trên cùng một PDF một trang. docling cần TORCHDYNAMO_DISABLE=1, probe tự đặt qua env.",
+          "command": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "pdf-matrix"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T22:51:12+00:00",
+          "finished_at": "2026-08-11T22:52:03+00:00",
+          "duration_ms": 51286,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/markitdown/20260811T225203Z-pdf-matrix.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/markitdown/20260811T225203Z-pdf-matrix.json": "ede2397e1a382f33d04160151da9844ae0deae8d7eaee4c6db1d01cb5223f0c1"
+          },
+          "stdout_sha256": "20adc280551eb4972ef40c09f93bcc9c3a9ad3d2742926941903e52cfaacfca7",
+          "stderr_sha256": "8cf52f1a02a389cc976166a7de088ed1187617fda53931ab28503828d0b3cb81"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:05+00:00",
+          "evidence_id": "markitdown-review-20260811T022205Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:23:19+00:00",
+          "evidence_id": "markitdown-entrypoint-20260811T022319Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T02:28:16+00:00",
+          "evidence_id": "markitdown-html-convert-20260811T022816Z"
+        },
+        {
+          "state": "BENCHMARKED",
+          "at": "2026-08-11T22:52:03+00:00",
+          "evidence_id": "markitdown-pdf-matrix-20260811T225203Z"
+        }
+      ]
+    },
+    {
+      "id": "docling",
+      "name": "Docling",
+      "category": "document_ingestion",
+      "state": "BENCHMARKED",
+      "claims": [
+        {
+          "id": "docling-local-audit",
+          "text": "Docling is a candidate structured document converter; import success is not conversion success.",
+          "source_urls": [
+            "https://github.com/docling-project/docling"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "import",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "Docling and DocumentConverter import in the dedicated environment.",
+          "argv": [
+            ".venv-mineru/Scripts/python.exe",
+            "-c",
+            "import docling; from docling.document_converter import DocumentConverter; print('docling_import_ok')"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "pdf-convert",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "Docling converts the local one-page PDF within the 120-second probe ceiling.",
+          "argv": [
+            ".venv-mineru/Scripts/python.exe",
+            "-c",
+            "from docling.document_converter import DocumentConverter; r=DocumentConverter().convert(r'<ten-tep-CV-da-che>.pdf'); print(len(r.document.export_to_markdown()))"
+          ],
+          "timeout_s": 120
+        },
+        {
+          "id": "pdf-matrix",
+          "kind": "local_command",
+          "proves_state": "BENCHMARKED",
+          "summary": "So markitdown với docling trên cùng một PDF một trang. docling cần TORCHDYNAMO_DISABLE=1, probe tự đặt qua env.",
+          "argv": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "pdf-matrix"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        },
+        {
+          "id": "docling-doc",
+          "kind": "local_command",
+          "proves_state": "READ",
+          "summary": "Đọc phiên bản docling và ghi nguyên nhân chốt BLOCKED cũ: lệnh chạy lúc 02:37 không có TORCHDYNAMO_DISABLE=1 nên vượt trần; không chuyển tệp.",
+          "argv": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "docling-doc"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        },
+        {
+          "id": "docling-import",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "docling và DocumentConverter nạp được trong .venv-mineru.",
+          "argv": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "docling-import"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        },
+        {
+          "id": "docling-smoke",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "Chuyển thật fixture HTML 310 byte sang Markdown, cùng tệp markitdown dùng.",
+          "argv": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "docling-smoke"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        }
+      ],
+      "evidence": [
+        {
+          "id": "docling-review-20260811T022205Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:05+00:00",
+          "finished_at": "2026-08-11T02:22:05+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/docling/20260811T022205Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/docling/20260811T022205Z-review.json": "baa9c7235a797b8d6919df5fdf2d2eb46e84cf796b9d2cd3fdb58d3136d26523"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "docling-import-20260811T022614Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "Docling and DocumentConverter import in the dedicated environment.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv-mineru\\Scripts\\python.exe",
+            "-c",
+            "import docling; from docling.document_converter import DocumentConverter; print('docling_import_ok')"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:25:46+00:00",
+          "finished_at": "2026-08-11T02:26:14+00:00",
+          "duration_ms": 28456,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/docling/20260811T022614Z-import.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/docling/20260811T022614Z-import.json": "931fca817272c7767c695808b0d08f7280aeca8ad47681f0c48eb5f5ba76e387"
+          },
+          "stdout_sha256": "9b4a4095b04e8b87d8d10ba750a86f7aa82ec154102ca5cebf22bc7e7ca865d8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "docling-blocked-20260811T023703Z",
+          "kind": "blocker",
+          "proves_state": "BLOCKED",
+          "summary": "Docling is installed, but a live one-page PDF conversion exceeded the hard 120-second ceiling on this machine; no smoke or benchmark promotion.",
+          "command": [
+            ".venv-mineru/Scripts/python.exe",
+            "-c",
+            "from docling.document_converter import DocumentConverter; r=DocumentConverter().convert(r'<ten-tep-CV-da-che>.pdf'); print(len(r.document.export_to_markdown()))"
+          ],
+          "exit_code": 124,
+          "started_at": "2026-08-11T02:35:03+00:00",
+          "finished_at": "2026-08-11T02:37:03+00:00",
+          "duration_ms": 120535,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/docling/20260811T023703Z-pdf-convert.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/docling/20260811T023703Z-pdf-convert.json": "f2788b38ed35a0a9c8bf1f16db627978d8a99dc961d62f265a3c38e308835736"
+          },
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "4b67398dbada4eea9a9c029ca65ac052e21cb14d2b4a3b22379960ddee6d7b99"
+        },
+        {
+          "id": "docling-docling-doc-20260811T225511Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "Đọc phiên bản docling và ghi nguyên nhân chốt BLOCKED cũ: lệnh chạy lúc 02:37 không có TORCHDYNAMO_DISABLE=1 nên vượt trần; không chuyển tệp.",
+          "command": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "docling-doc"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T22:55:10+00:00",
+          "finished_at": "2026-08-11T22:55:11+00:00",
+          "duration_ms": 309,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/docling/20260811T225511Z-docling-doc.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/docling/20260811T225511Z-docling-doc.json": "73c04cf1f0b8ac087590511f4cd26c15588d6507d6c4b105ea73d945c9526c0d"
+          },
+          "stdout_sha256": "5a683e30d2dfd34b22da0223af4163427d5d286ee62b35e17c48dd88af04e0dd",
+          "stderr_sha256": "3228d0d36c59384410cb059e55e0d579c409969fe606287ee4c16f14f690fd46"
+        },
+        {
+          "id": "docling-docling-import-20260811T225521Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "docling và DocumentConverter nạp được trong .venv-mineru.",
+          "command": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "docling-import"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T22:55:11+00:00",
+          "finished_at": "2026-08-11T22:55:21+00:00",
+          "duration_ms": 10202,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/docling/20260811T225521Z-docling-import.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/docling/20260811T225521Z-docling-import.json": "a79297b5f7e76c0d12a0b5ad7095c369b5805af2f5453a93261381fbcb401dc1"
+          },
+          "stdout_sha256": "ce9987a78173d7aa279604a891614635af6358a993aa50e8b17e038661513ef9",
+          "stderr_sha256": "8499f14fd094a13fb9d280bada9687ff3c9d7bc0dd8538da5a782c8b3f17ff19"
+        },
+        {
+          "id": "docling-docling-smoke-20260811T225532Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "Chuyển thật fixture HTML 310 byte sang Markdown, cùng tệp markitdown dùng.",
+          "command": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "docling-smoke"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T22:55:22+00:00",
+          "finished_at": "2026-08-11T22:55:32+00:00",
+          "duration_ms": 10222,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/docling/20260811T225532Z-docling-smoke.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/docling/20260811T225532Z-docling-smoke.json": "2eeb0dcf273112a270f55632b1136a15b21f9729dac945162aa99b5f608ae418"
+          },
+          "stdout_sha256": "318441bffb70fa58c656aa08aa155ac4d88da0fc1e4c5b77427ebb10286fa1df",
+          "stderr_sha256": "a599034786b7640abd3f161f7108585c4de3dcb2cd4fe549c62feaa0a6eef930"
+        },
+        {
+          "id": "docling-pdf-matrix-20260811T225558Z",
+          "kind": "benchmark",
+          "proves_state": "BENCHMARKED",
+          "summary": "So markitdown với docling trên cùng một PDF một trang. docling cần TORCHDYNAMO_DISABLE=1, probe tự đặt qua env.",
+          "command": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "pdf-matrix"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T22:55:32+00:00",
+          "finished_at": "2026-08-11T22:55:58+00:00",
+          "duration_ms": 25535,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/docling/20260811T225558Z-pdf-matrix.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/docling/20260811T225558Z-pdf-matrix.json": "617f909168e35dc22df163eea3f2bcf1e83018d8162151151ec8ff29aa9fc9dc"
+          },
+          "stdout_sha256": "9f4e662ac26f692977d72bd12891b457ce3b4d0dc703ae0edc705e83734c068c",
+          "stderr_sha256": "f4a7c87337f553ecab0b36b625e6ade2606330db93f3d3525af77382187129d7"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:05+00:00",
+          "evidence_id": "docling-review-20260811T022205Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:26:14+00:00",
+          "evidence_id": "docling-import-20260811T022614Z"
+        },
+        {
+          "state": "BLOCKED",
+          "at": "2026-08-11T02:37:03+00:00",
+          "evidence_id": "docling-blocked-20260811T023703Z"
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T22:55:11+00:00",
+          "evidence_id": "docling-docling-doc-20260811T225511Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T22:55:21+00:00",
+          "evidence_id": "docling-docling-import-20260811T225521Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T22:55:32+00:00",
+          "evidence_id": "docling-docling-smoke-20260811T225532Z"
+        },
+        {
+          "state": "BENCHMARKED",
+          "at": "2026-08-11T22:55:58+00:00",
+          "evidence_id": "docling-pdf-matrix-20260811T225558Z"
+        }
+      ]
+    },
+    {
+      "id": "mineru",
+      "name": "MinerU",
+      "category": "document_ingestion",
+      "state": "INSTALLED",
+      "claims": [
+        {
+          "id": "mineru-local-audit",
+          "text": "MinerU is installed as an isolated document-conversion candidate; no historical prose benchmark is accepted as evidence.",
+          "source_urls": [
+            "https://github.com/opendatalab/MinerU"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "import",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "MinerU imports and its package version is readable in the dedicated environment.",
+          "argv": [
+            ".venv-mineru/Scripts/python.exe",
+            "-c",
+            "import importlib.metadata as m; import mineru; print(m.version('mineru'))"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "mineru-review-20260811T022206Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:06+00:00",
+          "finished_at": "2026-08-11T02:22:06+00:00",
+          "duration_ms": 2,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/mineru/20260811T022206Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/mineru/20260811T022206Z-review.json": "8078c43ea392d0914fed718403ff122c860ee592dc4a003f8f8b68e7141e1c4a"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "mineru-import-20260811T022700Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "MinerU imports and its package version is readable in the dedicated environment.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv-mineru\\Scripts\\python.exe",
+            "-c",
+            "import importlib.metadata as m; import mineru; print(m.version('mineru'))"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:27:00+00:00",
+          "finished_at": "2026-08-11T02:27:00+00:00",
+          "duration_ms": 304,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/mineru/20260811T022700Z-import.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/mineru/20260811T022700Z-import.json": "741d732f5da47781f192a16a92f0b7528eedb0937e5159a2d3fe009d9c3e239f"
+          },
+          "stdout_sha256": "a19f5cb2aecb9af1c0ed78cca3bfc0f8a954f1e680cc51bde6d3d7f7b965a79f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:06+00:00",
+          "evidence_id": "mineru-review-20260811T022206Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:27:00+00:00",
+          "evidence_id": "mineru-import-20260811T022700Z"
+        }
+      ]
+    },
+    {
+      "id": "ollama-qwen-models",
+      "name": "Ollama Qwen model set",
+      "category": "local_llm",
+      "state": "SMOKE_TESTED",
+      "claims": [
+        {
+          "id": "qwen-local-audit",
+          "text": "The three local Qwen tags must be tested for both generation reachability and exact instruction compliance.",
+          "source_urls": [
+            "https://ollama.com/library/qwen3"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "models-present",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "All three declared Qwen model tags appear in the local Ollama inventory.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-installed"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "generation",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "All three models completed a short local generation; the artifact separately records exact-instruction failures.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-smoke"
+          ],
+          "timeout_s": 120
+        }
+      ],
+      "evidence": [
+        {
+          "id": "ollama-qwen-models-review-20260811T022207Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:07+00:00",
+          "finished_at": "2026-08-11T02:22:07+00:00",
+          "duration_ms": 2,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/ollama-qwen-models/20260811T022207Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/ollama-qwen-models/20260811T022207Z-review.json": "0ba842a4ed08a071bb9f29e38d0fe8784e0de610bc749f15a1ebab39ba529cc2"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "ollama-qwen-models-models-present-20260811T022702Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "All three declared Qwen model tags appear in the local Ollama inventory.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-installed"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:27:01+00:00",
+          "finished_at": "2026-08-11T02:27:02+00:00",
+          "duration_ms": 464,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/ollama-qwen-models/20260811T022702Z-models-present.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/ollama-qwen-models/20260811T022702Z-models-present.json": "f6af201912e1a8c06603bd1d84d96c5d179fa3efe8ca2a46cfe08cfd0ea9b513"
+          },
+          "stdout_sha256": "7cb26d9b23c38b1a83ad2548c8501dc9c9c29e3906cce8600d99ef1795deb307",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "ollama-qwen-models-generation-20260811T022925Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "All three models completed a short local generation; the artifact separately records exact-instruction failures.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-smoke"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:28:17+00:00",
+          "finished_at": "2026-08-11T02:29:25+00:00",
+          "duration_ms": 67875,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/ollama-qwen-models/20260811T022925Z-generation.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/ollama-qwen-models/20260811T022925Z-generation.json": "f4ec6c937e5c76864f047458bbae94c590cbf8eb647eb34a37568f700456782b"
+          },
+          "stdout_sha256": "017455eb4857965a2aab7c4bcafe2d1676d62a3269923596edfb4959572d0772",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:07+00:00",
+          "evidence_id": "ollama-qwen-models-review-20260811T022207Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:27:02+00:00",
+          "evidence_id": "ollama-qwen-models-models-present-20260811T022702Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T02:29:25+00:00",
+          "evidence_id": "ollama-qwen-models-generation-20260811T022925Z"
+        }
+      ]
+    },
+    {
+      "id": "ffmpeg",
+      "name": "FFmpeg",
+      "category": "media_processing",
+      "state": "SMOKE_TESTED",
+      "claims": [
+        {
+          "id": "ffmpeg-local-audit",
+          "text": "FFmpeg is AURA's local media conversion dependency and needs an operation-level smoke test.",
+          "source_urls": [
+            "https://ffmpeg.org/"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "installed",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "The local FFmpeg executable reports a version.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "ffmpeg-installed"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "sine-null",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "FFmpeg generated and decoded a 0.2-second synthetic signal without writing a file.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "ffmpeg-smoke"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "ffmpeg-review-20260811T022209Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:09+00:00",
+          "finished_at": "2026-08-11T02:22:09+00:00",
+          "duration_ms": 2,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/ffmpeg/20260811T022209Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/ffmpeg/20260811T022209Z-review.json": "a06d5983a6adc289c78867e79c31d2b4e83f8e47a1071f9c78518951beca1e49"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "ffmpeg-installed-20260811T022703Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "The local FFmpeg executable reports a version.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "ffmpeg-installed"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:27:02+00:00",
+          "finished_at": "2026-08-11T02:27:03+00:00",
+          "duration_ms": 434,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/ffmpeg/20260811T022703Z-installed.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/ffmpeg/20260811T022703Z-installed.json": "e47ed399f87909b18f90e21b4b5bec198081d5ace328ec43bc25e0cbd064cb9f"
+          },
+          "stdout_sha256": "a670bd78ca17b4c74a6ee5465fb5e742542b38b1653b66e5552ee3ddce152626",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "ffmpeg-sine-null-20260811T022929Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "FFmpeg generated and decoded a 0.2-second synthetic signal without writing a file.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "ffmpeg-smoke"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:29:27+00:00",
+          "finished_at": "2026-08-11T02:29:29+00:00",
+          "duration_ms": 1433,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/ffmpeg/20260811T022929Z-sine-null.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/ffmpeg/20260811T022929Z-sine-null.json": "1b516b1e3a31444d9a6ed3d2b29ba2bbce91199a0d49d43a419727eeb56dbbb4"
+          },
+          "stdout_sha256": "5114fabc8ae648f06c61d5882b06429214ce3a2d3916825699b0882b1ff37b45",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:09+00:00",
+          "evidence_id": "ffmpeg-review-20260811T022209Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:27:03+00:00",
+          "evidence_id": "ffmpeg-installed-20260811T022703Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T02:29:29+00:00",
+          "evidence_id": "ffmpeg-sine-null-20260811T022929Z"
+        }
+      ]
+    },
+    {
+      "id": "crawl4ai",
+      "name": "Crawl4AI",
+      "category": "web_extraction",
+      "state": "BLOCKED",
+      "claims": [
+        {
+          "id": "crawl4ai-local-audit",
+          "text": "Crawl4AI is a candidate web-to-Markdown extractor; it was not found locally during this audit.",
+          "source_urls": [
+            "https://github.com/unclecode/crawl4ai"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "local-presence",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "A local Crawl4AI module or command is present.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "crawl4ai"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "crawl4ai-review-20260811T022210Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:10+00:00",
+          "finished_at": "2026-08-11T02:22:10+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/crawl4ai/20260811T022210Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/crawl4ai/20260811T022210Z-review.json": "d647682d71c4a747d6ab434495304fc5614c29b76ab12286c8a6e4b904000bf6"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "crawl4ai-blocked-20260811T023428Z",
+          "kind": "blocker",
+          "proves_state": "BLOCKED",
+          "summary": "The reviewed Crawl4AI candidate has no local Python module or command; installation and smoke testing are blocked until separately authorized.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "crawl4ai"
+          ],
+          "exit_code": 1,
+          "started_at": "2026-08-11T02:34:28+00:00",
+          "finished_at": "2026-08-11T02:34:28+00:00",
+          "duration_ms": 214,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/crawl4ai/20260811T023428Z-local-presence.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/crawl4ai/20260811T023428Z-local-presence.json": "fd7e9bf7d41b7de4bae2cea8a47817805a640f0d8acd39164984469ab3c26c8e"
+          },
+          "stdout_sha256": "e692b623857b9c631c1e8e1ce4c58423d21da5e30ea935c30cddb19dd830d375",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:10+00:00",
+          "evidence_id": "crawl4ai-review-20260811T022210Z"
+        },
+        {
+          "state": "BLOCKED",
+          "at": "2026-08-11T02:34:28+00:00",
+          "evidence_id": "crawl4ai-blocked-20260811T023428Z"
+        }
+      ]
+    },
+    {
+      "id": "moonshine",
+      "name": "Moonshine Voice",
+      "category": "speech_to_text",
+      "state": "SMOKE_TESTED",
+      "claims": [
+        {
+          "id": "moonshine-local-audit",
+          "text": "Moonshine can transcribe Vietnamese locally, but the cached model emits a non-commercial license warning.",
+          "source_urls": [
+            "https://github.com/moonshine-ai/moonshine"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source and license review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "import",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "moonshine_voice imports from AURA's active .venv311 runtime.",
+          "argv": [
+            ".venv311/Scripts/python.exe",
+            "-c",
+            "import importlib.metadata as m; import moonshine_voice; print(m.version('moonshine-voice'))"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "vietnamese-transcription",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "Moonshine transcribed a 7.6-second local Vietnamese sample; only metrics, not transcript text, enter the artifact.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "moonshine-smoke"
+          ],
+          "timeout_s": 120
+        }
+      ],
+      "evidence": [
+        {
+          "id": "moonshine-review-20260811T022211Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source and license review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:11+00:00",
+          "finished_at": "2026-08-11T02:22:11+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/moonshine/20260811T022211Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/moonshine/20260811T022211Z-review.json": "7042f91097788ae08b13ac09776ea494c74fb68f7aecf4e246df4c05a12297a2"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "moonshine-import-20260811T022705Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "moonshine_voice imports from AURA's active .venv311 runtime.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv311\\Scripts\\python.exe",
+            "-c",
+            "import importlib.metadata as m; import moonshine_voice; print(m.version('moonshine-voice'))"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:27:03+00:00",
+          "finished_at": "2026-08-11T02:27:05+00:00",
+          "duration_ms": 1564,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/moonshine/20260811T022705Z-import.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/moonshine/20260811T022705Z-import.json": "52717557e26dcbca367f7851438d08e716cfbd6fb7d0782f373fb5d5f7575e86"
+          },
+          "stdout_sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "moonshine-vietnamese-transcription-20260811T023235Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "Moonshine transcribed a 7.6-second local Vietnamese sample; only metrics, not transcript text, enter the artifact.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "moonshine-smoke"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:32:25+00:00",
+          "finished_at": "2026-08-11T02:32:35+00:00",
+          "duration_ms": 10184,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/moonshine/20260811T023235Z-vietnamese-transcription.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/moonshine/20260811T023235Z-vietnamese-transcription.json": "fd8dff03a62d43a9ad8d46e38c561b56d4b443b054b446357f12c3031027d374"
+          },
+          "stdout_sha256": "9fbcbaa868027326d9081a5edbc8a4318e4477cd17cd4e9431b3790701fff674",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:11+00:00",
+          "evidence_id": "moonshine-review-20260811T022211Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:27:05+00:00",
+          "evidence_id": "moonshine-import-20260811T022705Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T02:32:35+00:00",
+          "evidence_id": "moonshine-vietnamese-transcription-20260811T023235Z"
+        }
+      ]
+    },
+    {
+      "id": "qwen-audio-agent",
+      "name": "Qwen Audio Agent",
+      "category": "voice_agent",
+      "state": "SMOKE_TESTED",
+      "claims": [
+        {
+          "id": "qwen-audio-local-audit",
+          "text": "Qwen Audio Agent 1.8.1 is installed in an isolated .tech directory. CLI help, TUI/WebUI help, and read-only Codex adapter setup succeeded. Microphone-to-Codex voice E2E remains untested; the Windows CLI reports that the background Gateway service is unsupported, and the default audio Python environment still needs configuration.",
+          "source_urls": [
+            "https://github.com/QwenAudio/qwen-audio-agent"
+          ],
+          "video_urls": [
+            "https://www.tiktok.com/@beeknoeeai/video/7671851855860731144?is_from_webapp=1&sender_device=pc"
+          ]
+        },
+        {
+          "id": "qwen-audio-package-metadata",
+          "text": "The isolated npm package declares version 1.8.1 and Apache-2.0; the local CLI reports Codex backend and adapter readiness in read-only setup mode.",
+          "source_urls": [
+            "https://github.com/QwenAudio/qwen-audio-agent"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "local-presence",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "A local Qwen Audio Agent module or command is present.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "qwen-audio-agent"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "reopen-isolated-install",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The isolated qwen-audio-agent 1.8.1 package manifest now exists, so the previous missing-install blocker can be reopened for fresh checks.",
+          "path": ".tech/qwen-audio-agent/node_modules/qwen-audio-agent/package.json"
+        },
+        {
+          "id": "isolated-package",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "The isolated package manifest and CLI exist and declare qwen-audio-agent 1.8.1 under Apache-2.0.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-audio-installed"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "cli-config-smoke",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "The CLI help and read-only Codex setup check both succeeded with backend and adapter ready; this does not prove microphone or voice E2E.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-audio-smoke"
+          ],
+          "timeout_s": 60
+        }
+      ],
+      "evidence": [
+        {
+          "id": "qwen-audio-agent-review-20260811T022213Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:13+00:00",
+          "finished_at": "2026-08-11T02:22:13+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T022213Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T022213Z-review.json": "f4116dd2dbe38ba1644cc9ccb1ce90b1fe48753a256ad4f79d89e1285c72981d"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "qwen-audio-agent-blocked-20260811T023429Z",
+          "kind": "blocker",
+          "proves_state": "BLOCKED",
+          "summary": "The reviewed Qwen Audio Agent candidate has no local Python module or command; it was not installed during this audit.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "qwen-audio-agent"
+          ],
+          "exit_code": 1,
+          "started_at": "2026-08-11T02:34:28+00:00",
+          "finished_at": "2026-08-11T02:34:29+00:00",
+          "duration_ms": 252,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T023429Z-local-presence.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T023429Z-local-presence.json": "b03cff3c04b90fa93f03977ce7c9b221194a896efe6442d8b3ed1ea08c745bb8"
+          },
+          "stdout_sha256": "8a5fbae2b82785547adbf3b6f2401fd4893333b7fefb30db5c2057a353bc296d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "qwen-audio-agent-reopen-isolated-install-20260811T025904Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The isolated qwen-audio-agent 1.8.1 package manifest now exists, so the previous missing-install blocker can be reopened for fresh checks.",
+          "command": [
+            "internal:path_exists",
+            ".tech/qwen-audio-agent/node_modules/qwen-audio-agent/package.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:59:04+00:00",
+          "finished_at": "2026-08-11T02:59:04+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T025904Z-reopen-isolated-install.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T025904Z-reopen-isolated-install.json": "4999d6bcbc9013f922580c46bcfe5f5499221e3a4d34c8530545997dca938c3f"
+          },
+          "stdout_sha256": "0c43660829840876638af29264c87fb8aa1b16b1f879dacb9a838f1de56b57e2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "qwen-audio-agent-isolated-package-20260811T025906Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "The isolated package manifest and CLI exist and declare qwen-audio-agent 1.8.1 under Apache-2.0.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-audio-installed"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:59:05+00:00",
+          "finished_at": "2026-08-11T02:59:06+00:00",
+          "duration_ms": 669,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T025906Z-isolated-package.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T025906Z-isolated-package.json": "6e749167f183b85e873e4627c1af18b69ec70f4de2a153a42ec1276f861c3178"
+          },
+          "stdout_sha256": "afa6373627737fa247f4aefa84e79e55b0890c2cb3d50256aa14bf41c3d89564",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "qwen-audio-agent-cli-config-smoke-20260811T025908Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "The CLI help and read-only Codex setup check both succeeded with backend and adapter ready; this does not prove microphone or voice E2E.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "qwen-audio-smoke"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:59:07+00:00",
+          "finished_at": "2026-08-11T02:59:08+00:00",
+          "duration_ms": 779,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T025908Z-cli-config-smoke.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/qwen-audio-agent/20260811T025908Z-cli-config-smoke.json": "129737eb31d122c152ba72d535281ffde34301a6b7aa6b9c6d92e14e38ca6ebc"
+          },
+          "stdout_sha256": "f593861e6b5be4e48280fdb6a1c95c7f853ca8134c7c64fbe541bf361f6e7f93",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:13+00:00",
+          "evidence_id": "qwen-audio-agent-review-20260811T022213Z"
+        },
+        {
+          "state": "BLOCKED",
+          "at": "2026-08-11T02:34:29+00:00",
+          "evidence_id": "qwen-audio-agent-blocked-20260811T023429Z"
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:59:04+00:00",
+          "evidence_id": "qwen-audio-agent-reopen-isolated-install-20260811T025904Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T02:59:06+00:00",
+          "evidence_id": "qwen-audio-agent-isolated-package-20260811T025906Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T02:59:08+00:00",
+          "evidence_id": "qwen-audio-agent-cli-config-smoke-20260811T025908Z"
+        }
+      ]
+    },
+    {
+      "id": "book-to-skill",
+      "name": "book-to-skill",
+      "category": "knowledge_tooling",
+      "state": "BLOCKED",
+      "claims": [
+        {
+          "id": "book-skill-local-audit",
+          "text": "book-to-skill is a candidate skill generator; it was not found locally during this audit.",
+          "source_urls": [
+            "https://github.com/virgiliojr94/book-to-skill"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "local-presence",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "A local book-to-skill module or command is present.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "book-to-skill"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "book-to-skill-review-20260811T022215Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:15+00:00",
+          "finished_at": "2026-08-11T02:22:15+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/book-to-skill/20260811T022215Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/book-to-skill/20260811T022215Z-review.json": "5a946d1a0c309d7c4e085a669938c9817fc664f6a1af1ac0d4bc5c3207e0d4f4"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "book-to-skill-blocked-20260811T023430Z",
+          "kind": "blocker",
+          "proves_state": "BLOCKED",
+          "summary": "The reviewed book-to-skill candidate has no local module, command, repository, or installed skill; it remains unavailable.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "book-to-skill"
+          ],
+          "exit_code": 1,
+          "started_at": "2026-08-11T02:34:29+00:00",
+          "finished_at": "2026-08-11T02:34:30+00:00",
+          "duration_ms": 322,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/book-to-skill/20260811T023430Z-local-presence.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/book-to-skill/20260811T023430Z-local-presence.json": "a4886230579a65d0e844caa26b4c0078461d2b8806103e3dc75d28bc80f68e4d"
+          },
+          "stdout_sha256": "9bb58dac71fe6981f2c2bf737cd75ce5c671891d35cb849d1c8757bd06f05fea",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:15+00:00",
+          "evidence_id": "book-to-skill-review-20260811T022215Z"
+        },
+        {
+          "state": "BLOCKED",
+          "at": "2026-08-11T02:34:30+00:00",
+          "evidence_id": "book-to-skill-blocked-20260811T023430Z"
+        }
+      ]
+    },
+    {
+      "id": "lightrag",
+      "name": "LightRAG",
+      "category": "retrieval",
+      "state": "BLOCKED",
+      "claims": [
+        {
+          "id": "lightrag-local-audit",
+          "text": "LightRAG is a retrieval candidate; it was not found locally during this audit.",
+          "source_urls": [
+            "https://github.com/HKUDS/LightRAG/"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "path": "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+        },
+        {
+          "id": "local-presence",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "A local LightRAG module or command is present.",
+          "argv": [
+            ".venv/Scripts/python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "lightrag"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "lightrag-review-20260811T022217Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 source review exists.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-priority-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T02:22:17+00:00",
+          "finished_at": "2026-08-11T02:22:17+00:00",
+          "duration_ms": 3,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/lightrag/20260811T022217Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/lightrag/20260811T022217Z-review.json": "c1eab53c6c7f4889240f5ea538d28a706324f3853ab53761daced1db7a5cf153"
+          },
+          "stdout_sha256": "06e3937ef6393f26c5ee91682f34b308b4ef3f5a89cef1eae7786a10c21bfe04",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "lightrag-blocked-20260811T023430Z",
+          "kind": "blocker",
+          "proves_state": "BLOCKED",
+          "summary": "The reviewed LightRAG candidate has no local Python module, command, or repository; it was not installed during this audit.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+            "tools/local_tech_probes.py",
+            "missing",
+            "lightrag"
+          ],
+          "exit_code": 1,
+          "started_at": "2026-08-11T02:34:30+00:00",
+          "finished_at": "2026-08-11T02:34:30+00:00",
+          "duration_ms": 370,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/lightrag/20260811T023430Z-local-presence.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/lightrag/20260811T023430Z-local-presence.json": "c39824a1ccd0fb9d16de4defdf0912e1f39e748f9cc044f36d4dfb3de9384ad9"
+          },
+          "stdout_sha256": "798fae53482949a3b6d49a005b46c326236809b1f62717df88f7727e78722926",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T09:10:25+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T02:22:17+00:00",
+          "evidence_id": "lightrag-review-20260811T022217Z"
+        },
+        {
+          "state": "BLOCKED",
+          "at": "2026-08-11T02:34:30+00:00",
+          "evidence_id": "lightrag-blocked-20260811T023430Z"
+        }
+      ]
+    },
+    {
+      "id": "cloudflare-os",
+      "name": "Cloudflare OS",
+      "category": "agent_runtime",
+      "state": "READ",
+      "claims": [
+        {
+          "id": "cloudflare-os-video-review",
+          "text": "Cloudflare OS is an official Cloudflare AI workspace/runtime project, not a computer operating system. Its Gadgets and capability-based Gatekeepers are relevant architecture references. Source tests passed 40/40 after correcting a Windows CRLF-only fixture mismatch, but dependency linking did not finish within five minutes and the product stack was not launched. The project is early access, so absolute safety claims remain unproven.",
+          "source_urls": [
+            "https://github.com/cloudflare/cloudflare-os"
+          ],
+          "video_urls": [
+            "https://www.tiktok.com/@ainius.net/video/7671522624765283602?is_from_webapp=1&sender_device=pc"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "id": "video-source-review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The bounded 2026-08-11 Cloudflare OS video/source review exists; this does not prove installation or runtime behavior.",
+          "path": "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "cloudflare-os-video-source-review-20260811T031752Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The bounded 2026-08-11 Cloudflare OS video/source review exists; this does not prove installation or runtime behavior.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T03:17:52+00:00",
+          "finished_at": "2026-08-11T03:17:52+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/cloudflare-os/20260811T031752Z-video-source-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/cloudflare-os/20260811T031752Z-video-source-review.json": "eb12ce8a44b982d5b109d5decccd467be60f3b553caa1a8c3c3b608cc459aa19"
+          },
+          "stdout_sha256": "99ffc38216f374bf9b1e7978c649523999b6324fca4804d8c30fafa1dd59ebf4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T10:04:15+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T03:17:52+00:00",
+          "evidence_id": "cloudflare-os-video-source-review-20260811T031752Z"
+        }
+      ]
+    },
+    {
+      "id": "self-evolving-skills",
+      "name": "ContinualSkillBench",
+      "category": "agent_evaluation",
+      "state": "READ",
+      "claims": [
+        {
+          "id": "self-evolving-skills-video-review",
+          "text": "ContinualSkillBench is a real benchmark and open-source evaluation suite, not a production self-evolution engine. The paper evaluates 5 domains with 100 interdependent subtasks each and reports sequential gains in 14/15 model-domain pairs, but context-only performance (0.605) is approximately equal to explicit skill maintenance (0.602). Local syntax compilation passed; the benchmark was not reproduced because Docker, model access, and paid API execution are unavailable.",
+          "source_urls": [
+            "https://arxiv.org/abs/2608.03874",
+            "https://github.com/gtynnn060110-hash/continual-skill-bench-final"
+          ],
+          "video_urls": [
+            "https://www.tiktok.com/@cunghocainha/video/7671557342277946645?is_from_webapp=1&sender_device=pc"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "id": "video-source-review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The initial video review identified a learning concept; a later bounded source audit identified ContinualSkillBench but did not reproduce its benchmark.",
+          "path": "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "self-evolving-skills-video-source-review-20260811T031820Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 review records this only as a concept with no testable implementation.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T03:18:20+00:00",
+          "finished_at": "2026-08-11T03:18:20+00:00",
+          "duration_ms": 0,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/self-evolving-skills/20260811T031820Z-video-source-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/self-evolving-skills/20260811T031820Z-video-source-review.json": "9b48cbc96ba50e89ec614a8f9829715ebed27b870794916124a28a931041fe94"
+          },
+          "stdout_sha256": "99ffc38216f374bf9b1e7978c649523999b6324fca4804d8c30fafa1dd59ebf4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T10:04:15+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T03:18:20+00:00",
+          "evidence_id": "self-evolving-skills-video-source-review-20260811T031820Z"
+        }
+      ]
+    },
+    {
+      "id": "open-source-ai-crm-unknown",
+      "name": "Comp AI CRM",
+      "category": "crm",
+      "state": "READ",
+      "claims": [
+        {
+          "id": "unknown-ai-crm-video-review",
+          "text": "The screenshot identifies the official trycompai/crm project. It is a real MIT-licensed agent-first CRM with an agent worker, leased Postgres work queue, bounded tools, evidence recording, and field updates. A pure queue test passed 7/7 and a bounded static check of core agent files passed, but Postgres, generated Prisma code, UI, model calls, and full E2E were not run. The stronger claim that the CRM is operated entirely by AI is not proven.",
+          "source_urls": [
+            "https://github.com/trycompai/crm",
+            "https://github.com/trycompai/crm/blob/release/docs/agent.md",
+            "https://github.com/trycompai/crm/blob/release/docs/setup.md"
+          ],
+          "video_urls": [
+            "https://www.tiktok.com/@aidev.repo/video/7669836232339377429?is_from_webapp=1&sender_device=pc"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "id": "video-source-review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 review records that the video lacks a testable repository or product identity.",
+          "path": "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+        },
+        {
+          "id": "identified-source-review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The follow-up screenshot identifies trycompai/crm; the bounded source and local code-smoke report exists, while full runtime E2E remains untested.",
+          "path": "docs/TECH_CHECK_5_SOURCES_2026-08-11.md"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "open-source-ai-crm-unknown-video-source-review-20260811T031855Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 review records that the video lacks a testable repository or product identity.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T03:18:55+00:00",
+          "finished_at": "2026-08-11T03:18:55+00:00",
+          "duration_ms": 0,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/open-source-ai-crm-unknown/20260811T031855Z-video-source-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/open-source-ai-crm-unknown/20260811T031855Z-video-source-review.json": "4cb867ab5eae4bf6ba370c4681693335ba3a58bdbe6a30fd7922a8d57ab05911"
+          },
+          "stdout_sha256": "99ffc38216f374bf9b1e7978c649523999b6324fca4804d8c30fafa1dd59ebf4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "open-source-ai-crm-unknown-blocked-20260811T030415Z",
+          "kind": "blocker",
+          "proves_state": "BLOCKED",
+          "summary": "The video review does not identify a repository or product precisely enough to verify, install, or test; guessing a tool name is forbidden.",
+          "command": [
+            "manual:video-review",
+            "https://www.tiktok.com/@aidev.repo/video/7669836232339377429?is_from_webapp=1&sender_device=pc"
+          ],
+          "exit_code": 2,
+          "started_at": "2026-08-11T03:04:15+00:00",
+          "finished_at": "2026-08-11T03:04:15+00:00",
+          "duration_ms": 0,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/open-source-ai-crm-unknown/20260811T030415Z-identity-missing.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/open-source-ai-crm-unknown/20260811T030415Z-identity-missing.json": "b162faf6e8706454d610654140ec55375fb88412e91b7e9cc07b268b6c2d78e4"
+          },
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "7e10daf3f592c69d3f8f366d4b47015f891be7d8c4e18e529bc0e6fe4f46bc2b"
+        },
+        {
+          "id": "open-source-ai-crm-unknown-identified-source-review-20260811T052726Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The follow-up screenshot identifies trycompai/crm; the bounded source and local code-smoke report exists, while full runtime E2E remains untested.",
+          "command": [
+            "internal:path_exists",
+            "docs/TECH_CHECK_5_SOURCES_2026-08-11.md"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T05:27:26+00:00",
+          "finished_at": "2026-08-11T05:27:26+00:00",
+          "duration_ms": 1,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/open-source-ai-crm-unknown/20260811T052726Z-identified-source-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/open-source-ai-crm-unknown/20260811T052726Z-identified-source-review.json": "ce6dd510e1ce63ca6e0612d3bbe2a34e27fd7bc6e29b633b9faad90e24620818"
+          },
+          "stdout_sha256": "9439437ddcba9429d8de2861171f9bf47cefb7a4f864d79da5dfd05a2b0ccc90",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T10:04:15+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T03:18:55+00:00",
+          "evidence_id": "open-source-ai-crm-unknown-video-source-review-20260811T031855Z"
+        },
+        {
+          "state": "BLOCKED",
+          "at": "2026-08-11T03:04:15+00:00",
+          "evidence_id": "open-source-ai-crm-unknown-blocked-20260811T030415Z"
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T05:27:26+00:00",
+          "evidence_id": "open-source-ai-crm-unknown-identified-source-review-20260811T052726Z"
+        }
+      ]
+    },
+    {
+      "id": "short-video-retention-apv",
+      "name": "Short-video retention and APV practice",
+      "category": "content_strategy",
+      "state": "READ",
+      "claims": [
+        {
+          "id": "retention-apv-video-review",
+          "text": "A.B.D is not an official YouTube metric; the correct terms are Average View Duration (AVD) and Average Percentage Viewed (APV). For Shorts, YouTube describes chose-to-view, AVD, APV, likes/dislikes, and post-watch surveys as signals. CTR remains an official thumbnail-impression metric, while high CTR with low AVD can indicate clickbait. No reviewed official source proves that APV always has the highest weight.",
+          "source_urls": [
+            "https://support.google.com/youtube/answer/11914225",
+            "https://support.google.com/youtube/answer/12220281",
+            "https://support.google.com/youtube/answer/7628154",
+            "https://support.google.com/youtube/answer/9314415"
+          ],
+          "video_urls": [
+            "https://www.tiktok.com/@agi.2027/video/7670858051963931911?is_from_webapp=1&sender_device=pc"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "id": "video-source-review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 review bounds the APV claim using official YouTube guidance; no benchmark is inferred.",
+          "path": "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "short-video-retention-apv-video-source-review-20260811T032605Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The 2026-08-11 review bounds the APV claim using official YouTube guidance; no benchmark is inferred.",
+          "command": [
+            "internal:path_exists",
+            "data/tech_evidence/reviews/2026-08-11-video-tech-audit.json"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T03:26:05+00:00",
+          "finished_at": "2026-08-11T03:26:05+00:00",
+          "duration_ms": 0,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/short-video-retention-apv/20260811T032605Z-video-source-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/short-video-retention-apv/20260811T032605Z-video-source-review.json": "a92abac7054a962d3dda1beda0ea1bc223ba414f504939c504621a195293b13b"
+          },
+          "stdout_sha256": "99ffc38216f374bf9b1e7978c649523999b6324fca4804d8c30fafa1dd59ebf4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T10:04:15+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T03:26:05+00:00",
+          "evidence_id": "short-video-retention-apv-video-source-review-20260811T032605Z"
+        }
+      ]
+    },
+    {
+      "id": "hermes-agent",
+      "name": "Hermes Agent",
+      "category": "agent_runtime",
+      "state": "SMOKE_TESTED",
+      "claims": [
+        {
+          "id": "hermes-agent-local-contract",
+          "text": "The local Hermes Agent 0.20.0 clone declares a 64,000-token minimum context and maps the bare Ollama alias to a local custom provider. This contract smoke does not prove acceptable end-to-end quality or latency on AURA's hardware.",
+          "source_urls": [
+            "https://github.com/NousResearch/hermes-agent"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The sanitized 2026-08-11 independent review exists inside the repository.",
+          "path": "docs/TECH_CHECK_HERMES_OPENCLAW_2026-08-11.md"
+        },
+        {
+          "id": "install",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "An offline probe verifies the local Hermes clone identity, package version, license, Python requirement, and commit without reading user configuration.",
+          "argv": [
+            ".venv311/Scripts/python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "hermes-install"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "contract",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "The offline contract smoke verifies Hermes' 64,000-token minimum and local Ollama-to-custom provider assertion; no model is called.",
+          "argv": [
+            ".venv311/Scripts/python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "hermes-contract"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "hermes-agent-review-20260811T095529Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The sanitized 2026-08-11 independent review exists inside the repository.",
+          "command": [
+            "internal:path_exists",
+            "docs/TECH_CHECK_HERMES_OPENCLAW_2026-08-11.md"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T09:55:29+00:00",
+          "finished_at": "2026-08-11T09:55:29+00:00",
+          "duration_ms": 0,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/hermes-agent/20260811T095529Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/hermes-agent/20260811T095529Z-review.json": "c4678d6f17ada291b4a1f98e7e1d4e552f666af2a60549ae87f90f11ec85bbf9"
+          },
+          "stdout_sha256": "1b61cc685aa680d29e0de2ffb24ced313d3e552b7c8de5143c7ed65e1cf0133a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "hermes-agent-install-20260811T095529Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "An offline probe verifies the local Hermes clone identity, package version, license, Python requirement, and commit without reading user configuration.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv311\\Scripts\\python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "hermes-install"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T09:55:29+00:00",
+          "finished_at": "2026-08-11T09:55:29+00:00",
+          "duration_ms": 193,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/hermes-agent/20260811T095529Z-install.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/hermes-agent/20260811T095529Z-install.json": "78dbaa3c3db3e9da7b20dcec24a5ae5a8ab07417872247440ae5eacfd84de9a4"
+          },
+          "stdout_sha256": "aa4e042dc85595b0888812f887d863591da8094c15ed9170ea71703bdb61c796",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "hermes-agent-contract-20260811T095530Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "The offline contract smoke verifies Hermes' 64,000-token minimum and local Ollama-to-custom provider assertion; no model is called.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv311\\Scripts\\python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "hermes-contract"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T09:55:30+00:00",
+          "finished_at": "2026-08-11T09:55:30+00:00",
+          "duration_ms": 135,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/hermes-agent/20260811T095530Z-contract.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/hermes-agent/20260811T095530Z-contract.json": "4a10522ecfc00f9d83966d4eb4fd51dd55e5764a8c60041d0b385e6babdf9922"
+          },
+          "stdout_sha256": "125600bcfbe4e630924378670fadf3804207b65fd5bdeba6485e6c7eba701026",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T00:00:00+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T09:55:29+00:00",
+          "evidence_id": "hermes-agent-review-20260811T095529Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T09:55:29+00:00",
+          "evidence_id": "hermes-agent-install-20260811T095529Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T09:55:30+00:00",
+          "evidence_id": "hermes-agent-contract-20260811T095530Z"
+        }
+      ]
+    },
+    {
+      "id": "openclaw",
+      "name": "OpenClaw",
+      "category": "agent_runtime",
+      "state": "SMOKE_TESTED",
+      "claims": [
+        {
+          "id": "openclaw-local-contract",
+          "text": "The installed OpenClaw package is MIT-licensed and documents local Ollama support plus a dynamic context guard with an 8K warning floor and 4K hard floor. Version/contract smoke does not prove acceptable full-agent quality or latency with qwen3.5:4b.",
+          "source_urls": [
+            "https://github.com/openclaw/openclaw",
+            "https://github.com/openclaw/openclaw/blob/main/docs/gateway/local-models.md",
+            "https://github.com/openclaw/openclaw/blob/main/docs/providers/ollama.md"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "review",
+          "kind": "path_exists",
+          "proves_state": "READ",
+          "summary": "The sanitized 2026-08-11 independent review exists inside the repository.",
+          "path": "docs/TECH_CHECK_HERMES_OPENCLAW_2026-08-11.md"
+        },
+        {
+          "id": "install",
+          "kind": "local_command",
+          "proves_state": "INSTALLED",
+          "summary": "An offline probe verifies the installed OpenClaw package identity, version, MIT license, and repository metadata without reading user configuration.",
+          "argv": [
+            ".venv311/Scripts/python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "openclaw-install"
+          ],
+          "timeout_s": 30
+        },
+        {
+          "id": "contract",
+          "kind": "local_command",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "A bounded no-model CLI/version smoke verifies OpenClaw's installed version, Ollama documentation, and documented 8K warning/4K hard context floors.",
+          "argv": [
+            ".venv311/Scripts/python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "openclaw-contract"
+          ],
+          "timeout_s": 30
+        }
+      ],
+      "evidence": [
+        {
+          "id": "openclaw-review-20260811T095530Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "The sanitized 2026-08-11 independent review exists inside the repository.",
+          "command": [
+            "internal:path_exists",
+            "docs/TECH_CHECK_HERMES_OPENCLAW_2026-08-11.md"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T09:55:30+00:00",
+          "finished_at": "2026-08-11T09:55:30+00:00",
+          "duration_ms": 0,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/openclaw/20260811T095530Z-review.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/openclaw/20260811T095530Z-review.json": "518d1465f3b25772096be892da48728df3763f767b8764bef8400069b7fedd21"
+          },
+          "stdout_sha256": "1b61cc685aa680d29e0de2ffb24ced313d3e552b7c8de5143c7ed65e1cf0133a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "openclaw-install-20260811T095531Z",
+          "kind": "install_check",
+          "proves_state": "INSTALLED",
+          "summary": "An offline probe verifies the installed OpenClaw package identity, version, MIT license, and repository metadata without reading user configuration.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv311\\Scripts\\python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "openclaw-install"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T09:55:30+00:00",
+          "finished_at": "2026-08-11T09:55:31+00:00",
+          "duration_ms": 149,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/openclaw/20260811T095531Z-install.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/openclaw/20260811T095531Z-install.json": "2856e750474b0da7b62890925c2e80110692dc20a1f0d2cd0c8ddc0cbb1cb8d7"
+          },
+          "stdout_sha256": "823751c4dab34afb633b79c29cc65e44deee4b88d124009e3e61d577451766af",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "openclaw-contract-20260811T095531Z",
+          "kind": "smoke_test",
+          "proves_state": "SMOKE_TESTED",
+          "summary": "A bounded no-model CLI/version smoke verifies OpenClaw's installed version, Ollama documentation, and documented 8K warning/4K hard context floors.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv311\\Scripts\\python.exe",
+            "tools/probes/hermes_openclaw_contract.py",
+            "openclaw-contract"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T09:55:31+00:00",
+          "finished_at": "2026-08-11T09:55:31+00:00",
+          "duration_ms": 272,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/openclaw/20260811T095531Z-contract.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/openclaw/20260811T095531Z-contract.json": "93350b6cb4a48c90b43b43bb52af2e284c2fbbfdd87ce19292c05eea3a062ab5"
+          },
+          "stdout_sha256": "10dd80845d0edef494dfaf7c6e075053b034526c53c9b7251ece0f61af295bbf",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T00:00:00+07:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T09:55:30+00:00",
+          "evidence_id": "openclaw-review-20260811T095530Z"
+        },
+        {
+          "state": "INSTALLED",
+          "at": "2026-08-11T09:55:31+00:00",
+          "evidence_id": "openclaw-install-20260811T095531Z"
+        },
+        {
+          "state": "SMOKE_TESTED",
+          "at": "2026-08-11T09:55:31+00:00",
+          "evidence_id": "openclaw-contract-20260811T095531Z"
+        }
+      ]
+    },
+    {
+      "id": "airllm",
+      "name": "AirLLM",
+      "category": "suy luận cục bộ",
+      "state": "READ",
+      "claims": [
+        {
+          "id": "airllm-70b-4gb",
+          "text": "Chạy model 70B trên 4 GB bằng cách nạp từng lớp một",
+          "source_urls": [
+            "https://github.com/lyogavin/airllm"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "tran-dia",
+          "kind": "local_command",
+          "proves_state": "READ",
+          "summary": "Cơ chế nạp-từng-lớp buộc đọc lại toàn bộ trọng số mỗi token, nên tốc độ đĩa là trần trên.",
+          "argv": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "tran-dia"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        }
+      ],
+      "evidence": [
+        {
+          "id": "airllm-tran-dia-20260811T121137Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "Cơ chế nạp-từng-lớp buộc đọc lại toàn bộ trọng số mỗi token, nên tốc độ đĩa là trần trên.",
+          "command": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "tran-dia"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T12:11:35+00:00",
+          "finished_at": "2026-08-11T12:11:37+00:00",
+          "duration_ms": 1168,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/airllm/20260811T121137Z-tran-dia.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/airllm/20260811T121137Z-tran-dia.json": "ea04129b8cf6b33ec29057182ea03add6ae08eb7d006be79e6dbf64da9f7060f"
+          },
+          "stdout_sha256": "e59fc46ca47151105aaf1aa18d5232be2280eb98af585b604ec4e8b7921b874a",
+          "stderr_sha256": "080d7e07b96ef7a51fdeb4df4155ae214a2b7d8d2a778b8116b0ef7edf2f7d2c"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T11:55:40+00:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T12:11:37+00:00",
+          "evidence_id": "airllm-tran-dia-20260811T121137Z"
+        }
+      ]
+    },
+    {
+      "id": "speculative-decoding",
+      "name": "Speculative decoding (draft model)",
+      "category": "suy luận cục bộ",
+      "state": "READ",
+      "claims": [
+        {
+          "id": "spec-decode-1x7",
+          "text": "Nhanh 1,7-3 lần mà giữ nguyên 100% chất lượng",
+          "source_urls": [
+            "https://arxiv.org/abs/2211.17192"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "ollama-spec",
+          "kind": "local_command",
+          "proves_state": "READ",
+          "summary": "Ollama — thứ AURA đang chạy — có cắm được model nháp không.",
+          "argv": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "ollama-spec"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        }
+      ],
+      "evidence": [
+        {
+          "id": "speculative-decoding-ollama-spec-20260811T121027Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "Ollama — thứ AURA đang chạy — có cắm được model nháp không.",
+          "command": [
+            "D:\\AURA_OS_v2\\venv\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "ollama-spec"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T12:10:27+00:00",
+          "finished_at": "2026-08-11T12:10:27+00:00",
+          "duration_ms": 252,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/speculative-decoding/20260811T121027Z-ollama-spec.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/speculative-decoding/20260811T121027Z-ollama-spec.json": "184b7f5a799a0ef779f7df31e38df160afb6d96208c8c0c45dd9f853221531d5"
+          },
+          "stdout_sha256": "2a95d0f750ac533f330c83c04cc0f3a9edfdd3c629ae9a000102e7c8eac371ff",
+          "stderr_sha256": "2cb3f8205e8e961cf4950b0eb825e7a39db690810abce84feb9b8a5d5e9f4ced"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T11:55:40+00:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T12:10:27+00:00",
+          "evidence_id": "speculative-decoding-ollama-spec-20260811T121027Z"
+        }
+      ]
+    },
+    {
+      "id": "agents-last-exam",
+      "name": "Agents' Last Exam (Berkeley RDI)",
+      "category": "thước đo",
+      "state": "READ",
+      "claims": [
+        {
+          "id": "ale-1500-tasks",
+          "text": "1.500+ nhiệm vụ nghề nghiệp thật, kết quả kiểm chứng được",
+          "source_urls": [
+            "https://github.com/rdi-berkeley/agents-last-exam"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [
+        {
+          "id": "ale-task-cards",
+          "kind": "local_command",
+          "proves_state": "READ",
+          "summary": "Đếm trên chính bộ đề: bao nhiêu nhiệm vụ AURA khởi động nổi. Cần .venv-mineru vì phải đọc parquet.",
+          "argv": [
+            "D:\\AURA_OS_v2\\.venv-mineru\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "ale-task-cards"
+          ],
+          "cwd": ".",
+          "timeout_s": 120
+        }
+      ],
+      "evidence": [
+        {
+          "id": "agents-last-exam-ale-task-cards-20260811T121029Z",
+          "kind": "source_review",
+          "proves_state": "READ",
+          "summary": "Đếm trên chính bộ đề: bao nhiêu nhiệm vụ AURA khởi động nổi. Cần .venv-mineru vì phải đọc parquet.",
+          "command": [
+            "D:\\AURA_OS_v2\\.venv-mineru\\Scripts\\python.exe",
+            "tools/probes/do_cong_nghe.py",
+            "ale-task-cards"
+          ],
+          "exit_code": 0,
+          "started_at": "2026-08-11T12:10:27+00:00",
+          "finished_at": "2026-08-11T12:10:29+00:00",
+          "duration_ms": 1499,
+          "artifact_paths": [
+            "data/tech_evidence/artifacts/agents-last-exam/20260811T121029Z-ale-task-cards.json"
+          ],
+          "artifact_sha256": {
+            "data/tech_evidence/artifacts/agents-last-exam/20260811T121029Z-ale-task-cards.json": "b42f69b651962abcd86afa67071f50822303bdc0cdff40fd3853f4b70254f2c6"
+          },
+          "stdout_sha256": "dc94dd07359ad833ecfb9ea1b1cd5156ddea4eac409b08149ff513c6e1dc4061",
+          "stderr_sha256": "7b22516219bc7868b7c159d5844f7f07247859ea2c2390bdc8fb1d13b2382534"
+        }
+      ],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-11T11:55:40+00:00",
+          "evidence_id": null
+        },
+        {
+          "state": "READ",
+          "at": "2026-08-11T12:10:29+00:00",
+          "evidence_id": "agents-last-exam-ale-task-cards-20260811T121029Z"
+        }
+      ]
+    },
+    {
+      "id": "mano-p",
+      "name": "Mano-P",
+      "category": "agent",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "mano-p-nguon-noi",
+          "text": "Skill mã nguồn mở của Mininglamp-AI. Video không nêu số đo nào.",
+          "source_urls": [
+            "https://github.com/Mininglamp-AI/Mano-P"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "mano-p-da-tra",
+          "text": "Mininglamp-AI/Mano-P có thật: 2.500 sao, Apache-2.0, đẩy lần cuối 25/06/2026. Nguồn không nêu số nào nên không có gì để đối chiếu.",
+          "source_urls": [
+            "https://github.com/Mininglamp-AI/Mano-P"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "page-agent",
+      "name": "page-agent",
+      "category": "agent-web",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "page-agent-nguon-noi",
+          "text": "GUI agent nhúng thẳng vào trang web, phân tích DOM chứ không nhận dạng ảnh. Nguồn nói: MIT, TypeScript, 30,2 KB sau nén, không cần backend.",
+          "source_urls": [],
+          "video_urls": []
+        },
+        {
+          "id": "page-agent-da-tra",
+          "text": "LÀ alibaba/page-agent — 28.592 sao, MIT, TypeScript. Tìm bằng GitHub search KHÔNG RA, phải tra web mới thấy (đúng bài học KeyGraph: không tìm thấy ≠ không tồn tại). Nguồn nói MIT + TypeScript: ĐÚNG. Đây là dự án lớn, không phải đồ ít người biết.",
+          "source_urls": [
+            "https://github.com/alibaba/page-agent"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "ppt-master",
+      "name": "PPT-MASTER",
+      "category": "tai-lieu",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "ppt-master-nguon-noi",
+          "text": "Công cụ Python biến PDF/Word/ảnh thành .pptx thật, giữ shape/chart/animation. Nguồn nói: MIT.",
+          "source_urls": [
+            "https://github.com/hugohe3/ppt-master"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "ppt-master-da-tra",
+          "text": "hugohe3/ppt-master: 45.082 sao, MIT. Nguồn nói MIT: ĐÚNG.",
+          "source_urls": [
+            "https://github.com/hugohe3/ppt-master"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "croc",
+      "name": "croc",
+      "category": "truyen-tep",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "croc-nguon-noi",
+          "text": "Gửi tệp giữa hai máy có mã hoá. Nguồn nói: 39,1k sao, MIT.",
+          "source_urls": [
+            "https://github.com/schollz/croc"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "croc-da-tra",
+          "text": "schollz/croc: 39.678 sao, MIT. Nguồn nói 39,1k + MIT: khớp.",
+          "source_urls": [
+            "https://github.com/schollz/croc"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "unsloth-desktop",
+      "name": "Unsloth Desktop",
+      "category": "huan-luyen",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "unsloth-desktop-nguon-noi",
+          "text": "App desktop vừa chạy vừa train model local, nối Claude Code/Codex vào model local. Nguồn nói: 69,9K sao, train nhanh gấp đôi, VRAM ít hơn 70%, chạy được cả CPU.",
+          "source_urls": [
+            "https://github.com/unslothai/unsloth"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "unsloth-desktop-da-tra",
+          "text": "unslothai/unsloth: 70.458 sao, Apache-2.0. Nguồn nói 69,9K: khớp.",
+          "source_urls": [
+            "https://github.com/unslothai/unsloth"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "wigolo",
+      "name": "wigolo",
+      "category": "tra-mang",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "wigolo-nguon-noi",
+          "text": "Cho agent tra web không cần API key, không cloud. Nguồn nói: 904 sao, npm v0.2.0, node>=20, MCP server, AGPL-3.0, public beta.",
+          "source_urls": [],
+          "video_urls": []
+        },
+        {
+          "id": "wigolo-da-tra",
+          "text": "LÀ KnockOutEZ/wigolo. HAI CHỖ LỆCH: video ghi 904 sao, thật là 4.506 (video THẤP hơn 5 lần). Giấy phép thì GitHub API trả NOASSERTION, nhưng ĐỌC TỆP LICENSE thì đúng là AGPL-3.0 — API sai vì tệp có tiêu đề riêng thay vì chép nguyên văn. Tin trường metadata là báo nhầm theo chiều ngược lại.",
+          "source_urls": [
+            "https://github.com/KnockOutEZ/wigolo"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "genoffice",
+      "name": "GenOffice",
+      "category": "tai-lieu",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "genoffice-nguon-noi",
+          "text": "Bộ office AI-native cho macOS/Windows, sửa đoạn nào ghi lại đoạn đó. Nguồn nói: 1,8K sao trong 6 ngày, Apache-2.0, Electron + TS.",
+          "source_urls": [
+            "https://github.com/genspark-ai/genoffice"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "genoffice-da-tra",
+          "text": "genspark-ai/genoffice: 2.629 sao, Apache-2.0. Nguồn nói 1,8K trong 6 ngày + Apache-2.0: giấy phép đúng, sao đã tăng thêm.",
+          "source_urls": [
+            "https://github.com/genspark-ai/genoffice"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "dots-ocr",
+      "name": "dots.ocr",
+      "category": "ocr",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "dots-ocr-nguon-noi",
+          "text": "Bộ OCR. Chưa có số đo nào.",
+          "source_urls": [],
+          "video_urls": []
+        },
+        {
+          "id": "dots-ocr-da-tra",
+          "text": "LÀ studio-dots-ai/dots.ocr: 9.066 sao, MIT.",
+          "source_urls": [
+            "https://github.com/studio-dots-ai/dots.ocr"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "paddleocr",
+      "name": "PaddleOCR",
+      "category": "ocr",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "paddleocr-nguon-noi",
+          "text": "Bộ OCR của PaddlePaddle, đọc được ảnh chụp/bản scan.",
+          "source_urls": [
+            "https://github.com/PaddlePaddle/PaddleOCR"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "paddleocr-da-tra",
+          "text": "PaddlePaddle/PaddleOCR: 87.503 sao, Apache-2.0.",
+          "source_urls": [
+            "https://github.com/PaddlePaddle/PaddleOCR"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "authentik",
+      "name": "authentik",
+      "category": "danh-tinh",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "authentik-nguon-noi",
+          "text": "Máy chủ định danh (IdP) tự dựng.",
+          "source_urls": [
+            "https://github.com/goauthentik/authentik"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "authentik-da-tra",
+          "text": "goauthentik/authentik: 24.661 sao, giấy phép NOASSERTION — không phải giấy phép mở chuẩn, phải đọc tệp trước khi dùng.",
+          "source_urls": [
+            "https://github.com/goauthentik/authentik"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "ix-code-graph",
+      "name": "Ix",
+      "category": "doc-ma",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "ix-code-graph-nguon-noi",
+          "text": "Biến repo thành đồ thị truy vấn được (Tree-sitter 26 ngôn ngữ + ArangoDB trong Docker). Nguồn nói: tiết kiệm 30%–99,7% token; còn ở giai đoạn alpha; cần Node 22+, Docker, ripgrep.",
+          "source_urls": [
+            "https://github.com/ix-infrastructure/Ix"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "ix-code-graph-da-tra",
+          "text": "ix-infrastructure/Ix: CHỈ 694 sao, Apache-2.0. Bài giới thiệu đọc như dự án lớn nhưng đây là dự án nhỏ, đúng như nó tự nhận: alpha.",
+          "source_urls": [
+            "https://github.com/ix-infrastructure/Ix"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "browser-use",
+      "name": "browser-use",
+      "category": "agent-web",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "browser-use-nguon-noi",
+          "text": "Cho agent điều khiển trình duyệt thật.",
+          "source_urls": [
+            "https://github.com/browser-use/browser-use"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "browser-use-da-tra",
+          "text": "browser-use/browser-use: 108.901 sao, MIT.",
+          "source_urls": [
+            "https://github.com/browser-use/browser-use"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "diffusion-gemma",
+      "name": "DiffusionGemma",
+      "category": "model",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "diffusion-gemma-nguon-noi",
+          "text": "Google DeepMind tinh chỉnh Gemma 4 MoE (25,2B tổng / 3,8B active) thành model khuếch tán. Nguồn nói: sinh cả khối 256 chữ một lúc, nhanh gấp 4.",
+          "source_urls": [],
+          "video_urls": []
+        },
+        {
+          "id": "diffusion-gemma-da-tra",
+          "text": "CÓ THẬT, Google DeepMind, ra 10/06/2026. Nguồn của Sếp ghi 25,2B tổng — SAI, thật là 26B (bản google/diffusiongemma-26B-A4B-it), 3,8B active thì đúng. 'Nhanh gấp 4' đúng (>1.000 tok/s trên một H100). SỐ QUAN TRỌNG NHẤT cho máy này: lượng tử hoá rồi vẫn cần ~24GB VRAM. Máy có 11,7GB RAM và KHÔNG GPU rời.",
+          "source_urls": [
+            "https://huggingface.co/google/diffusiongemma-26B-A4B-it"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "elements-of-style",
+      "name": "the-elements-of-style",
+      "category": "viet-lach",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "elements-of-style-nguon-noi",
+          "text": "Bộ hướng dẫn văn phong cho agent.",
+          "source_urls": [
+            "https://github.com/obra/the-elements-of-style"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "elements-of-style-da-tra",
+          "text": "obra/the-elements-of-style: 505 sao và KHÔNG CÓ GIẤY PHÉP. Không giấy phép = mặc định giữ toàn quyền, dùng lại là vi phạm. Đây mới là lý do loại, không phải 'không hợp AURA'.",
+          "source_urls": [
+            "https://github.com/obra/the-elements-of-style"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "complete-shelf",
+      "name": "complete-shelf",
+      "category": "hoc-lieu",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "complete-shelf-nguon-noi",
+          "text": "Bộ sưu tập tài liệu học.",
+          "source_urls": [
+            "https://github.com/MengTo/complete-shelf"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "complete-shelf-da-tra",
+          "text": "MengTo/complete-shelf: 562 sao và KHÔNG CÓ GIẤY PHÉP — cùng vấn đề với the-elements-of-style.",
+          "source_urls": [
+            "https://github.com/MengTo/complete-shelf"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "claude-of-duty",
+      "name": "Claude of Duty",
+      "category": "demo-game",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "claude-of-duty-nguon-noi",
+          "text": "Game FPS chạy trong trình duyệt bằng Three.js, sinh từ 1 prompt 163 chữ. Nguồn nói: 55 nghìn dòng, 2,2K sao trong 5 ngày, MIT.",
+          "source_urls": [
+            "https://github.com/mshumer/Claude-of-Duty"
+          ],
+          "video_urls": []
+        },
+        {
+          "id": "claude-of-duty-da-tra",
+          "text": "mshumer/Claude-of-Duty: 3.072 sao, MIT. Nguồn nói 2,2K trong 5 ngày: khớp, sao đã tăng.",
+          "source_urls": [
+            "https://github.com/mshumer/Claude-of-Duty"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "claude-code-game-studios",
+      "name": "Claude-Code-Game-Studios",
+      "category": "demo-game",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "claude-code-game-studios-nguon-noi",
+          "text": "Mẫu làm game bằng Claude Code. Nguồn nói: 14k sao.",
+          "source_urls": [],
+          "video_urls": []
+        },
+        {
+          "id": "claude-code-game-studios-da-tra",
+          "text": "LÀ Donchitos/Claude-Code-Game-Studios: 23.806 sao, MIT. Video ghi 14k — THẤP hơn thật 70%. Lại một lần số trong video sai theo chiều khiêm tốn.",
+          "source_urls": [
+            "https://github.com/Donchitos/Claude-Code-Game-Studios"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "cf-monetization-gateway",
+      "name": "Cloudflare Monetization Gateway",
+      "category": "thanh-toan",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "cf-monetization-gateway-nguon-noi",
+          "text": "Thu phí API ngay trên edge bằng stablecoin qua x402.",
+          "source_urls": [],
+          "video_urls": []
+        },
+        {
+          "id": "cf-monetization-gateway-da-tra",
+          "text": "KHÔNG PHẢI mã nguồn mở — là dịch vụ của Cloudflare kèm bài blog. Không có repo để đo.",
+          "source_urls": [],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    },
+    {
+      "id": "firecrawl-codex",
+      "name": "Firecrawl for Codex",
+      "category": "tra-mang",
+      "state": "DISCOVERED",
+      "claims": [
+        {
+          "id": "firecrawl-codex-nguon-noi",
+          "text": "Plugin nạp ngữ cảnh web thật cho Codex thay vì để nó bịa URL.",
+          "source_urls": [],
+          "video_urls": []
+        },
+        {
+          "id": "firecrawl-codex-da-tra",
+          "text": "LÀ firecrawl/firecrawl-codex-plugin: 15 sao. Rất mới/rất nhỏ.",
+          "source_urls": [
+            "https://github.com/firecrawl/firecrawl-codex-plugin"
+          ],
+          "video_urls": []
+        }
+      ],
+      "probes": [],
+      "evidence": [],
+      "state_history": [
+        {
+          "state": "DISCOVERED",
+          "at": "2026-08-12T10:09:34+00:00",
+          "evidence_id": null
+        }
+      ]
+    }
+  ]
+}

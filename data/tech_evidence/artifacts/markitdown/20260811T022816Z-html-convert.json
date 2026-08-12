@@ -1,0 +1,16 @@
+{
+  "technology_id": "markitdown",
+  "probe_id": "html-convert",
+  "probe_kind": "local_command",
+  "network": false,
+  "command": [
+    "D:\\AURA_OS_v2\\.venv311\\Scripts\\markitdown.exe",
+    "tests/fixtures/tech_evidence/sample_document.html"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-08-11T02:28:08+00:00",
+  "finished_at": "2026-08-11T02:28:16+00:00",
+  "duration_ms": 8673,
+  "stdout": "# AURA kiểm tra nạp tài liệu\n\nĐây là nội dung công khai, không chứa bí mật hay dữ liệu cá nhân.\n\n* Mục một\n* Mục hai\n",
+  "stderr": ""
+}

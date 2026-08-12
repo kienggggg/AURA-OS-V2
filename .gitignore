@@ -1,0 +1,130 @@
+# ─── Bí mật — TUYỆT ĐỐI KHÔNG commit ───
+.env
+.env.*
+!.env.example
+
+# Hồ sơ trình duyệt — 648 MB, có Cookies / Login Data / Web Data / History.
+# `aura_app.pyw:207` mở Chrome với `--user-data-dir=data/app_window` để Windows
+# coi AURA là ứng dụng riêng. Đúng về mặt giao diện, nhưng nó biến một thư mục
+# trong repo thành nơi tích phiên đăng nhập và mật khẩu đã lưu.
+# 11/08/2026, lúc soát trước khi định đẩy lên GitHub: 5.061 tệp chưa theo dõi,
+# trong đó có Default/Network/Cookies, Default/Login Data, Default/Web Data
+# (tự điền: địa chỉ, thẻ), Default/History. Một lần `git add -A` là công khai
+# toàn bộ.
+data/app_window/
+
+# Trang tải về từ opencli — có thể lẫn bảng tin Facebook của Sếp và tên người
+# khác. `tools/cat_bang_tin_facebook.py` dọn được, nhưng đừng để nó vào git.
+web-articles/
+litellm/keys.env
+api_keys/keys.env
+api_keys/*.env
+!api_keys/keys.env.example
+keys.env
+run_story_temp.py
+
+# ─── Python ───
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.spec
+
+# ─── Virtualenv ───
+venv/
+.venv/
+
+# ─── Dữ liệu runtime (ChromaDB, log, metrics) ───
+data/chroma/
+data/logs/
+data/metrics.json
+data/downloads/
+data/models/
+data/factory/
+data/outputs/
+!data/outputs/web/
+!data/outputs/web/lienquan_portal/
+data/bilibili_cookies.txt
+# OAuth YouTube: client_secret + token = chìa khóa kênh thật
+data/youtube/
+
+# ─── Repo tham khảo tải về (không phải code của mình) ───
+reference/
+
+# ─── Media nặng / có bản quyền ───
+*.mp4
+*.mkv
+*.wav
+
+# ─── Hệ điều hành / IDE ───
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
+
+# video_dub co repo git rieng (github.com/kienggggg/auto-video-dub)
+video_dub/
+
+# venv Python 3.11 phu (thu nghiem) — khong commit
+.venv311/
+# venv rieng cho MinerU (PDF -> Markdown). Nang vi keo theo torch.
+.venv-mineru/
+# Skill Claude Code tai tu repo ngoai (hallmark MIT + ui-ux-pro-max MIT).
+# 8,4 MB, phan lon la co so du lieu mau/kieu — tai lai duoc, khong phai ma AURA.
+.claude/skills/
+
+# Profile trình duyệt của bot — CHỨA COOKIE ĐĂNG NHẬP THẬT, tuyệt đối không commit
+data/rookies_profile/
+data/wattpad_profile/
+# Ảnh/HTML chụp lúc gỡ lỗi web — có thể lộ nội dung tài khoản
+data/rookies_debug/
+data/wattpad_debug/
+
+# Thư mục việc tay của Sếp — hàng dựng lại được bằng core/payhip_kit.py
+VIEC_CUA_SEP/
+
+# --- Bí mật & rác (Claude thêm 2026-07-26 trước khi commit gộp) ---
+# Profile Chrome Payhip: chứa cookie + phiên đăng nhập — TUYỆT ĐỐI không commit
+data/payhip_profile/
+# Rác build Android (Gradle sinh ra, dựng lại được)
+android/**/build/
+android/**/.gradle/
+# Công cụ ngoài đã clone về (SkillOpt-Sleep)
+.skillopt-sleep/
+# Thư mục nháp
+scratch/
+# CV cá nhân của Sếp (PII — AURA đọc từ đĩa, không cần trong git).
+# 12/08/2026 bỏ họ tên khỏi chính dòng luật này: tệp .gitignore CÓ lên GitHub,
+# nên viết tên vào đây là tự dán tên lên chỗ công khai để giấu một tệp.
+*TopCV.vn-*.pdf
+# Token ghép cặp cầu MB Bank (bí mật chia sẻ Android<->AURA)
+data/ledger/android_mb_pairing.json
+# Token riêng của Vivo AURA Avatar (không dùng chung với MB Bank)
+data/ledger/aura_avatar_pairing.json
+# Nhật ký câu lệnh/hội thoại tự nhận thức (đã redaction nhưng vẫn là dữ liệu riêng)
+data/ledger/aura_self_awareness.jsonl
+# Giáo trình hậu phẫu đã kiểm chứng (có thể chứa ngữ cảnh vận hành riêng)
+data/ledger/aura_verified_lessons.jsonl
+# Nhật ký hội thoại thật của Sếp với AURA.  Ngày 09/08/2026 tệp này chứa mật
+# khẩu wifi thật vì AURA đọc nó ra màn hình trước khi có cổng bí mật.
+data/chat_history.jsonl
+# Sổ phiên chat v3 — nội dung hội thoại riêng, không phải mã nguồn.
+data/chat_sessions/
+
+# venv riêng cho VVAH (công cụ quét bảo mật ngoài)
+.vvah/
+
+# Binary rtk (cong cu ngoai, tai lai duoc tu GitHub release)
+.rtk/
+
+# Công nghệ npm cài cô lập để thử nghiệm; dựng lại từ package manifest khi cần.
+# Có thể chứa cache/cấu hình runtime nên không commit cả cây node_modules.
+.tech/
+
+# --- Bổ sung 06/08/2026 (ghi chú PHẢI ở dòng riêng, git không hiểu chú thích cuối dòng) ---
+# venv công cụ ESP32 (esptool/bleak/moonshine) — 59MB, cài lại được
+.venv-robot/
+# thư mục nháp
+.tmp/
+.cache/
+# nhị phân gỡ lỗi ESP32 (~20MB) — biên dịch lại là có
+robot/**/build/*.elf

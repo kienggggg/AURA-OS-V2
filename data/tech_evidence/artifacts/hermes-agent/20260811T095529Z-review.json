@@ -1,0 +1,16 @@
+{
+  "technology_id": "hermes-agent",
+  "probe_id": "review",
+  "probe_kind": "path_exists",
+  "network": false,
+  "command": [
+    "internal:path_exists",
+    "docs/TECH_CHECK_HERMES_OPENCLAW_2026-08-11.md"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-08-11T09:55:29+00:00",
+  "finished_at": "2026-08-11T09:55:29+00:00",
+  "duration_ms": 0,
+  "stdout": "D:\\AURA_OS_v2\\docs\\TECH_CHECK_HERMES_OPENCLAW_2026-08-11.md",
+  "stderr": ""
+}

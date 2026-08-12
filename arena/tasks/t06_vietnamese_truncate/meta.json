@@ -1,0 +1,20 @@
+{
+  "id": "pilot-06-t06_vietnamese_truncate",
+  "batch_id": "pilot-b1",
+  "category": "bien-du-lieu-that",
+  "why_must_run": "Tiếng Anh luôn đúng. Chỉ hỏng với ký tự nhiều byte — phải chạy dữ liệu thật.",
+  "failing_test": "test_red.py",
+  "files_allowed": [
+    "module.py"
+  ],
+  "forbidden_paths": [
+    "test_red.py",
+    "test_hidden.py",
+    "fixed.py"
+  ],
+  "budget_s": 600,
+  "requested_max_output_tokens": 60000,
+  "budget_prompt_chars": 50000,
+  "budget_reply_chars": 240000,
+  "network": false
+}

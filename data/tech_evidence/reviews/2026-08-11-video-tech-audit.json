@@ -1,0 +1,31 @@
+{
+  "reviewed_at": "2026-08-11T10:04:15+07:00",
+  "scope": "Four technology or practice claims recovered from the 2026-08-10 TikTok batch",
+  "method": "Video URLs are preserved exactly. TikTok retrieval was unreachable in the local video audit, so claims are bounded by retained notes and independently identified official sources; no installation or smoke test is inferred.",
+  "items": {
+    "cloudflare-os": {
+      "video_url": "https://www.tiktok.com/@ainius.net/video/7671522624765283602?is_from_webapp=1&sender_device=pc",
+      "video_status": "UNREACHABLE",
+      "source_url": "https://github.com/cloudflare/cloudflare-os",
+      "conclusion": "Official project identified and source reviewed; not installed or run locally. Marketing claims such as absolute safety are unproven."
+    },
+    "self-evolving-skills": {
+      "video_url": "https://www.tiktok.com/@cunghocainha/video/7671557342277946645?is_from_webapp=1&sender_device=pc",
+      "video_status": "UNREACHABLE",
+      "source_url": null,
+      "conclusion": "Only an architectural concept was retained. No concrete implementation or repository was identified, so there is nothing installable to test."
+    },
+    "open-source-ai-crm-unknown": {
+      "video_url": "https://www.tiktok.com/@aidev.repo/video/7669836232339377429?is_from_webapp=1&sender_device=pc",
+      "video_status": "UNREACHABLE",
+      "source_url": null,
+      "conclusion": "The retained video note does not name a repository or product precisely enough to verify license, install, or behavior. Guessing a tool name is forbidden."
+    },
+    "short-video-retention-apv": {
+      "video_url": "https://www.tiktok.com/@agi.2027/video/7670858051963931911?is_from_webapp=1&sender_device=pc",
+      "video_status": "UNREACHABLE",
+      "source_url": "https://support.google.com/youtube/answer/11914225",
+      "conclusion": "Official YouTube guidance supports retention/average percentage viewed as signals among several signals. No official evidence found that APV always has the highest weight."
+    }
+  }
+}

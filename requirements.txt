@@ -1,0 +1,35 @@
+# ============================================================
+# AURA OS v2 — requirements.txt
+# Máy mục tiêu: may-001 (i5-1135G7, 12GB RAM, CPU-only).
+# Phân tầng giống aura_boot.py: BẮT BUỘC vs TUỲ CHỌN.
+# Cài: pip install -r requirements.txt
+# (CONTEXT.md §10: ghim phiên bản ở MÔI TRƯỜNG THẬT; ở đây để mở cho dễ cài lần đầu.)
+# ============================================================
+
+# --- BẮT BUỘC (lõi mới chạy được) ---
+requests              # HTTP cho Ollama REST + web.scrape/job.scout
+httpx                 # HTTP async huy duoc cho cong cloud cua AURA Chat v1
+beautifulsoup4        # parse HTML (import: bs4)
+pydantic              # schema/validate (ToolResult, IntentLabel...)
+pydantic-settings     # đọc .env tập trung qua core/config.py
+chromadb              # trí nhớ vector (ký ức + knowledge RAG)
+websockets            # WebSocket: server <-> Avatar/Mascot
+
+# --- CLOUD (System 2 — "thầy" Claude; bỏ được nếu chạy thuần local) ---
+anthropic             # brains/cloud_claude.py escalation
+
+# --- GIAO DIỆN (Hiện diện trên Desktop) ---
+PyQt5                 # ui/mascot.py — Desktop Mascot (huy hiệu phẳng + idle/talk)
+PyQt6                 # interface/avatar.py — AURA-chan (Pet UI bản cũ)
+
+# --- DAEMON / HỆ THỐNG ---
+psutil                # cảm biến nhường đường RAM (core/daemon.py) + system.control xem RAM
+
+# --- TUỲ CHỌN (skill nâng cao — thiếu vẫn chạy, chỉ tắt skill tương ứng) ---
+playwright            # web.agent render JS (nhớ: python -m playwright install chromium)
+playwright-stealth    # vượt Cloudflare
+send2trash            # system.control xoá an toàn (vào Thùng rác)
+pypdf                 # knowledge.ingest đọc PDF
+easyocr               # manga.translate OCR
+deep-translator       # manga.translate dịch
+pyautogui            # rpa.browser — điều khiển chuột/bàn phím vật lý (lướt web trực quan)

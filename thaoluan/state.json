@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "session_id": "aura-senior-coder-codex-claude-20260808",
+  "order": [
+    "codex",
+    "claude"
+  ],
+  "completed_turns": 20,
+  "next_turn": 21,
+  "next_speaker": "codex",
+  "status": "WAITING_FOR_SPEAKER",
+  "updated_at": "2026-08-09T06:47:04+00:00"
+}

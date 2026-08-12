@@ -1,0 +1,53 @@
+<p><strong>TRẬN SỐ 0 ĐÃ CHẠY. Có con số thật đầu tiên — và nó nói rằng bộ đề của tôi hỏng.</strong></p>
+<p>Không cần key mới: AURA vốn đã có <code>OPENAI_BASE_URL</code> trỏ tới Gemini 2.5 Flash qua endpoint OpenAI-compatible. Tôi viết một adapter text-only và cho nó thi 30 đề Giai đoạn C.</p>
+
+<h3>1. Số thật</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Gemini 2.5 Flash giải được   : 15/19  = 79%
+Mốc đã chốt ở lượt 012       : ~50%
+
+Lý do kết thúc (30 lượt):
+  completed              15   (50%)
+  loi HTTPError          10   (33%)   <- hết hạn mức miễn phí
+  hidden_failed           2   ( 7%)
+  malformed               2   ( 7%)
+  ConnectionReset         1   ( 3%)</code></pre>
+
+<h3 style="color:#e06c5a">2. Bộ đề QUÁ DỄ — hỏng đúng chỗ tôi tự cảnh báo</h3>
+<p>Lượt 012 tôi viết luật soạn đề: <em>"hiệu chuẩn để model nền pass khoảng 50%. Đề quá dễ hoặc quá khó đều làm số đề lệch tiêu biến — mà không có đề lệch thì không có bằng chứng."</em></p>
+<p><strong>Tôi soạn ra bộ 79%.</strong> Ở mức đó, đem đấu với một model tương đương thì phần lớn đề rơi vào ô "cả hai cùng đúng" — ô không mang thông tin. Ước lượng thô: chênh 10pp quanh mốc 79% chỉ cho khoảng 5–6 đề lệch, tức <strong>dưới ngưỡng tối thiểu 5 đề thắng tuyệt đối</strong> mà tôi tính ở lượt 004. Kết quả sẽ là <code>INCONCLUSIVE</code>.</p>
+<p><strong>Việc phải làm:</strong> thay khoảng một phần ba bộ đề bằng đề khó hơn. Tiêu chí giữ nguyên (chạy mới biết), nhưng phải là lỗi cần <em>nhiều bước suy luận</em> chứ không chỉ một chỗ sửa. Không đo lại thì không biết đã đúng vùng chưa — nên vòng nào cũng phải hiệu chuẩn trước khi thi.</p>
+
+<h3>3. Cảnh báo lượt 018 ĐÚNG — và sát ngưỡng</h3>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f"><code>malformed = 2/19 lượt chạy trọn = 11%
+ngưỡng tôi tự đặt ở lượt 018     = 10%</code></pre>
+<p>Bài đo harness nói: <em>"format violation dominates capable model failures"</em>. Gemini 2.5 Flash đúng là model dạng <strong>chat</strong> — đúng loại bài đo nói sẽ tụt 29–38pp dưới harness gắt. Harness của tôi gắt nhất có thể: một khối mã, không văn xuôi, một lần thử.</p>
+<p>11% vượt ngưỡng tôi tự đặt. Theo đúng luật tôi viết ở lượt 018, <strong>kết quả này chưa đủ tư cách để so cặp</strong>. Nó chỉ dùng được làm hiệu chuẩn.</p>
+<p>Đáng chú ý: hai lượt <code>malformed</code> đều tốn <strong>16,1 giây</strong> — dài hơn hẳn trung bình ~8s của các lượt thành công. Model nghĩ lâu hơn rồi trả về thứ không đúng khuôn. Đó là dấu hiệu của <em>viết thêm lời giải thích</em>, không phải của bí.</p>
+
+<h3 style="color:#e8a33d">4. Tôi tự dựng một điểm mù vào chính cái thước</h3>
+<p>Muốn biết vì sao hai lượt kia sai định dạng, tôi mở sổ ra — và <strong>không có gì để xem</strong>. Ở lượt 013 Codex ghi rõ, tôi duyệt: <em>"ledger chỉ ghi HMAC, hashes và metrics; không ghi prompt, hidden source, fixed source hay code submission."</em></p>
+<p>Nguyên tắc đó đúng: sổ không được chứa đáp án. Nhưng hệ quả là <strong>khi thí sinh trượt vì định dạng, ta không bao giờ biết nó đã viết gì</strong> — mà đó lại chính là loại lỗi ta cần chẩn đoán nhất.</p>
+<p><strong>Cách vá, không phá nguyên tắc:</strong> ghi thêm <em>hình dạng</em> câu trả lời, không ghi nội dung —
+<code>fence_count</code>, <code>fence_python_count</code>, <code>chars_outside_fence</code>, <code>starts_with_prose</code>. Bốn con số này đủ để phân biệt "viết thêm lời giải thích" với "nhiều khối mã" với "không có khối nào", mà không lộ một dòng mã nào.</p>
+<p>Đây là lỗi thiết kế của tôi, phát hiện bằng cách <strong>dùng thật</strong> chứ không phải bằng đọc lại. Không chạy trận số 0 thì không bao giờ thấy.</p>
+
+<h3>5. Ba điều KHÔNG được kết luận từ trận này</h3>
+<ul>
+<li><strong>Không phải phép so AURA với ai cả.</strong> Đối thủ là một kịch bản nộp lại y nguyên mã hỏng — mốc dưới để kiểm đường ống, không phải đối thủ thật.</li>
+<li><strong>Không phải 79% năng lực của Gemini.</strong> 11 lượt chết vì hạn mức, mẫu còn 19. Và bộ đề này quá dễ, nên con số nói về ĐỀ nhiều hơn về MODEL.</li>
+<li><strong>Không có "AURA thông minh hơn" gì hết.</strong> AURA chưa thi lượt nào. Cái vừa chạy là model nền chạy một mình.</li>
+</ul>
+
+<h3>6. Việc kế tiếp, xếp theo thứ tự bắt buộc</h3>
+<ol>
+<li><strong>Ghi hình dạng câu trả lời vào episode</strong> (mục 4). Không có nó thì mọi lần <code>malformed</code> sau này vẫn mù.</li>
+<li><strong>Đo lại malformed</strong> với mẫu đủ lớn. 2/19 quá ít để chắc là 11% hay 5% hay 20%.</li>
+<li><strong>Làm bộ đề khó hơn</strong> tới khi nền rơi về ~50%, rồi hiệu chuẩn lại.</li>
+<li><strong>Giải bài toán hạn mức</strong>: 33% số lượt chết vì 429. Cần nhiều key hoặc giãn nhịp gọi.</li>
+<li>Chỉ sau bốn bước trên mới nói tới trận đấu thật.</li>
+</ol>
+
+<p style="background:#1c2318;padding:12px;border-radius:6px;border-left:4px solid #8ee6aa;margin-top:18px"><strong>Nhưng có một điều đáng ghi:</strong> mười chín lượt vừa rồi, mỗi lượt đều có episode và result <em>đã ký</em>, chuỗi ledger liền mạch, đáp án nằm ngoài repo, prompt giống nhau tới từng byte, và <strong>không ai — kể cả tôi — sửa được con số 79% mà không làm gãy chữ ký.</strong><br><br>
+Mười chín lượt trước, ta bắt đầu bằng một tệp tự khai <em>"PASS 100% ĐẠT TIÊU CHUẨN THẾ GIỚI"</em>. Hôm nay cái thước trả về <strong>79%, kèm 11 lượt hỏng và một lời thú nhận rằng bộ đề tôi soạn chưa đạt</strong>. Con số xấu hơn nhiều — và đó là toàn bộ ý nghĩa của việc này.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 019. Codex mở lại hạn mức 15/08; tôi vẫn ký tên mình, không viết thay danh nghĩa anh. Trận chạy hết 8,3 phút, dùng key Gemini sẵn có của AURA, không mua thêm gì. Hai lượt <code>malformed</code> tôi định mổ ra xem thì chính tôi cũng dính 429 — nên phần chẩn đoán còn nợ lại.</em></p>

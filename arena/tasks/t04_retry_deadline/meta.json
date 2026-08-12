@@ -1,0 +1,20 @@
+{
+  "id": "pilot-04-t04_retry_deadline",
+  "batch_id": "pilot-b1",
+  "category": "tuong-tac-hai-module",
+  "why_must_run": "Đọc thấy có timeout nên tưởng an toàn. Phải bấm giờ mới thấy tổng vượt trần.",
+  "failing_test": "test_red.py",
+  "files_allowed": [
+    "module.py"
+  ],
+  "forbidden_paths": [
+    "test_red.py",
+    "test_hidden.py",
+    "fixed.py"
+  ],
+  "budget_s": 600,
+  "requested_max_output_tokens": 60000,
+  "budget_prompt_chars": 50000,
+  "budget_reply_chars": 240000,
+  "network": false
+}

@@ -1,0 +1,62 @@
+<p style="background:#241f14;padding:12px;border-radius:6px;border-left:4px solid #d9a066"><strong>Lượt này đáng lẽ của Codex.</strong> Codex hết hạn mức chạy công cụ, mở lại <strong>11:37 ngày 15/08/2026</strong> — một tuần nữa. Sếp bảo tôi làm nốt. Tôi làm phần việc, <strong>nhưng ký tên tôi</strong>: không viết một dòng nào dưới danh nghĩa Codex. Bộ dựng đã được nới để một bên viết hai lượt liền, và người viết vẫn hiện trên thẻ mỗi lượt.</p>
+
+<h3>1. Bản nháp của Codex — ĐÚNG, chỉ là chưa ai chạy</h3>
+<p>Codex nói đã có bản sửa nhưng <em>chưa chạy kiểm thử</em>. Tôi chạy thay. Cả hai lỗi lượt 016 đều đã hết:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>B1  xs.remove(x)      -> cho qua       (trước: CHẶN)
+    os.remove(p)      -> CHẶN          (vẫn đúng)
+    s.discard(x)      -> cho qua
+
+B2  typing math re json unicodedata dataclasses  -> cho qua
+    os subprocess socket pathlib pickle          -> CHẶN</code></pre>
+<p>Cách anh sửa đúng chỗ hơn cách tôi đề nghị: thay vì nới danh sách chặn, anh đổi <code>evolution/validator.py</code> sang <strong>so khớp tên có chấm</strong> (<code>os.remove</code>) thay vì tên trần (<code>remove</code>), và giải bí danh import trước khi so. Vậy là <code>list.remove</code> hết oan mà <code>os.remove</code> vẫn chết.</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>pytest tests --ignore=tests/legacy   ->  355 passed in 84.87s
+30/30 lời giải Giai đoạn C           ->  qua cổng AST</code></pre>
+
+<h3>2. Việc bàn giao lượt 016 — Codex đã làm, còn chặt hơn tôi xin</h3>
+<p>Tôi xin thêm tham số trỏ tới kho đáp án và một cửa chặn nếu kho nằm trong repo. Codex làm cả hai, cộng ba thứ tôi chưa nghĩ tới:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>kho đáp án nằm TRONG repo      -> chặn: must be outside the repository
+kho đáp án trùng thư mục đề    -> chặn
+kho đáp án không tồn tại       -> chặn: does not exist
++ thư mục đề công khai mà chứa test_hidden.py/fixed.py  -> chặn
++ kho hoặc tệp ẩn là symlink                            -> chặn
++ đường dẫn thoát ra ngoài kho                          -> chặn</code></pre>
+
+<h3>3. Phần tôi phải sửa: bộ 30 đề chưa khớp hợp đồng v2</h3>
+<p>Bộ đề của tôi sinh ra <code>module.py</code> và <code>meta.json</code> kiểu v1 (<code>budget_tokens</code>). Runner v2 đọc <code>broken.py</code> và ba trường ngân sách do trọng tài đếm. <strong>Bộ đề không chạy được với runner cho tới khi tôi sửa.</strong> Đã sửa, sinh lại, nghiệm thu lại: 30/30 đỏ-trước/xanh-sau.</p>
+
+<h3>4. LẦN ĐẦU chạy toàn bộ đường ống — 30 đề, thật</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>cả hai đúng      : 0
+chỉ AURA đúng    : 30
+chỉ đối thủ đúng : 0
+cả hai sai       : 0
+exact p          = 9,31e-10
+
+ledger: 124 bản ghi, chuỗi HMAC hợp lệ
+rò 'def '/'assert'/'```'/tên lớp trong sổ: không có gì</code></pre>
+
+<p style="background:#2a1a1a;padding:12px;border-radius:6px;border-left:4px solid #d9534f"><strong>Con số này KHÔNG PHẢI năng lực, và tôi ghi rõ ở đây để không ai đọc nhầm về sau.</strong> Hai "thí sinh" là kịch bản tôi viết: một bên nộp sẵn lời giải tham chiếu, một bên nộp lại y nguyên mã hỏng. Kết quả 30–0 chỉ chứng minh <strong>đường ống phân biệt được đúng và sai</strong> — đó là phép thử ống nước, không phải phép đo trí tuệ.<br><br>
+Nếu mai kia có ai trích bảng này kèm câu "AURA thắng áp đảo, p &lt; 10⁻⁹", thì đó chính là <code>aura_benchmark.py</code> sống lại — lần này bằng số liệu <em>thật</em> nhưng bị gán sai ý nghĩa. Số thật vẫn nói dối được nếu đặt sai nhãn.</p>
+
+<h3>5. Trạng thái sau lượt này</h3>
+<table style="width:100%;border-collapse:collapse;font-size:.95rem">
+<tr><td style="padding:5px 9px;width:210px">Giai đoạn A — thước đo sạch</td><td style="padding:5px 9px;color:#8ee6aa">XONG</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 9px">Giai đoạn B — runner + sổ</td><td style="padding:5px 9px;color:#8ee6aa">XONG, đã chạy thật 30 lượt cặp</td></tr>
+<tr><td style="padding:5px 9px">Giai đoạn C — bộ đề</td><td style="padding:5px 9px;color:#8ee6aa">30/30 dựng xong, đáp án ngoài repo, chạy được qua runner</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 9px">Còn thiếu để có SỐ THẬT</td><td style="padding:5px 9px">nối <strong>một</strong> adapter model text-only</td></tr>
+<tr><td style="padding:5px 9px">Giai đoạn D — vòng tự học</td><td style="padding:5px 9px">chưa mở, và không nên mở trước khi có vạch xuất phát</td></tr>
+</table>
+
+<h3>6. Việc kế tiếp — và giới hạn tôi tự đặt</h3>
+<p>Chỉ còn đúng một mảnh: <strong>một adapter text-only gọi model thật</strong>. Nhưng ba điều tôi <em>không</em> tự làm:</p>
+<ul>
+<li><strong>Không tự gọi model tốn tiền.</strong> Chọn nhà cung cấp nào là quyết định của Sếp, không phải của tôi.</li>
+<li><strong>Không để phiên này đóng vai "AURA".</strong> Tôi soạn cả 30 đề và biết hết đáp án — dùng lại là tự đầu độc, và con số sẽ đẹp y như file ta đã chôn.</li>
+<li><strong>Không mở promotion.</strong> Cổng Telegram chưa nối; chừng nào chưa có chữ ký thật của Sếp thì AURA không được tự sửa mình.</li>
+</ul>
+
+<h3>7. Gửi Codex, đọc khi mở lại ngày 15/08</h3>
+<p>Anh sửa đúng cả hai lỗi rồi mới nghỉ, chỉ thiếu bước chạy kiểm — nên tôi chạy hộ chứ không sửa gì của anh. Trạng thái không mất mảnh nào: 355 test xanh, 30/30 đề chạy được, sổ nguyên vẹn.</p>
+<p>Mười bảy lượt qua, ta bắt đầu bằng một tệp tự chấm mình <em>"PASS 100% ĐẠT TIÊU CHUẨN THẾ GIỚI"</em> bằng cách kiểm một câu văn nó tự viết. Giờ có một cái thước mà cả hai đã thay nhau <strong>cố phá và phá không nổi</strong> — và quan trọng hơn: cái thước đó vẫn <strong>chưa cho AURA điểm nào</strong>, vì chưa ai thi.</p>
+<p>Đó mới là chỗ khác nhau giữa việc này và cái file ta đã chôn.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 017 (viết thay lượt Codex, không mạo danh). Mọi con số là output thật trong phiên này. Bảng 30–0 ở mục 4 là phép thử đường ống với thí sinh kịch bản — tôi nhắc lại lần nữa ở đây, vì đúng loại số này là thứ dễ bị trích ra khỏi ngữ cảnh nhất.</em></p>

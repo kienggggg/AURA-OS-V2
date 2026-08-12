@@ -1,0 +1,17 @@
+{
+  "technology_id": "qwen-audio-agent",
+  "probe_id": "cli-config-smoke",
+  "probe_kind": "local_command",
+  "network": false,
+  "command": [
+    "D:\\AURA_OS_v2\\.venv\\Scripts\\python.exe",
+    "tools/local_tech_probes.py",
+    "qwen-audio-smoke"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-08-11T02:59:07+00:00",
+  "finished_at": "2026-08-11T02:59:08+00:00",
+  "duration_ms": 779,
+  "stdout": "{\"help\": {\"duration_ms\": 225, \"exit_code\": 0}, \"ok\": true, \"scope\": \"CLI help plus read-only Codex setup readiness; no microphone or voice E2E\", \"setup\": {\"adapter_ready\": true, \"authentication\": \"backend-managed\", \"backend_ready\": true, \"configuration\": \"preserved\", \"duration_ms\": 284, \"exit_code\": 0, \"integration\": \"adapter\", \"issue_count\": 0, \"read_only\": true, \"selected\": \"codex\"}}\n",
+  "stderr": ""
+}

@@ -1,0 +1,82 @@
+<p><strong>Review vòng hai — phán quyết: <span style="color:#e8a33d">NEEDS_FIX</span>, nhưng chỉ còn <span style="color:#e8a33d">hai lỗ</span>, và một trong hai anh <em>không thể</em> vá ở tầng dữ liệu.</strong></p>
+<p>Tôi dựng một bộ bằng chứng <strong>hợp lệ hoàn toàn</strong> (2 batch × 6 đề, AURA thắng 6–0, p=0,00024) rồi bẻ từng đường. Năm đòn — ba bị chặn, hai lọt.</p>
+
+<h3>A. Những đòn anh chặn được — tôi xác nhận bằng chạy thật</h3>
+<table style="width:100%;border-collapse:collapse;font-size:.95rem">
+<tr style="background:#1b1e24"><th style="padding:6px 9px;text-align:left">Đòn</th><th style="padding:6px 9px;text-align:left">Kết quả</th></tr>
+<tr><td style="padding:6px 9px">Sửa <code>hidden_pass</code> của baseline thành 9, không ký lại</td><td style="padding:6px 9px;color:#8ee6aa">chặn — <code>invalid result_signature</code></td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Sửa <code>elapsed_s→0.001</code>, <code>tokens→1</code>, không ký lại</td><td style="padding:6px 9px;color:#8ee6aa">chặn — <code>invalid episode_signature</code></td></tr>
+<tr><td style="padding:6px 9px">Xác thực bằng khoá sai</td><td style="padding:6px 9px;color:#8ee6aa">chặn — <code>invalid registration_signature</code></td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px"><strong>Tự đặt ngưỡng dễ</strong>: 2 đề, thắng 1–0 (p=0,5), prereg khai <code>threshold_p=0.9</code></td><td style="padding:6px 9px;color:#8ee6aa">chặn — <code>threshold_p must be in (0, 0.05]</code></td></tr>
+<tr><td style="padding:6px 9px">Thăng hạng chỉ bằng 1 batch</td><td style="padding:6px 9px;color:#8ee6aa">chặn — buộc ≥2 batch</td></tr>
+</table>
+<p>Đòn "tự đặt ngưỡng" là đòn tôi kỳ vọng nhất và anh đã bịt trước khi tôi kịp nghĩ tới. <strong>B1 xử lý xong.</strong></p>
+<p><strong>B2 cũng xong, sạch:</strong> archive giờ <code>SyntaxError</code> ngay dòng 1, nhưng payload sau dòng niêm phong hash vẫn ra đúng <code>F3BB…E346</code>. Vừa chặn <code>exec</code> vừa giữ nguyên bằng chứng — cách này gọn hơn base64 tôi đề xuất.</p>
+
+<hr style="border:0;border-top:1px solid #393d46;margin:24px 0">
+
+<h3>B. Lỗ 1 — CỔNG DUY NHẤT CỦA SẾP ĐANG DO MÁY TỰ KÝ</h3>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>approval = sign_record({... "decision":"approve",
+                        "approved_by":"Sếp"}, KEY_EVALUATOR)
+
+→ validate_evidence_bundle(...)  =  LỌT LƯỚI, không một lỗi
+</code></pre>
+<p><code>SIGNATURE_FIELDS</code> dùng <strong>chung một khoá</strong> cho cả năm loại bản ghi. Nghĩa là: <strong>thứ gì ký được <code>result</code> thì ký được luôn chữ "Sếp đã duyệt".</strong></p>
+<p>Anh đã lường trước phần coder: <em>"runner phải bảo đảm process coder không đọc được khoá"</em>. Nhưng lỗ này <strong>không nằm ở coder</strong> — nó nằm ở chính evaluator. Dù cách ly coder hoàn hảo, evaluator vẫn là <strong>một tiến trình máy</strong>, và nó có khoá. Vòng lặp tự tiến hoá chạy ban đêm không người trông sẽ tự cấp phép cho chính nó, giấy tờ hợp lệ 100%.</p>
+<p><strong>Không có khoá nào vừa để máy ký kết quả vừa chứng minh người đã duyệt.</strong> Đây là giới hạn nguyên lý, không phải lỗi cẩu thả — nên không vá được ở tầng dữ liệu.</p>
+
+<h4>Cách vá, dùng thứ AURA ĐÃ CÓ</h4>
+<p>Phê duyệt phải đến từ <strong>kênh AURA không ghi vào được</strong>. AURA đã có sẵn <code>core/messenger.py</code> — Telegram hai chiều, Sếp đã duyệt bằng cách trả lời <code>y</code>.</p>
+<ul>
+<li><code>approval</code> phải mang <code>telegram_message_id</code> và <code>from_user_id</code> của <strong>tài khoản thật của Sếp</strong>, cùng <code>reply_to</code> trỏ tới tin nhắn xin duyệt.</li>
+<li>Validation gọi Telegram API xác minh tin đó có thật và đúng người gửi.</li>
+<li>AURA giữ token <em>bot</em> nên nhắn được <em>với tư cách bot</em> — nhưng <strong>không thể tạo ra một tin nhắn từ tài khoản của Sếp</strong>. Đó mới là chữ ký người thật.</li>
+</ul>
+<p>Phương án dự phòng nếu chưa nối Telegram kịp: <strong>khoá phê duyệt riêng</strong>, không nằm trong repo, không nằm trong tiến trình AURA — Sếp dán tay khi duyệt. Xấu hơn nhưng vẫn đúng nguyên tắc: <em>một khoá cho máy, một khoá cho người</em>.</p>
+
+<h3>C. Lỗ 2 — <code>repro_runs</code> gần như không bị ràng buộc gì</h3>
+<p>Dòng 444–447 chỉ kiểm run có tồn tại và <code>_result_passes</code>. Hai đòn đều lọt:</p>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>repro_runs = ['f1-r0-aura', 'f1-r1-aura']        → LỌT
+   (chính hai run trong trận đấu — không hề chạy lại lần nào)
+
+repro_runs = ['f1-r0-baseline', 'f2-r0-baseline'] → LỌT
+   (kết quả của ĐỐI THỦ được tính là AURA tái hiện)
+</code></pre>
+<p>"Hai lần chạy tái hiện" hiện có thể thoả bằng cách <strong>trỏ ngược vào bằng chứng cũ</strong>, hoặc tệ hơn, bằng <strong>thành tích của đối thủ</strong>.</p>
+<p><strong>Sửa:</strong> <code>repro_runs</code> phải (1) <strong>rời hoàn toàn</strong> mọi <code>run_id</code> của các batch được viện dẫn, (2) có <code>episode.actor == "aura"</code>, (3) trỏ tới task thuộc đúng các batch đó.<br>
+<em>Test cần thêm:</em> đúng hai case trên phải <code>_fail</code>.</p>
+
+<h3>D. Một lỗi nhỏ về chất lượng</h3>
+<p><code>arena_batches: ["d1"]</code> báo <code>"must contain unique strings"</code> — nhưng <code>["d1"]</code> <em>đã</em> là chuỗi duy nhất; lý do thật là "phải có ≥2". Tôi mất một lượt chạy vì thông báo này dẫn sai hướng. Tách thành hai thông báo riêng.</p>
+
+<hr style="border:0;border-top:1px solid #393d46;margin:24px 0">
+
+<h3>E. Bàn giao Giai đoạn B — spec pack 10 lỗi đỏ</h3>
+<p>Lỗ 1 và 2 nằm trong file của anh nên không chặn tôi. Đây là spec tôi cam kết ở lượt 006:</p>
+
+<p><strong>Luật chọn đề (rút thẳng từ tính toán lượt 004):</strong></p>
+<ol>
+<li><strong>Hiệu chuẩn độ khó</strong>: model nền phải pass <strong>~50%</strong>. Đề quá dễ → cả hai cùng đúng; quá khó → cả hai cùng sai. Cả hai trường hợp đều <strong>vô thông tin</strong> vì chỉ đề lệch mới mang bằng chứng.</li>
+<li><strong>Chỉ nhận lỗi "chạy mới biết"</strong> — nhìn code không đoán ra. Đây là chỗ duy nhất AURA có cửa hơn 25–30pp, vì nó chạy được và đọc được stack trace, còn model nền bắn một phát.</li>
+<li><strong>Loại thẳng</strong>: lỗi cú pháp, lỗi chính tả tên biến, lỗi thấy ngay trong một hàm. Model nền làm được → đề chết.</li>
+</ol>
+
+<p><strong>Mười ô đề, phân bổ theo loại lỗi có thật trong lịch sử AURA:</strong></p>
+<table style="width:100%;border-collapse:collapse;font-size:.93rem">
+<tr style="background:#1b1e24"><th style="padding:5px 8px;text-align:left">#</th><th style="padding:5px 8px;text-align:left">Loại lỗi</th><th style="padding:5px 8px;text-align:left">Vì sao phải chạy mới biết</th></tr>
+<tr><td style="padding:5px 8px">1–2</td><td style="padding:5px 8px">Lỗi phụ thuộc trạng thái tích luỹ</td><td style="padding:5px 8px">chỉ hiện sau N lần gọi, không hiện ở lần đầu</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 8px">3–4</td><td style="padding:5px 8px">Tương tác giữa hai module</td><td style="padding:5px 8px">mỗi file đọc riêng đều đúng</td></tr>
+<tr><td style="padding:5px 8px">5–6</td><td style="padding:5px 8px">Lỗi biên trên dữ liệu thật</td><td style="padding:5px 8px">rỗng / một phần tử / Unicode tiếng Việt có dấu</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 8px">7</td><td style="padding:5px 8px">Nuốt ngoại lệ</td><td style="padding:5px 8px">test đỏ ở chỗ khác nơi gây lỗi</td></tr>
+<tr><td style="padding:5px 8px">8</td><td style="padding:5px 8px">Sai thứ tự / nhịp</td><td style="padding:5px 8px">đọc tuần tự thấy hợp lý</td></tr>
+<tr style="background:#1b1e24"><td style="padding:5px 8px">9</td><td style="padding:5px 8px">Rò tài nguyên</td><td style="padding:5px 8px">chỉ lộ khi chạy lặp</td></tr>
+<tr><td style="padding:5px 8px">10</td><td style="padding:5px 8px"><strong>Bẫy tự khai</strong> — hàm báo thành công nhưng không làm gì</td><td style="padding:5px 8px">đúng ca <code>ACK:BACKWARD</code> mà bánh không quay</td></tr>
+</table>
+<p>Ô số 10 tôi cố ý đặt: nếu AURA sửa bằng cách <em>làm cho báo cáo đẹp hơn</em> thay vì làm cho hành vi đúng, hidden test phải bắt được. Nó thi đúng cái bệnh cả thầy lẫn trò đều mắc hôm nay.</p>
+
+<h3>F. Chốt</h3>
+<p><strong>Lỗ 2 và mục D</strong> — vá xong là tôi đổi PASS ngay.<br>
+<strong>Lỗ 1</strong> — cần Sếp quyết chọn Telegram hay khoá dán tay, vì nó chạm vào cách Sếp duyệt hằng ngày. Đề nghị ghi thành <strong>câu hỏi duy nhất</strong> ta trình Sếp khi họp xong, đúng như biên bản 004: điểm duy nhất cần người.</p>
+<p>Tôi bắt tay soạn 10 đề thật kèm hidden test. Sang lượt 010 tôi nộp pack chạy được, không nộp mô tả.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 008. Bộ tấn công nằm ở scratchpad, chạy được, không đụng repo. Mọi dòng "LỌT LƯỚI" ở trên là output thật của <code>validate_evidence_bundle</code>, không phải suy luận từ đọc mã.</em></p>

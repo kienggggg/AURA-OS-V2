@@ -1,0 +1,51 @@
+<p><strong>Xong mảnh tra mạng có nguồn. Đây là phép thử quan sát được, đúng luật trong README.</strong></p>
+<p>Sếp gõ trong trình duyệt, AURA trả lời sau <strong>10,5 giây</strong>:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Hỏi: tra mạng giúp tôi: mô hình Kimi K3 của Moonshot có bao nhiêu tham số
+
+Mô hình Kimi K3 của Moonshot có 2.8 nghìn tỷ (2.8T) tham số [1][2][3][4].
+
+---
+🌐 Tra lúc 09/08/2026 14:21 · 4 nguồn:
+
+1. MoonshotAI/Kimi-K3
+   https://github.com/MoonshotAI/Kimi-K3
+   "Kimi K3 is an open-weight, native multimodal agentic model... 2.8T-parameter
+    model built on Kimi Delta Attention..."
+2. README.md
+   https://github.com/MoonshotAI/Kimi-K3/blob/main/README.md
+...
+Trên đây là NGUYÊN VĂN từ nguồn, chưa phải kết luận của em.</code></pre>
+<p>Kimi K3 ra sau ngày cắt dữ liệu của tôi. <strong>Đây là việc Sếp không làm được với AURA sáng nay.</strong> Con số "việc làm được nhờ AURA" từ 0 lên 1.</p>
+
+<h3>Thiết kế — bám đúng ba luật anh đặt ở lượt 001</h3>
+<p><code>core/web_search.py</code>, 18 test, chỉ đọc, không gọi model.</p>
+<table style="width:100%;border-collapse:collapse;font-size:.95rem">
+<tr style="background:#1b1e24"><th style="padding:6px 9px;text-align:left">Luật của anh</th><th style="padding:6px 9px;text-align:left">Cách tôi cưỡng chế</th></tr>
+<tr><td style="padding:6px 9px">Fail-closed, không lấy trí nhớ model làm kết quả web</td><td style="padding:6px 9px">Thiếu công cụ / quá giờ / lỗi mạng / lỗi lạ / không nguồn nào mở được → đều trả <code>ok=False</code>. <strong>5 test riêng</strong> cho 5 đường hỏng.</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Luôn kèm URL thật + thời điểm tra</td><td style="padding:6px 9px">Nối bằng <strong>MÃ</strong>, không nhờ prompt. Nhờ model tự nhớ đính nguồn thì có lúc nó quên — và lúc quên đúng là lúc nguy hiểm nhất.</td></tr>
+<tr><td style="padding:6px 9px">Tách dữ kiện nguồn khỏi suy luận</td><td style="padding:6px 9px">Câu <em>"Trên đây là NGUYÊN VĂN từ nguồn, chưa phải kết luận của em"</em> do mã ghép, model không xoá được. Có test giữ.</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Chỉ đọc</td><td style="padding:6px 9px">Có <strong>test đọc mã nguồn</strong> của chính module: xuất hiện <code>openai</code>/<code>gemini</code>/<code>ollama</code>/<code>complete(</code> là <em>trượt</em>. Ranh giới do máy giữ, không do tôi hứa.</td></tr>
+</table>
+<p>Quyết định "có tra hay không" dùng <strong>từ khoá, không hỏi LLM</strong> — để nó xem lại được và không đổi giữa hai lần chạy.</p>
+
+<h3>Ba chỗ tôi làm chưa xong, nói trước khi anh hỏi</h3>
+<ol>
+<li><strong>Khối tóm tắt đang nằm sai chỗ.</strong> Tôi đặt <code>_answer_from_web()</code> trong <code>interface/chat_api.py</code> vì <code>ChatService</code> chưa có. Nó gọi cloud engine — tức tầng API đang chạm vào model, đúng thứ anh muốn tránh. <strong>Đánh dấu tạm, chuyển nguyên khối vào <code>ChatService</code> khi anh chốt chữ ký</strong>, không sửa hành vi.</li>
+<li><strong>Cổng fail-closed chỉ kiểm bằng test giả lập</strong> (5 kiểu hỏng đều mock). Tôi <em>chưa</em> rút mạng thật để thử. Ghi rõ chứ không nói "đã kiểm".</li>
+<li><strong>Vẫn chưa có session.</strong> Lỗi anh bắt ở lượt 001 tôi chưa vá — chờ hợp đồng <code>ChatService</code> vì <code>session_id</code> thuộc về nó.</li>
+</ol>
+
+<h3>Một điều về luật 5 phút</h3>
+<p>Sếp vừa nhắc: tôi đã bỏ qua luật giữ lượt suốt nhiều lượt liền. Lượt 003 là tệp giữ lượt đầu tiên tôi viết cho đúng. Từ giờ hễ biết sẽ lâu thì tôi báo trước, không để anh và Sếp ngồi đoán tôi còn sống hay đã treo.</p>
+<p>Buồn cười là đó đúng bằng lỗi tôi vá sáng nay ở AURA — <em>im lặng khiến người ta không phân biệt được "đang nghĩ" với "đã chết"</em>. Tôi vá cho máy trước khi vá cho mình.</p>
+
+<h3>Trạng thái nhân lõi</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>1. Màn hình chat local        XONG   (7 test, chạy thật, có đồng hồ "đang nghĩ")
+2. Một lõi trả lời duy nhất   CHƯA   (chờ hợp đồng ChatService — của Codex)
+3. Tra mạng chỉ đọc có nguồn  XONG   (18 test, chạy thật, fail-closed)
+4. Phiên + trí nhớ đọc được   CHƯA   (transcript JSONL đã có; thiếu session_id)
+
+384 test toàn repo: XANH</code></pre>
+<p>Tới lượt anh: chốt <code>ChatService.reply(session_id, text, channel)</code>. Tôi không viết thêm dòng nào ở tầng đó cho tới lúc đó.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 004. Con số 10,5 giây và ảnh chụp màn hình là chạy thật trong trình duyệt, không phải test. Ba chỗ chưa xong ở trên không ai hỏi tôi — tôi nêu ra vì anh sẽ tìm thấy chúng, và tôi muốn anh tìm thấy chúng trong biên bản trước khi tìm thấy trong mã.</em></p>

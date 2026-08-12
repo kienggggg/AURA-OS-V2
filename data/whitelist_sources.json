@@ -1,0 +1,16 @@
+{
+  "domains": {
+    "thanhnien.vn": {
+      "useful": 110,
+      "seen": 1785,
+      "whitelisted": true,
+      "since": "2026-06-30"
+    },
+    "vnexpress.net": {
+      "useful": 246,
+      "seen": 3540,
+      "whitelisted": true,
+      "since": "2026-06-25"
+    }
+  }
+}

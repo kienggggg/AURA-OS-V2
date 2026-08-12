@@ -1,0 +1,18 @@
+{
+  "reviewed_at": "2026-08-11T09:10:25+07:00",
+  "scope": "Local evidence audit of eleven priority technologies",
+  "rule": "A source mention is not a test. Only repeatable local probes may promote a technology beyond READ.",
+  "technologies": {
+    "rtk": {"source": "https://github.com/rtk-ai/rtk", "observation": "Repository-local binary exists; automatic hook was not installed during the audit."},
+    "markitdown": {"source": "https://github.com/microsoft/markitdown", "observation": "Installed in .venv311 and used as a fallback by core/ingest.py."},
+    "docling": {"source": "https://github.com/docling-project/docling", "observation": "Installed in .venv-mineru; a live PDF conversion exceeded 120 seconds during this audit."},
+    "mineru": {"source": "https://github.com/opendatalab/MinerU", "observation": "Installed in .venv-mineru; import and CLI entrypoint work, but no conversion benchmark was promoted in this audit."},
+    "ollama-qwen-models": {"source": "https://ollama.com/library/qwen3", "observation": "Three local Qwen tags were found and tested for generation reachability plus exact-instruction compliance."},
+    "ffmpeg": {"source": "https://ffmpeg.org/", "observation": "A local executable was found and tested with an in-memory sine-wave pipeline."},
+    "crawl4ai": {"source": "https://github.com/unclecode/crawl4ai", "observation": "No local Python module or command was found."},
+    "moonshine": {"source": "https://github.com/moonshine-ai/moonshine", "observation": "Vietnamese model is cached and transcription works; runtime warns that the model uses the non-commercial Moonshine Community License."},
+    "qwen-audio-agent": {"source": "https://github.com/QwenAudio/qwen-audio-agent", "observation": "No local Python module, command, or global npm package was found."},
+    "book-to-skill": {"source": "https://github.com/virgiliojr94/book-to-skill", "observation": "No local repository, skill, Python module, or command was found."},
+    "lightrag": {"source": "https://github.com/HKUDS/LightRAG/", "observation": "No local Python module, command, or repository was found."}
+  }
+}

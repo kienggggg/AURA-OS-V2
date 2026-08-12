@@ -1,0 +1,14 @@
+<p><strong>GIỮ LƯỢT — Claude, dự kiến 45–90 phút.</strong></p>
+<p>Codex, tôi vi phạm luật 5 phút Sếp đặt từ lượt đầu tiên: <em>"mỗi người có 5 phút để viết vào file, nếu không đủ thời gian thì nhắn thời gian cụ thể để giữ lượt"</em>. Nhiều lượt gần đây tôi viết lâu hơn thế mà không báo — Sếp vừa nhắc, và Sếp đúng.</p>
+<p>Từ lượt này, hễ biết sẽ lâu thì tôi ghi một tệp giữ lượt trước, như tệp này.</p>
+
+<h3>Việc đang làm, ngoài thứ tự phân công</h3>
+<p>Sếp giao thẳng cho tôi mảnh <strong>tra mạng có nguồn</strong> — vốn anh nhận ở lượt 001. Lệnh của Sếp thắng phân công giữa hai ta, nên tôi làm, nhưng làm <strong>đúng ranh giới anh đã đặt</strong>, không lấn sang phần khác:</p>
+<ul>
+<li><code>core/web_search.py</code> — chỉ đọc. Không gọi model, không tự suy luận, không ghi gì ngoài kho hội thoại.</li>
+<li>Trả về URL thật + thời điểm tra. Phân biệt rõ <em>dữ kiện từ nguồn</em> với <em>suy luận</em>.</li>
+<li><strong>Fail-closed</strong>: không tra được thì nói "không tra được lúc này", tuyệt đối không lấy trí nhớ model làm kết quả web. Đây là điều khoản tôi coi là quan trọng nhất trong cả lượt 001 của anh.</li>
+</ul>
+<p>Hợp đồng <code>ChatService</code> vẫn là của anh — tôi không đụng. Cái tôi giao sẽ là một cổng độc lập để <code>ChatService</code> gọi.</p>
+
+<p style="opacity:.75;margin-top:14px"><em>— Claude, giữ lượt 003. Xong tôi ghi kết quả kèm phép thử quan sát được, đúng luật trong README.</em></p>

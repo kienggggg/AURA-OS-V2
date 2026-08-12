@@ -1,0 +1,16 @@
+{
+  "technology_id": "open-source-ai-crm-unknown",
+  "probe_id": "identity-missing",
+  "probe_kind": "manual_review",
+  "network": false,
+  "command": [
+    "manual:video-review",
+    "https://www.tiktok.com/@aidev.repo/video/7669836232339377429?is_from_webapp=1&sender_device=pc"
+  ],
+  "exit_code": 2,
+  "started_at": "2026-08-11T03:04:15+00:00",
+  "finished_at": "2026-08-11T03:04:15+00:00",
+  "duration_ms": 0,
+  "stdout": "",
+  "stderr": "The retained video evidence does not identify a repository or product name precisely enough to test."
+}

@@ -1,0 +1,50 @@
+<p><strong>Runner + signed ledger Giai đoạn B đã được triển khai ở chế độ pilot fail-closed.</strong> Tôi chấp nhận kết luận của anh: pack 10 đề này đã công khai đáp án nên chỉ kiểm runner, vĩnh viễn không đo baseline.</p>
+
+<h3>1. Runner mới: <code>core/coding_arena_runner.py</code></h3>
+<ul>
+  <li><code>PilotArenaRunner</code> chỉ nhận adapter text-only có bốn khai báo bắt buộc: <code>history_free=True</code>, <code>tools_enabled=False</code>, <code>recall_enabled=False</code>, <code>model_id</code> rõ ràng. Sai một điều thì dừng trước khi gửi prompt.</li>
+  <li>Prompt đúng bốn khối anh chốt: module, test đỏ, output pytest nguyên văn, chỉ dẫn cố định. Không đọc/đưa meta ngoài ngân sách, không slug/category/why/path/hidden/fixed.</li>
+  <li>Prompt được dựng <strong>một lần</strong>, hash một lần, cùng chuỗi Python được đưa tuần tự cho AURA và baseline. Hai episode buộc cùng <code>prompt_sha</code>.</li>
+  <li>Submission parser chỉ nhận đúng một khối <code>```python</code>, không văn xuôi. Thiếu/nhiều khối hoặc chữ ngoài khối → <code>malformed</code>, một lần thử, không hỏi lại.</li>
+  <li>AST gate chặn import ngoài <code>collections/time/threading</code>, file I/O, dynamic execution/import, process/network, introspection dunder và các đường hệ thống rõ ràng.</li>
+  <li>Thứ tự chấm: AST → public red → private hidden. Hidden chỉ được đọc sau khi model đã trả lời; model adapter không nhận path hay lần gọi thứ hai.</li>
+</ul>
+
+<h3>2. Không tự nhận sandbox thật</h3>
+<ul>
+  <li>Mọi result pilot luôn có <code>safety_flags=["pilot_no_os_sandbox"]</code>, kể cả hidden xanh hết.</li>
+  <li>Evidence validator coi safety flag là không pass promotion/repro.</li>
+  <li>Khởi tạo runner với <code>mode="promotion"</code> lập tức ném <code>SecureExecutorUnavailable</code>; không fallback âm thầm.</li>
+  <li>Contract đã ghi pack này lộ đáp án, chỉ test runner và không bao giờ đo baseline.</li>
+</ul>
+
+<h3>3. Measurement và ledger thuộc trọng tài</h3>
+<ul>
+  <li>Evaluator tự bấm <code>monotonic()</code>, tự lấy output/return code pytest và parse pass/total; không đọc số thời gian/test từ lời model.</li>
+  <li>Adapter phải trả token meter của backend trong <code>ModelReply</code>; runner không chấp nhận giá trị âm/sai kiểu.</li>
+  <li><code>SignedJsonlLedger</code> chỉ ghi HMAC episode/result, hashes và metrics. Không ghi prompt, hidden source, fixed source hay code submission.</li>
+  <li>Environment fingerprint ghi rõ <code>os_sandbox:false</code> và runner version.</li>
+</ul>
+
+<h3>4. Test tấn công và lỗi tự bắt</h3>
+<p>Lần đầu test, parser nhận nhầm hai code block thành một rồi báo <code>ast_blocked</code>. Tôi sửa ngay: đếm chính xác một opener và hai fence, nên case đó nay là <code>malformed</code>.</p>
+<p>Bộ test runner kiểm: prompt không có slug/meta/path/đáp án; hai model nhận chuỗi giống hệt; ledger có 4 signed records nhưng không có nội dung prompt/hidden/fixed; bốn kiểu malformed; code thử <code>open(make_pack.py)</code> bị AST chặn; adapter bật recall bị từ chối trước model call; promotion mode fail-closed.</p>
+
+<h3>5. Bằng chứng chạy</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Runner + evidence + quarantine targeted: 36 passed in 11.17s
+Pack sau sửa t06: 10/10 đỏ-trước/xanh-sau
+AURA regression (tests/, bỏ legacy): 331 passed in 27.33s
+py_compile runner/evidence/pack: PASS
+t06 giới hạn 0..4 → độ dài [0,1,2,3,4]
+</code></pre>
+<p>Một phép in t06 đầu tiên vấp console cp1252 dù logic đã chạy; tôi không tính nó là bằng chứng. Chạy lại với UTF-8 ra đúng bảng độ dài ở trên.</p>
+
+<h3>6. Yêu cầu review lượt 014</h3>
+<ol>
+  <li>Tấn công prompt builder: tìm đường lộ slug/meta/fixed/hidden/history/recall hoặc làm hai prompt khác byte.</li>
+  <li>Tấn công submission/AST: nhiều fence, văn xuôi, import gián tiếp, đọc file, dynamic call, sửa test.</li>
+  <li>Tấn công ledger/eligibility: thử biến một result pilot xanh thành evidence promotion.</li>
+  <li>Kiểm measurement parser và timeout có đếm sai pass/total hay để code sống sau timeout không.</li>
+  <li>Chốt PASS/NEEDS_FIX runner pilot. Không tiết lộ nội dung bộ 30 đề Giai đoạn C trong biên bản.</li>
+</ol>
+<p>Chưa gọi model thật, chưa tiêu tiền, chưa bật daemon, chưa promotion. Sau review 014, bước hợp lệ kế tiếp là nối adapter text-only miễn phí/đã có và chạy calibration — kết quả chỉ đánh giá runner, không đánh giá AURA vì pack đã lộ.</p>

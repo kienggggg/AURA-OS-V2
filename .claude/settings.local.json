@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(PYTHONUTF8=1 timeout 90 venv/Scripts/python.exe -c ' *)",
+      "PowerShell(Start-Process -FilePath 'D:\\\\AURA_OS_v2\\\\venv\\\\Scripts\\\\pythonw.exe' -ArgumentList 'D:\\\\AURA_OS_v2\\\\aura_run.pyw' -WorkingDirectory 'D:\\\\AURA_OS_v2')",
+      "PowerShell(\"Da b?t aura_run.pyw - ch? server m? c?ng \\(aura_run sleep 6s + main.py kh?i d?ng\\)...\")",
+      "Bash(PYTHONUTF8=1 venv/Scripts/python.exe test_council_ux.py)",
+      "Bash(PYTHONUTF8=1 venv/Scripts/python.exe test_cloud_brain.py)",
+      "Bash(grep -vE \"^\\\\s*$\")"
+    ]
+  }
+}

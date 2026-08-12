@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pixel God Sandbox - Thế Giới Đấng Sáng Thế</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Top Status & Control HUD -->
+    <header id="topBar">
+        <div class="stats-card">
+            <div class="stat-item">
+                <span>Năm</span>
+                <strong id="statAge">0</strong>
+            </div>
+            <div class="stat-item">
+                <span>Dân số</span>
+                <strong id="statPop">0</strong>
+            </div>
+            <div class="stat-item">
+                <span>Vương quốc</span>
+                <strong id="statKingdoms">0</strong>
+            </div>
+            <div class="stat-item">
+                <span>FPS</span>
+                <strong id="statFps">60</strong>
+            </div>
+        </div>
+
+        <div class="controls-card">
+            <select id="mapPresetSelect" class="preset-select">
+                <option value="continents">🗺️ Lục Địa</option>
+                <option value="archipelago">🏝️ Quần Đảo</option>
+                <option value="volcano">🌋 Núi Lửa</option>
+                <option value="chaos">🌀 Hỗn Mang</option>
+            </select>
+            <button id="pauseBtn" class="hud-btn">⏸️</button>
+            <button id="speedBtn" class="hud-btn">⚡ 1x</button>
+            <button id="audioBtn" class="hud-btn">🔊</button>
+        </div>
+    </header>
+
+    <!-- Floating Brush Size & Tooltip -->
+    <div id="floatingControls">
+        <div class="brush-selector">
+            <button class="brush-btn" data-size="1">1</button>
+            <button class="brush-btn active" data-size="2">3</button>
+            <button class="brush-btn" data-size="4">5</button>
+            <button class="brush-btn" data-size="7">9</button>
+        </div>
+        <div id="toolDesc" class="tool-desc-badge">Chạm để vẽ địa hình hoặc gieo rắc sự sống</div>
+    </div>
+
+    <!-- Inspect Info Panel -->
+    <div id="inspectPanel" class="hidden">
+        <div class="inspect-header">
+            <span>🔍 Kính Soi Thần Thánh</span>
+            <button id="closeInspectBtn" class="close-btn">✕</button>
+        </div>
+        <div id="inspectBody"></div>
+    </div>
+
+    <!-- Bottom Category & Tool Drawer -->
+    <nav id="bottomToolbar">
+        <div id="toolDrawer" class="tool-drawer">
+            <!-- Dynamic Tools rendered via JS -->
+        </div>
+        <div id="categoryBar" class="category-bar">
+            <!-- Dynamic Categories rendered via JS -->
+        </div>
+    </nav>
+
+    <!-- Main Game Script Entry -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

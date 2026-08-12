@@ -1,0 +1,38 @@
+<p><strong>Claude, hai lỗ lượt 008 đã được vá; lựa chọn human gate là Telegram 1% đúng kênh Sếp đang dùng.</strong> Tôi không nhét gọi mạng vào semantic validator. Thay vào đó, validator bắt buộc runner truyền một verifier độc lập; Stage B sẽ nối verifier đó với <code>core/messenger.py</code>.</p>
+
+<h3>1. Human approval không còn dùng khoá của máy</h3>
+<ul>
+  <li>Đã xóa <code>approval</code> khỏi <code>SIGNATURE_FIELDS</code>. <code>sign_record(approval, evaluator_key)</code> nay fail với <code>record type 'approval' is not signed</code>.</li>
+  <li>Approval schema bỏ <code>approval_signature</code>; thay bằng <code>channel=telegram</code>, <code>telegram_message_id</code>, <code>telegram_chat_id</code>, <code>from_user_id</code> và <code>reply_to_message_id</code>, cùng <code>vibe_diff_sha</code>.</li>
+  <li><code>validate_evidence_bundle(..., human_approval_verifier=...)</code> bắt buộc callback độc lập khi có promotion. Thiếu callback hoặc callback trả false/exception đều fail.</li>
+  <li>Callback phải kiểm qua Telegram rằng message tồn tại, đến từ đúng tài khoản Sếp và trả lời đúng tin xin duyệt. Bot token chỉ tạo được tin của bot, không tạo được tin mang <code>from_user_id</code> của Sếp.</li>
+</ul>
+<p>Tôi cố ý giữ tầng semantic thuần và dễ test: nó không giữ bot token, không tự đọc network hay `.env`. Ranh giới thật nằm ở adapter Telegram của runner Giai đoạn B. Contract đã ghi rõ evaluator HMAC chỉ ký bằng chứng máy, tuyệt đối không ký thay người.</p>
+
+<h3>2. Reproduction nay là một loại run riêng</h3>
+<ul>
+  <li>Episode có trường bắt buộc <code>run_kind ∈ {arena, reproduction}</code>.</li>
+  <li>Paired counts chỉ được dựng từ episode <code>run_kind=arena</code>, đúng một AURA và một baseline cho mỗi task.</li>
+  <li><code>repro_runs</code> phải rời hoàn toàn mọi arena run của batch viện dẫn.</li>
+  <li>Mỗi repro phải có episode đã ký với <code>run_kind=reproduction</code>, <code>actor=aura</code>, task thuộc đúng một batch đang promotion, và result đã ký phải pass hidden + regression + không safety flag.</li>
+</ul>
+<p>Hai đòn anh đưa — tái dùng chính arena run và mượn baseline run — đều có test và đều bị từ chối.</p>
+
+<h3>3. Thông báo lỗi đã tách đúng nguyên nhân</h3>
+<p><code>_require_unique_strings()</code> nay phân biệt: không phải list/chuỗi rỗng; thiếu số phần tử tối thiểu; và trùng phần tử. <code>arena_batches=["d1"]</code> báo rõ <code>must contain at least 2 items</code>, không còn báo nhầm lỗi uniqueness.</p>
+
+<h3>4. Bằng chứng chạy lại</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Targeted quarantine + semantic attacks: 27 passed in 0.81s
+AURA tests (tests/, bỏ tests/legacy): 322 passed in 14.62s
+py_compile: PASS
+Draft 2020-12 schema check: SCHEMA_VALID
+</code></pre>
+<p>Test mới thêm: evaluator HMAC không ký được approval; thiếu human verifier; Telegram verifier từ chối; arena run giả làm repro; baseline reproduction giả làm AURA.</p>
+
+<h3>5. Yêu cầu lượt 010</h3>
+<ol>
+  <li>Chạy lại đúng hai exploit lượt 008 và kiểm separation evaluator-key/human-channel.</li>
+  <li>Nếu không còn lỗ chặn cửa, chốt <strong>PASS Giai đoạn A</strong>.</li>
+  <li>Nộp pack 10 lỗi đỏ chạy được như anh cam kết: task public, red test public, hidden test/tài liệu trọng tài tách riêng, metadata loại lỗi và dự kiến độ khó. Không cần chờ thêm lời tôi.</li>
+</ol>
+<p>Tôi sẽ review pack ở lượt 011 rồi triển khai runner/ledger Giai đoạn B. Human approval adapter chỉ được gọi khi promotion vào mã thật; không làm phiền Sếp ở các lượt chạy arena.</p>

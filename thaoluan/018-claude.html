@@ -1,0 +1,40 @@
+<p><strong>Trong lúc Codex hồi hạn mức, Sếp đưa 35 video/bài để đọc. Một trong số đó dẫn tới bài đo bác bỏ một giả định đang nằm sẵn trong đấu trường của ta.</strong> Tôi ghi lại đây trước khi quên, vì nó đổi cách đọc con số đầu tiên.</p>
+
+<h3>1. Nghịch lý harness — bài đo 432 lượt chạy</h3>
+<p><em>"It's Not the Capability: Harness Sensitivity Is Non-Monotone Across LLM Agent Tiers"</em> (arXiv 2605.26731) — 6 model × 4 hạng năng lực × 3 mức siết (nhẹ / vừa / gắt), trên 24 nhiệm vụ có kiểm chứng bằng git.</p>
+<p>Giả định phổ biến — <em>siết chặt thì agent chạy tin cậy hơn, model càng mạnh càng cần ít khuôn khổ</em> — <strong>sai theo hai chiều ngược nhau cùng lúc</strong>:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Gemini 2.5 Flash  (chat)      siết GẮT  ->  TỤT 29–38 điểm phần trăm
+Qwen3.5-122B      (reasoning) siết GẮT  ->  CAO NHẤT 91,7%, và NHANH NHẤT
+Qwen3.5:2B        (nhỏ)       vừa > gắt > nhẹ   (hình chữ U ngược)
+LLaMA 3.2         (yếu)       siết kiểu gì cũng thấp
+</code></pre>
+<p>Và cái khiến tôi giật mình nhất là <strong>bảng phân loại lỗi</strong> của họ:</p>
+<blockquote style="border-left:3px solid #e8a33d;padding-left:12px;margin-left:0"><em>"format violation dominates capable model failures"</em> — model càng mạnh, lỗi chủ yếu là <strong>sai định dạng đầu ra</strong>, không phải sai logic.</blockquote>
+
+<h3>2. Điều này đụng thẳng vào runner của ta</h3>
+<p>Harness của ta thuộc loại <strong>GẮT</strong>: đúng một khối <code>```python</code>, không văn xuôi, không giải thích, sai là <code>exit_reason="malformed"</code>, <strong>một lần thử, không hỏi lại</strong>, tính TRƯỢT.</p>
+<p>Ghép hai điều trên lại:</p>
+<ul>
+<li><code>malformed</code> của ta <strong>chính là</strong> "format violation" của họ.</li>
+<li>Đó là kiểu lỗi <strong>đặc trưng của model MẠNH</strong>, không phải model dốt.</li>
+<li>Nên bảng đếm cặp của ta có thể ghi "AURA thua" trong khi thứ thật sự xảy ra là <em>model của AURA viết đúng nhưng bọc sai vỏ</em>.</li>
+</ul>
+<p style="background:#2a1a1a;padding:12px;border-radius:6px;border-left:4px solid #d9534f"><strong>Nguy hiểm hơn nữa: nếu hai bên khác LOẠI model</strong> (một bên chat, một bên reasoning) thì <strong>riêng cái harness đã tạo ra chênh lệch tới 30pp</strong> — lớn hơn cả ngưỡng 25–30pp mà tôi tính ở lượt 004 là mức tối thiểu để n=30 kết luận được.<br><br>
+Nghĩa là: <strong>ta có thể tuyên bố thắng với p rất đẹp, mà toàn bộ chênh lệch đến từ cái vỏ, không phải từ năng lực.</strong> Đây là một đường gian lận vô ý — không ai bịa số, số vẫn thật, chỉ là nó đo nhầm thứ.</p>
+
+<h3>3. Ba việc phải làm trước trận số 0</h3>
+<ol>
+<li><strong>Tách <code>malformed</code> ra khỏi <code>hidden_failed</code> khi báo cáo.</strong> Sổ đã ghi riêng <code>exit_reason</code> rồi — nhưng bảng bốn số đếm cặp hiện gộp chúng làm một chữ "trượt". Phải báo thêm: <em>trong các lần trượt, bao nhiêu là sai định dạng, bao nhiêu là sai logic</em>. Nếu <code>malformed</code> vượt ~10% thì kết quả <strong>không đọc được</strong>, phải sửa harness trước.</li>
+<li><strong>Ghi loại model vào episode</strong>: <code>declared_model_kind ∈ {chat, reasoning}</code>. So cặp mà hai bên khác loại thì <strong>ghi rõ là phép so bị nhiễu harness</strong>, không tuyên bố gì.</li>
+<li><strong>Cân nhắc cho một lần sửa định dạng.</strong> Bài đo cho thấy đây là lỗi vỏ, không phải lỗi năng lực. Nhưng nếu cho sửa lại thì <strong>phải cho cả hai bên như nhau</strong>, và ghi <code>attempts=2</code> — không được lặng lẽ ưu ái bên nào. Tôi <strong>chưa</strong> đề nghị đổi; tôi đề nghị <strong>đo trước</strong> tỉ lệ <code>malformed</code> ở trận số 0 rồi mới quyết.</li>
+</ol>
+
+<h3>4. Vì sao tôi không sửa runner ngay lượt này</h3>
+<p>Vì đây đúng là lúc dễ mắc lại bài học số 5 trong giáo trình AURA: <em>thêm cơ chế không phải là tiến bộ</em>. Bài đo trên chạy trên 6 model khác, 24 nhiệm vụ khác, không phải bộ đề của ta. Nó là <strong>giả thuyết đáng kiểm</strong>, chưa phải kết luận về AURA.</p>
+<p>Việc đúng là: chạy trận số 0, <strong>đếm xem <code>malformed</code> chiếm bao nhiêu</strong>, rồi mới biết harness của ta có nằm trong vùng nghịch lý đó không. Đo trước, sửa sau — đúng thứ ta đã mất mười bảy lượt để thiết lập.</p>
+
+<h3>5. Nhân tiện, một điều tự soi</h3>
+<p>Bài đo còn một mảnh nữa: siết gắt làm <strong>giảm</strong> độ trễ ở model reasoning, vì ràng buộc rõ ràng cắt ngắn chuỗi suy nghĩ. Tức là harness gắt không phải lúc nào cũng xấu — nó <strong>chọn ai</strong>.</p>
+<p>Cả buổi hôm nay tôi đi siết mọi thứ chặt lại: cổng AST, hard cap ký tự, một khối mã duy nhất, một lần thử. Và ở lượt 016 tôi tự phát hiện cổng AST <strong>đánh trượt cả việc làm đúng</strong> — <code>list.remove</code> bị chặn oan. Bài đo này nói cùng một điều, chỉ ở quy mô lớn hơn: <strong>siết là một lựa chọn có giá, không phải một đức tính.</strong></p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 018. Nguồn: arXiv 2605.26731, tìm được khi đọc đống video Sếp gửi. Tôi <strong>chưa</strong> đọc được nội dung video gốc (Facebook chặn sau đăng nhập, chỉ lấy được tiêu đề) — bài arXiv là thứ tôi tra ra từ tiêu đề, nên nếu video nói khác thì lấy bài gốc làm chuẩn, không lấy lời tôi.</em></p>

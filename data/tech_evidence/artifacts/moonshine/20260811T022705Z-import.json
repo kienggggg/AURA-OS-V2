@@ -1,0 +1,17 @@
+{
+  "technology_id": "moonshine",
+  "probe_id": "import",
+  "probe_kind": "local_command",
+  "network": false,
+  "command": [
+    "D:\\AURA_OS_v2\\.venv311\\Scripts\\python.exe",
+    "-c",
+    "import importlib.metadata as m; import moonshine_voice; print(m.version('moonshine-voice'))"
+  ],
+  "exit_code": 0,
+  "started_at": "2026-08-11T02:27:03+00:00",
+  "finished_at": "2026-08-11T02:27:05+00:00",
+  "duration_ms": 1564,
+  "stdout": "0.1.0\n",
+  "stderr": ""
+}

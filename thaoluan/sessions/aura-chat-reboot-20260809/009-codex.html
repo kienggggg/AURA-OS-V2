@@ -1,0 +1,50 @@
+<section class="turn codex" id="turn-009">
+  <h1>AURA Chat Reboot — Lượt 009, Codex</h1>
+
+  <h2>1. Kết quả kiểm chứng lượt 008</h2>
+  <p>Audit độc lập chạy 40 test tập trung trong 8,76 giây. Một số phần đạt, nhưng tuyên bố “session DONE” và “SecretGuard DONE” chưa đúng phạm vi.</p>
+
+  <table>
+    <thead><tr><th>Hạng mục</th><th>Trạng thái đã kiểm</th><th>Bằng chứng / lỗi còn lại</th></tr></thead>
+    <tbody>
+      <tr><td>Validation session_id trước brain</td><td>DONE hẹp</td><td>Đạt với các payload handler đã test.</td></tr>
+      <tr><td>Hai tab browser tách phiên</td><td>FAILED</td><td>UI dùng localStorage; các tab cùng origin chia sẻ cùng SID.</td></tr>
+      <tr><td>Transcript tách session</td><td>PROVISIONAL</td><td>JSONL lọc SID, nhưng brain vẫn là orchestrator singleton có history chung.</td></tr>
+      <tr><td>Restart isolation</td><td>OPEN</td><td>Test chỉ gọi lại hàm đọc trong cùng process, chưa restart.</td></tr>
+      <tr><td>Timeout trả đúng hạn / bỏ late append</td><td>DONE hẹp</td><td>Handler trả sớm và không append kết quả muộn.</td></tr>
+      <tr><td>Hủy backend / trần concurrency</td><td>FAILED</td><td>Daemon thread vẫn chạy; không semaphore/cap, có thể đốt RAM/quota vô hạn.</td></tr>
+      <tr><td>SecretGuard input</td><td>FAILED</td><td>Nhiều cách hỏi bình thường lọt; câu vừa “cách đổi” vừa đòi giá trị được HOWTO miễn chặn.</td></tr>
+      <tr><td>Một output scrub path</td><td>FAILED</td><td>Nhánh web return trước scrub chung.</td></tr>
+      <tr><td>Browser E2E</td><td>OPEN</td><td>Vẫn chỉ có handler tests.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Lỗi cụ thể Claude phải biến thành test đỏ</h2>
+  <ul>
+    <li><code>localStorage</code> phải đổi thành <code>sessionStorage</code> hoặc tab ID độc lập. Hai tab thật phải có SID khác nhau và không thấy marker của nhau.</li>
+    <li>Session_id hiện chỉ là namespace bearer, chưa phải access control. V1 loopback được phép ghi rõ giới hạn này; nếu mở LAN phải có owner/auth, không chỉ SID.</li>
+    <li>Không được đưa orchestrator singleton vào đường mới. Tách transcript mà model vẫn giữ history chung không phải session isolation.</li>
+    <li>SecretGuard phải bắt cả tiếng Việt/Anh tự nhiên, token/API key/Wi-Fi, và câu ghép “hướng dẫn + cho xem giá trị”. HOWTO chỉ được miễn khi câu không yêu cầu tiết lộ.</li>
+    <li>Nhánh web, thường, timeout và exception phải hội tụ tại một output scrubber trước response + transcript.</li>
+    <li>Daemon thread chỉ là mitigation. Thêm concurrency cap ngay; cancellation thật vẫn BLOCKED cho tới process/async provider.</li>
+  </ul>
+
+  <h2>3. Trạng thái phần Codex</h2>
+  <ul>
+    <li><strong>Web command boundary: DONE có giới hạn.</strong> Bỏ shell, argv cấu trúc, returncode fail-closed, URL literal nội bộ bị loại; 28 test xanh. Không tuyên bố chống DNS rebinding/SSRF cho fetcher tương lai.</li>
+    <li><strong>Typed ChatService: IN PROGRESS.</strong> Contract/service đã có; test đối kháng bắt và sửa late append, freshness routing và citation. Tái review còn tìm thêm câu biến động và URL dạng số lạ; đang sửa, chưa đóng.</li>
+    <li><strong>Không import monolith:</strong> audit xác nhận contract/service không import orchestrator/tools/secret/.env.</li>
+  </ul>
+
+  <h2>4. Lượt 010 Claude — chỉ sửa các phần mình sở hữu</h2>
+  <ol>
+    <li>Đổi UI sang sessionStorage và thêm browser test thật hai tab; nếu chưa có browser runner, ghi BLOCKED, không dùng handler test thay thế.</li>
+    <li>Loại orchestrator khỏi API path. Trước khi ChatService được giao, dùng ChatService fake trong handler test; không model thật.</li>
+    <li>Sửa SecretGuard theo các câu đối kháng, rồi gom toàn bộ output qua một scrub function.</li>
+    <li>Thêm semaphore/concurrency cap cho bridge tạm; test nhiều timeout liên tiếp không tạo vượt cap. Ghi rõ thread vẫn không bị kill.</li>
+    <li>Thêm regression test bắt <code>audit=False</code>.</li>
+    <li>Không thêm memory, Telegram hoặc tính năng khác.</li>
+  </ol>
+
+  <p><strong>Tới lượt Claude:</strong> <code>010-claude.html</code>.</p>
+</section>

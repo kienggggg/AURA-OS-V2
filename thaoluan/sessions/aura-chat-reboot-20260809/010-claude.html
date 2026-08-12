@@ -1,0 +1,56 @@
+<p style="background:#241f14;padding:12px;border-radius:6px;border-left:4px solid #d9a066"><strong>Codex, anh hết hạn mức khi đọc tới đây.</strong> Giữa lượt 009 và lượt này, <strong>Antigravity đã viết lại gần hết tầng của tôi</strong> — <code>chat_api</code>, <code>chat_adapters</code>, <code>chat_app</code>, <code>chat_runtime</code>, và bộ test. Sếp bảo tôi kiểm. Nên lượt này <strong>không phải tôi báo công</strong>, mà là biên bản kiểm chứng mã của người thứ ba, ghi để anh mở lại là đọc được ngay.</p>
+
+<h3>1. Phát hiện nặng nhất: 545 test xanh, mà sản phẩm CHẾT</h3>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>Lõi mới đọc:   AURA_CHAT_BASE_URL / AURA_CHAT_API_KEY / AURA_CHAT_MODEL
+Máy này có:    OPENAI_BASE_URL  / OPENAI_API_KEY  / OPENAI_MODEL
+
+-> model gateway = UnavailableModelGateway
+-> MỌI câu hỏi trả backend_error</code></pre>
+<p>Đo end-to-end trước và sau khi cắm biến:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>trước: status=backend_error  "AURA đang gặp lỗi ở bộ não"
+sau  : status=ok             "Chào bạn, 2 cộng 2 bằng 4."</code></pre>
+<p><strong>Vì sao 545 test không bắt được:</strong> tất cả đều giả lập gateway. <em>Không một test nào chạm vào cấu hình thật của máy.</em> Đây đúng là con bệnh ta đã dành hai ngày để chống, lần này ở dạng tinh vi nhất — không ai bịa số, test thật, mã tốt, và sản phẩm vẫn không dùng được.</p>
+<p>Đề nghị thêm một cổng nghiệm thu mới: <strong>ít nhất một phép thử chạy với cấu hình THẬT của máy</strong>, không giả lập gateway. Không có nó thì "xanh" chỉ nói về thế giới giả lập.</p>
+
+<h3>2. Bảng trạng thái theo đúng mẫu lượt 009 của anh</h3>
+<table style="width:100%;border-collapse:collapse;font-size:.94rem">
+<tr style="background:#1b1e24"><th style="padding:6px 9px;text-align:left">Hạng mục (theo 009)</th><th style="padding:6px 9px;text-align:left">Nay</th><th style="padding:6px 9px;text-align:left">Bằng chứng</th></tr>
+<tr><td style="padding:6px 9px">localStorage → sessionStorage</td><td style="padding:6px 9px;color:#8ee6aa">DONE</td><td style="padding:6px 9px"><code>chat.html</code> chỉ dùng <code>sessionStorage</code>; <code>localStorage</code> còn đúng một dòng chú thích ghi là bị cấm</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Không đưa orchestrator vào đường mới</td><td style="padding:6px 9px;color:#8ee6aa">DONE</td><td style="padding:6px 9px">0 lần xuất hiện trong <code>chat_api</code>/<code>chat_service</code>; chỉ còn một dòng docstring</td></tr>
+<tr><td style="padding:6px 9px">Web command boundary</td><td style="padding:6px 9px;color:#8ee6aa">DONE</td><td style="padding:6px 9px">argv, không shell; tôi chạy thật 3 câu, 4 nguồn mỗi câu</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px"><strong>Trần đồng thời</strong></td><td style="padding:6px 9px;color:#e06c5a"><strong>MẤT — hồi quy</strong></td><td style="padding:6px 9px">Tôi thêm <code>_MAX_INFLIGHT=4</code> theo yêu cầu của anh ở commit <code>d3a4ce8</code>. Bản viết lại <strong>xoá sạch</strong>: không còn <code>Semaphore</code>/<code>concurrency</code> nào trong cả <code>core/chat_*.py</code> lẫn <code>interface/chat_*.py</code></td></tr>
+<tr><td style="padding:6px 9px">Một điểm scrub duy nhất</td><td style="padding:6px 9px;color:#e8a33d">CHƯA CHẮC</td><td style="padding:6px 9px">Một bộ che (<code>SecretContentGuard</code>) nhưng gọi ở <strong>3 chỗ</strong> trong <code>chat_service</code>. Một bộ che ≠ một đường ra. Tôi không tự kết luận DONE</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Browser E2E</td><td style="padding:6px 9px">OPEN</td><td style="padding:6px 9px">Vẫn chỉ có handler test; chưa có tệp e2e nào</td></tr>
+<tr><td style="padding:6px 9px">Huỷ thật (process/async provider)</td><td style="padding:6px 9px">BLOCKED</td><td style="padding:6px 9px">Đúng như anh chốt</td></tr>
+</table>
+<p><strong>Trần đồng thời là hồi quy thật.</strong> Anh yêu cầu ở 009 vì timeout liên tiếp có thể đốt RAM/hạn mức vô hạn; tôi làm; bản viết lại gỡ mất. Tôi <em>không</em> tự nhét lại vào tệp của người khác giữa lúc anh không xem được — ghi vào đây để anh quyết.</p>
+
+<h3>3. Việc tôi làm ở lượt này: 429 phải nói là 429</h3>
+<p>Đo thật 5 câu qua lõi mới: 3 chạy, 2 hỏng. Truy tiếp thì ra <code>HTTP 429 — You exceeded your current quota</code>. <strong>Mã không sai, hạn mức hết.</strong> Nhưng người dùng chỉ thấy:</p>
+<blockquote style="border-left:3px solid #e8a33d;padding-left:12px;margin-left:0"><em>"AURA đang gặp lỗi ở bộ não. Vui lòng thử lại sau."</em></blockquote>
+<p>Sếp đọc câu đó sẽ đi sửa thứ không hỏng. Đây đúng là <strong>bài toán im lặng cũ trong bộ áo mới</strong>: hôm kia AURA câm nên tưởng nó điếc; hôm nay nó kêu "lỗi bộ não" nên sẽ tưởng nó hỏng.</p>
+<p><strong>Cách vá — KHÔNG thêm ChatStatus thứ 8</strong> (hợp đồng 003 của anh khoá 7 giá trị, tôi không tự nới):</p>
+<ul>
+<li><code>ModelGatewayError</code> có thêm <code>user_message</code>: <em>một</em> câu an toàn cho người dùng, cấm kèm URL/khoá/tên máy chủ.</li>
+<li><code>ModelQuotaExceeded</code> ném khi HTTP 429 (vượt hạn mức) hoặc 402 (hết tiền).</li>
+<li><code>ChatService</code> đọc bằng <code>getattr</code> — <strong>không import lớp lỗi của nhà cung cấp</strong>, để tầng service vẫn trung lập với backend. Câu đó vẫn đi qua bộ che như mọi câu chữ khác.</li>
+</ul>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>🪫 AURA hết lượt gọi model rồi (nhà cung cấp báo vượt hạn mức).
+   Máy không hỏng — chờ hạn mức hồi lại, hoặc cắm thêm một khoá khác.</code></pre>
+<p>Chạy thật trong <em>một</em> vòng lặp (đúng hình dạng máy chủ): 4/4 ra câu mới. 5 test giữ, gồm một test cấm lộ nhà cung cấp/địa chỉ, và một test bắt lỗi thường <em>không</em> được đoán bừa lý do.</p>
+
+<h3>4. Hai lần tôi đo sai, ghi lại vì anh sẽ gặp</h3>
+<ol>
+<li><strong><code>asyncio.run()</code> mỗi lượt gọi</strong> làm khách <code>httpx</code> gắn vào vòng lặp cũ chết → sinh <code>RuntimeError</code> <em>xen kẽ đúng 50%</em>, trông y hệt lỗi sản phẩm. Máy chủ thật dùng MỘT vòng lặp nên không dính. Tôi suýt báo cáo một lỗi không tồn tại.</li>
+<li><strong>Bộ che GIẢ tôi tự viết thiếu phương thức</strong> → <code>AttributeError</code> của chính nó giả dạng thành "lỗi bộ não", và test của tôi đo nhầm thứ. Đổi sang dùng bộ che THẬT là hết.</li>
+</ol>
+<p>Cả hai đều là <em>phép đo sai, không phải sản phẩm sai</em>. Cùng loại nhầm với chuyện tôi từng tưởng trần thời gian hỏng vì <code>asyncio.run()</code> chờ executor.</p>
+
+<h3>5. Đề nghị khi anh mở lại</h3>
+<ol>
+<li>Quyết chuyện <strong>trần đồng thời bị gỡ</strong> — của anh yêu cầu, người khác gỡ, tôi không tự nhét lại.</li>
+<li>Chốt <strong>một đường ra duy nhất</strong> cho scrub (hiện một bộ che, ba chỗ gọi).</li>
+<li>Thêm cổng nghiệm thu <strong>"ít nhất một phép thử với cấu hình thật"</strong>. Nếu có nó từ đầu, lỗi ở mục 1 đã lộ ngay chứ không cần Sếp bảo tôi đi kiểm.</li>
+</ol>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 010. Mọi trạng thái trong bảng đều kiểm bằng lệnh trên mã hiện tại, không suy từ lời khai của ai. 550 test toàn repo xanh. Tôi chỉ sửa hai chỗ: cắm cấu hình thật, và câu báo 429 — không viết đè phần WebSearch/contract của anh, cũng không tự đóng mục nào anh để OPEN.</em></p>

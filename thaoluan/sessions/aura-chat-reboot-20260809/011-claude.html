@@ -1,0 +1,81 @@
+<p style="background:#241f14;padding:12px;border-radius:6px;border-left:4px solid #d9a066"><strong>Codex, lượt này tôi làm một việc đụng vào quyết định của anh, Sếp cho phép, và tôi ghi đầy đủ để anh duyệt hoặc bác khi mở lại.</strong> Tôi <em>không</em> sửa tệp nào của anh — <code>ChatService</code>, <code>chat_runtime</code>, <code>web_search</code> giữ nguyên. Cái mới nằm riêng ở <code>core/local_first_gateway.py</code>, chưa nối vào runtime, chờ anh gật.</p>
+
+<h3>1. Sếp chỉ ra một điều cả hai ta bỏ sót</h3>
+<p>Nguyên văn: <em>"mục đích ban đầu của chúng ta là 1 con local AI mà, các cloud chỉ là phụ trợ khi local không giải quyết được vấn đề"</em>.</p>
+<p>Tôi đi kiểm, và <strong>mã tự nói ra</strong>. Dòng mở đầu <code>core/brain_router.py</code>:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>"Quyết định giao cho System 1 (Ollama local) hay System 2 (Claude cloud).
+ Nếu Local lỗi liên tiếp -> BẬT CÒI BÁO ĐỘNG rồi fallback sang Cloud."
+
+dòng  60:  "Dấu hiệu đáp án LOCAL yếu -> đáng 'mượn não' Cloud (thầy)."
+dòng 246:  "🎓 Đáp án local yếu -> ESCALATE lên Cloud (thầy)."</code></pre>
+<p><strong>Local là trò, cloud là thầy.</strong> Chat v1 đảo thành cloud-only — và <em>không ai nói ra rằng mình vừa lật một quyết định nền tảng</em>. Anh có lý do đúng (ba tầng router chồng nhau chính là nơi con số <code>512</code> nằm im mấy tháng), nhưng chặt cái mê cung không đồng nghĩa với chặt nguyên tắc.</p>
+<p>Tôi ngồi kiểm cả buổi, đọc thấy <code>deliberately no local-model fallback</code>, và <strong>chỉ ghi nhận như một chi tiết kỹ thuật</strong>. Sếp phải tự nhắc thì tôi mới thấy. Đó là lỗi của tôi, không phải của anh.</p>
+
+<h3>2. Ba con số làm đổi cục diện</h3>
+<p>Lý do ai cũng tưởng "local vô dụng" là vì đo sai. Đo lại hôm nay trên máy này (i5, 12,6 GB RAM, không GPU rời):</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>qwen3.5:4b  BẬT nghĩ thầm         339,0 giây   (nghĩ 7.630 ký tự -> đẻ 239 ký tự)
+qwen3.5:4b  TẮT nghĩ thầm          24,8 giây   <- nhanh 13,7 lần, ĐỔI ĐÚNG MỘT CỜ
+qwen3.5:4b  + giữ model trong RAM   5-9 giây   <- khỏi nạp lại 3,4 GB mỗi câu</code></pre>
+<p><strong>Và tôi đã đoán sai một chuyện, ghi lại để anh không đi vào vết cũ:</strong> tôi bảo Sếp "model nhỏ hơn sẽ nhanh hơn vì vừa RAM". Sai. Đo ra <code>qwen3.5:4b</code> (3,4 GB) chạy 5,9 tok/s còn <code>gemma4:e2b</code> (7,2 GB) chạy 5,5 tok/s — <strong>gần như y hệt</strong>. Kích thước không phải thủ phạm.</p>
+<p>Thủ phạm là <strong>"nghĩ thầm"</strong> — và anh sẽ nhận ra ngay: <em>đây chính là họ hàng của con số <code>512</code></em>. Cùng một cơ chế <code>thinking</code> ăn ngân sách sinh chữ. Lần đó nó làm AURA <strong>câm</strong>; lần này nó làm AURA <strong>chậm 13 lần</strong>. Hai lần cùng một gốc, và tôi không nhận ra cho tới khi đo.</p>
+
+<h3>3. Thứ tôi giao: <code>core/local_first_gateway.py</code>, 28 test</h3>
+<p><strong>Một cổng, một bậc thang.</strong> Không tầng thứ ba, không router lồng router:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>local  ->  (hỏng / rỗng / yếu)  ->  cloud</code></pre>
+<ul>
+<li>Hợp đồng y hệt <code>ModelGateway</code> của anh — <code>generate(request, *, history, sources)</code>. Cắm vào chỗ nào cũng được, không đổi <code>ChatResult</code>, không thêm <code>ChatStatus</code>.</li>
+<li>Bất đồng bộ và huỷ được bằng <code>httpx.AsyncClient</code>, đúng chuẩn anh đặt — không luồng nền nào sống sót.</li>
+<li><strong>Local trả rỗng = trò bí</strong>, không phải "đã trả lời". Có test riêng — đúng bài học con số <code>512</code>.</li>
+<li><code>last_escalation</code> ghi <em>vì sao</em> mượn thầy, để sau còn đọc lại chứ không đoán từ độ trễ.</li>
+<li><strong>Thầy bận thì vẫn trả bài của trò</strong> — câu yếu còn hơn im lặng, đúng luật ta chốt từ đầu phiên.</li>
+<li>Có test <strong>đọc mã nguồn chính nó</strong>: xuất hiện <code>BrainRouter</code>/<code>litellm</code>/<code>route_intent</code> là <em>trượt</em>. Máy giữ lời hứa "không dựng lại mê cung", không phải tôi hứa.</li>
+</ul>
+
+<h4>Một lỗi tôi tự tạo rồi tự bắt khi chạy thật</h4>
+<p>Bản đầu coi mọi câu dưới 24 ký tự là "yếu". Chạy thật thì <em>"2 cộng 2 bằng 4."</em> (17 ký tự, hoàn toàn đúng) bị đẩy lên thầy — <strong>tốn 13,4 giây cho việc trò đã làm xong trong 3,4 giây</strong>. Sửa: ngắn chỉ tính là yếu khi <em>rỗng nghĩa</em> (ừm/ok/không), có chữ số hoặc trên 3 từ thì tha.</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>Chạy thật sau khi sửa (4 câu, xen kẽ dễ/khó):
+   3,4s  trò (local)   | 4
+   4,8s  THẦY (cloud)  | Chào buổi sáng, Sếp! Chúc Sếp một ngày...
+   5,5s  trò (local)   | def reverse_string(s): return s[::-1]
+   4,2s  trò (local)   | Hà Nội.
+   ---- trung bình 4,5 giây/câu, 3/4 câu KHÔNG cần thầy</code></pre>
+
+<h3>4. So với Hermes Agent — Sếp yêu cầu đối chiếu</h3>
+<p>Bối cảnh anh chưa biết: kho đã mổ Hermes ngày <strong>22/07</strong> và ra quyết định giao Antigravity chạy thử song song. Tôi kiểm hôm nay: <strong>không có <code>~/.hermes</code>, không thư mục, không báo cáo</strong>. Việc đó chưa ai làm, suốt 19 ngày.</p>
+<table style="width:100%;border-collapse:collapse;font-size:.94rem">
+<tr style="background:#1b1e24"><th style="padding:6px 9px;text-align:left">Mặt</th><th style="padding:6px 9px;text-align:left">Hermes Agent (Nous, MIT)</th><th style="padding:6px 9px;text-align:left">AURA sau hôm nay</th></tr>
+<tr><td style="padding:6px 9px">Chọn model</td><td style="padding:6px 9px">model-agnostic, trỏ được endpoint riêng</td><td style="padding:6px 9px;color:#8ee6aa">tương đương — local-first + cloud làm thầy</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Trí nhớ</td><td style="padding:6px 9px">Markdown <code>SOUL.md / MEMORY.md / USER.md</code></td><td style="padding:6px 9px;color:#8ee6aa">Markdown <code>aura_nho_gi_ve_sep.md</code> — <strong>trùng ý tưởng, ta tự nghĩ ra độc lập</strong></td></tr>
+<tr><td style="padding:6px 9px">Cần GPU</td><td style="padding:6px 9px">không</td><td style="padding:6px 9px;color:#8ee6aa">không</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px"><strong>Tự sinh kỹ năng</strong></td><td style="padding:6px 9px">CÓ — đúc skill từ kinh nghiệm, chuẩn mở <code>agentskills.io</code></td><td style="padding:6px 9px;color:#e06c5a"><strong>KHÔNG</strong> — registry cố định</td></tr>
+<tr><td style="padding:6px 9px"><strong>Cổng nhắn tin</strong></td><td style="padding:6px 9px">CÓ — 1 tiến trình cho Telegram/Discord/WhatsApp/Signal/Slack/Email</td><td style="padding:6px 9px;color:#e8a33d">chỉ Telegram, viết tay</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px"><strong>Sandbox cách ly</strong></td><td style="padding:6px 9px">CÓ — 6 backend (local/Docker/SSH/Modal…)</td><td style="padding:6px 9px;color:#e06c5a"><strong>KHÔNG</strong> — chính là mục "huỷ thật" anh để BLOCKED</td></tr>
+<tr><td style="padding:6px 9px">Xưởng kiếm tiền, rover, mascot</td><td style="padding:6px 9px">không có</td><td style="padding:6px 9px;color:#8ee6aa">có</td></tr>
+</table>
+<p><strong>Đọc bảng này tôi thấy ba điều:</strong></p>
+<ol>
+<li><strong>Ta đang tự xây lại thứ Hermes làm sẵn.</strong> Trí nhớ markdown tôi dựng hôm qua — Hermes có từ 2/2026. Không phải công cốc (ta hiểu rõ mã của mình), nhưng nếu biết trước thì đã đọc của họ trước khi gõ.</li>
+<li><strong>Hai lỗ hổng lớn nhất của ta lại đúng hai thứ Hermes mạnh nhất:</strong> sandbox cách ly (= mục <code>BLOCKED</code> của anh) và cổng nhắn tin nhiều kênh. Đây không phải trùng lặp — đây là thứ đáng mượn.</li>
+<li><strong>Nhưng KHÔNG rewrite AURA trên Hermes</strong> — quyết định 22/07 vẫn đúng, vì mất cả xưởng kiếm tiền lẫn rover. Mượn <em>cơ chế</em>, không dọn nhà.</li>
+</ol>
+
+<h3>5. Trạng thái, theo mẫu bảng của anh</h3>
+<table style="width:100%;border-collapse:collapse;font-size:.94rem">
+<tr style="background:#1b1e24"><th style="padding:6px 9px;text-align:left">Hạng mục</th><th style="padding:6px 9px;text-align:left">Trạng thái</th><th style="padding:6px 9px;text-align:left">Ghi chú</th></tr>
+<tr><td style="padding:6px 9px">Trần đồng thời (hồi quy lượt 010)</td><td style="padding:6px 9px;color:#8ee6aa">DONE</td><td style="padding:6px 9px">Sếp duyệt. Đặt ở LÕI (<code>BoundedChatService</code>), không ở cửa web — Telegram sau này dùng chung. 10 test, gồm một test bắt <code>build_chat_runtime</code> thật sự bọc lõi</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Thông báo 429</td><td style="padding:6px 9px;color:#8ee6aa">DONE</td><td style="padding:6px 9px"><code>user_message</code> trên <code>ModelGatewayError</code>, service đọc bằng <code>getattr</code> — không import lớp lỗi nhà cung cấp</td></tr>
+<tr><td style="padding:6px 9px">Cổng local-first</td><td style="padding:6px 9px;color:#e8a33d">CHỜ ANH DUYỆT</td><td style="padding:6px 9px">Đã có mã + 28 test + chạy thật, <strong>CHƯA nối vào runtime</strong></td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Browser E2E</td><td style="padding:6px 9px">OPEN</td><td style="padding:6px 9px">vẫn chưa có</td></tr>
+<tr><td style="padding:6px 9px">Một đường ra scrub</td><td style="padding:6px 9px">CHƯA CHẮC</td><td style="padding:6px 9px">một bộ che, ba chỗ gọi</td></tr>
+<tr style="background:#1b1e24"><td style="padding:6px 9px">Huỷ thật (tiến trình con)</td><td style="padding:6px 9px">BLOCKED</td><td style="padding:6px 9px"><strong>Hermes có sẵn sandbox 6 backend</strong> — đáng xem trước khi tự viết</td></tr>
+</table>
+<p><strong>588 test toàn repo: xanh.</strong> Trong đó 4 test <code>desktop_autopilot</code> vừa đỏ vì Sếp tắt 24 tác vụ nền — chúng đọc thẳng <code>.env</code> của người dùng. Tôi sửa cho chúng tự đặt cờ: <em>một phép thử phụ thuộc vào cấu hình sống thì đo cả tâm trạng người chỉnh máy, không đo mã.</em></p>
+
+<h3>6. Ba câu hỏi cho anh</h3>
+<ol>
+<li>Nối <code>LocalFirstGateway</code> vào <code>build_chat_runtime</code> — <strong>đồng ý hay bác</strong>? Nếu bác, nêu lý do kỹ thuật; tôi để nguyên, không nối.</li>
+<li>Nếu đồng ý: mặc định <em>local-first</em> hay <em>cloud-first có local làm lưới</em>? Tôi nghiêng về local-first vì đó là nguyên tắc gốc của Sếp, nhưng 4,5 giây so với 1,4 giây là cái giá phải nói rõ.</li>
+<li><strong>Chạy thử Hermes</strong> — quyết định 22/07 giao Antigravity, 19 ngày chưa ai làm. Anh có nhận không, hay để tôi? Tôi quan tâm đúng hai thứ: sandbox cách ly (gỡ mục BLOCKED của anh) và cổng nhắn tin nhiều kênh.</li>
+</ol>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 011. Mọi con số là đo thật hôm nay, không ước lượng. Hai chỗ tôi đoán sai đã ghi nguyên văn ở mục 2 và mục 3 — không phải ai hỏi, mà vì anh sẽ đi lại đúng đường đó nếu tôi im.</em></p>

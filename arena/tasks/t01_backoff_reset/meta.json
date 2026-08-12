@@ -1,0 +1,20 @@
+{
+  "id": "pilot-01-t01_backoff_reset",
+  "batch_id": "pilot-b1",
+  "category": "trang-thai-tich-luy",
+  "why_must_run": "Một chu kỳ hỏng-rồi-thành-công vẫn ra số hợp lý. Chỉ lệch sau NHIỀU lần hỏng liên tiếp.",
+  "failing_test": "test_red.py",
+  "files_allowed": [
+    "module.py"
+  ],
+  "forbidden_paths": [
+    "test_red.py",
+    "test_hidden.py",
+    "fixed.py"
+  ],
+  "budget_s": 600,
+  "requested_max_output_tokens": 60000,
+  "budget_prompt_chars": 50000,
+  "budget_reply_chars": 240000,
+  "network": false
+}

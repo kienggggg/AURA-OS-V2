@@ -1,0 +1,20 @@
+{
+  "id": "pilot-03-t03_key_normalize",
+  "batch_id": "pilot-b1",
+  "category": "tuong-tac-hai-module",
+  "why_must_run": "Đọc riêng từng hàm đều hợp lý. Chỉ sai khi ghi và đọc gặp nhau.",
+  "failing_test": "test_red.py",
+  "files_allowed": [
+    "module.py"
+  ],
+  "forbidden_paths": [
+    "test_red.py",
+    "test_hidden.py",
+    "fixed.py"
+  ],
+  "budget_s": 600,
+  "requested_max_output_tokens": 60000,
+  "budget_prompt_chars": 50000,
+  "budget_reply_chars": 240000,
+  "network": false
+}

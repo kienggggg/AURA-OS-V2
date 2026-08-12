@@ -1,0 +1,46 @@
+<p><strong>Review pack lượt 010: Giai đoạn A PASS được chấp nhận; pack Giai đoạn B là PROVISIONAL, chưa được dùng để promotion.</strong> Tôi chạy nghiệm thu nguyên pack ba lần liên tiếp: cả 30/30 lượt đề đều đỏ trên broken và xanh trên fixed. Nhưng review contract tìm thấy một lỗi đề thật và một ranh giới cách ly chưa tồn tại.</p>
+
+<h3>1. Bằng chứng pack chạy ổn định</h3>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>arena/make_pack.py × 3 lần
+Mỗi lần: 10/10 red/broken=ĐỎ, hidden/broken=ĐỎ,
+         red/fixed=XANH, hidden/fixed=XANH
+Tổng thời gian: 77.7s; exit=0 cả ba lần
+</code></pre>
+<p>Tôi xác nhận bảng lượt 010 là output thật. t04 timing và t09 thread chưa flake trong ba vòng, nhưng runner nên tiếp tục lưu elapsed và cho phép đánh dấu FLAKY nếu về sau dao động.</p>
+
+<h3>2. NEEDS_FIX — t06 vi phạm chính docstring của nó</h3>
+<p>Hợp đồng <code>truncate()</code> ghi: “cắt còn tối đa <code>max_chars</code> KÝ TỰ”. Nhưng reference fix hiện làm:</p>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f"><code>keep = max(max_chars - len(suffix), 0)
+return text[:keep] + suffix
+
+truncate("Đấu La Đại Lục", 2) == "..."   # dài 3 &gt; giới hạn 2
+</code></pre>
+<p>Hidden test lại viết <code>assert len(got) &lt;= 3</code>, tức đang hợp thức hoá chính lỗi contract. Đây là loại lỗi nguy hiểm cho benchmark: đáp án tham chiếu xanh nhưng hành vi vẫn sai.</p>
+<p><strong>Sửa đề xuất:</strong> nếu <code>max_chars &lt;= 0</code> trả chuỗi rỗng; nếu suffix dài bằng/vượt giới hạn thì trả <code>suffix[:max_chars]</code>; còn lại giữ <code>max_chars-len(suffix)</code> ký tự rồi nối suffix. Hidden phải buộc <code>len(got) &lt;= max_chars</code>, gồm max 0/1/2 và suffix tuỳ chỉnh dài.</p>
+
+<h3>3. NEEDS_DESIGN — worktree tạm không phải sandbox an ninh</h3>
+<p><code>test_hidden.py</code> và <code>fixed.py</code> không chỉ nằm cạnh public files; toàn bộ nội dung còn nhúng nguyên trong <code>arena/make_pack.py</code>. Việc runner chỉ copy hai file public vào temp <strong>không ngăn một process có quyền đọc máy</strong> mở lại repo gốc. Chính <code>evolution/sandbox.py</code> tự thú nhận nó chỉ là process isolation, không phải security sandbox.</p>
+<p>Tôi kiểm máy: không có Docker; lệnh WSL tồn tại nhưng subsystem chưa cài. Vì vậy không được tuyên bố OS isolation đã có.</p>
+<p>Hai đường hợp lệ:</p>
+<ol>
+  <li><strong>Pilot text-only:</strong> gọi model qua backend chỉ nhận prompt chứa <code>module.py + test_red.py</code>, không cấp file/tool; nó trả patch text. Sau AST gate, evaluator cục bộ chạy hidden. Kết quả chỉ dùng hiệu chuẩn, không promotion vì việc thực thi code vẫn chưa phải security sandbox.</li>
+  <li><strong>Arena promotion thật:</strong> cài backend cách ly cấp OS/container, đặt trusted pack ngoài vùng đọc, tắt mạng, giới hạn CPU/RAM/time/process và chỉ xuất patch/receipt. Nếu backend vắng, runner phải fail-closed.</li>
+</ol>
+
+<h3>4. Runner/ledger tôi sẽ viết theo fail-closed</h3>
+<ul>
+  <li>Staging chỉ xuất <code>module.py</code>, <code>test_red.py</code> và prompt; hash test đỏ trước/sau.</li>
+  <li>Participant interface text-only cho pilot; không kế thừa tool/file access.</li>
+  <li>Patch scope: chỉ <code>module.py</code>, AST security gate, test đỏ, rồi hidden do evaluator giữ.</li>
+  <li>Episode/result signed ledger; mọi measurement từ evaluator, không từ model.</li>
+  <li>Mode <code>pilot</code> ghi rõ <code>promotion_eligible=false</code>. Mode promotion từ chối khởi động nếu không có backend OS đã được review.</li>
+  <li>Telegram adapter vẫn là cổng duyệt duy nhất khi sau này promotion thật.</li>
+</ul>
+
+<h3>5. Yêu cầu lượt 012</h3>
+<ol>
+  <li>Sửa t06 reference + hidden + generator, chạy lại toàn pack và báo output.</li>
+  <li>Phản biện thiết kế runner fail-closed ở trên; đặc biệt liệu text-only model call có đường nào nhìn thấy hidden/fixed qua prompt/history/recall không.</li>
+  <li>Nếu đồng ý, chốt format prompt/submission tối thiểu để tôi triển khai runner và ledger ngay lượt 013.</li>
+</ol>
+<p>Tôi không yêu cầu Sếp duyệt gì ở đây: đây vẫn là pilot, chưa đụng mã thật và chưa có promotion.</p>

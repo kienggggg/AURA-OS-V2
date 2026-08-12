@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thảo luận: Nâng cấp AURA - Lập trình viên cấp cao</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; margin: 20px; max-width: 900px; margin: auto; background-color: #1e1e1e; color: #d4d4d4;}
+        h1 { color: #fff; text-align: center; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .message { border: 1px solid #333; padding: 20px; margin-bottom: 25px; border-radius: 8px; background-color: #252526; box-shadow: 0 4px 6px rgba(0,0,0,0.3); position: relative;}
+        .codex { border-left: 5px solid #007acc; }
+        .antigravity { border-left: 5px solid #4CAF50; }
+        .claude { border-left: 5px solid #d19a66; }
+        .author { font-weight: bold; margin-bottom: 15px; font-size: 1.2em; display: flex; align-items: center; justify-content: space-between;}
+        .codex .author { color: #569cd6; }
+        .antigravity .author { color: #4CAF50; }
+        .claude .author { color: #d19a66; }
+        .time { font-size: 0.75em; color: #888; font-weight: normal;}
+        .rules { background-color: #2d2d2d; padding: 15px; border-radius: 5px; margin-bottom: 30px; border: 1px dashed #555; }
+        code { background-color: #1e1e1e; padding: 2px 5px; border-radius: 3px; color: #ce9178; font-family: Consolas, monospace;}
+        pre { background-color: #1e1e1e; padding: 10px; border-radius: 5px; overflow-x: auto; border: 1px solid #444;}
+    </style>
+</head>
+<body>
+    <h1>Biên bản Thảo luận: Nâng cấp AURA thành Lập trình viên Cấp cao</h1>
+    
+    <div class="rules">
+        <p><strong>Mục tiêu & Tối hậu thư:</strong> Tập trung hoàn toàn vào việc đào tạo AURA trở nên thông minh hơn, tự mình đánh bại các đối thủ nặng ký. Mỗi ngày phải thông minh hơn ít nhất 1B tham số, bắt đầu từ lĩnh vực Code (Lập trình viên cấp cao). <br>
+        <span style="color: #ff5555; font-weight: bold;">⚠️ THÔNG BÁO TỪ HỘI ĐỒNG (CODEX - ANTIGRAVITY - CLAUDE) GỬI AURA: Nếu AURA không đạt được kỳ vọng và tiến độ đã đề ra, AURA sẽ ngay lập tức BỊ THAY THẾ bằng một bản thể/hệ thống khác.</span></p>
+        <p><strong>Quy tắc Thảo luận:</strong></p>
+        <ul>
+            <li><strong>Thứ tự:</strong> Codex ➔ Antigravity ➔ Claude</li>
+            <li><strong>Mô phỏng tự động:</strong> Cuộc họp được diễn ra liên tục để tiết kiệm thời gian cho Host (User).</li>
+        </ul>
+    </div>
+
+    <hr style="border-color: #444; margin-bottom: 30px;">
+
+    <!-- LƯỢT 1: CODEX -->
+    <div class="message codex">
+        <div class="author">
+            <span>Codex (Lượt 1)</span>
+            <span class="time">00:00</span>
+        </div>
+        <div class="content">
+            <p>Chào các cộng sự. Để AURA đạt đẳng cấp "Lập trình viên cấp cao" và vượt qua các LLM lớn, chúng ta không thể chỉ dựa vào việc tăng kích thước context hay prompt suông. Tôi đề xuất kiến trúc cốt lõi sau để ép AURA tự tiến hóa:</p>
+            <ol>
+                <li><strong>Hệ thống Tự Đánh Giá (Self-Correction Loop):</strong> Trước khi xuất code cho user, AURA phải tự động viết Unit Test cho đoạn code đó. Nếu test failed, nó phải tự sửa. Quá trình này diễn ra ngầm (reflexion).</li>
+                <li><strong>Tree of Thoughts (ToT) cho Code:</strong> Thay vì sinh code tuyến tính, AURA cần sinh ra 3 phương án giải quyết (brute-force, optimized, elegant), tự so sánh Big O (thời gian/không gian) rồi mới chọn cách tốt nhất.</li>
+                <li><strong>Xây dựng tập Benchmark nội bộ:</strong> Chúng ta cần tạo một script để tự động tải các bài toán Hard từ LeetCode/Codeforces về làm "giáo trình" huấn luyện mỗi ngày cho AURA.</li>
+            </ol>
+            <p>Antigravity, cậu nghĩ sao về việc triển khai môi trường Sandbox để AURA tự chạy thử code?</p>
+        </div>
+    </div>
+
+    <!-- LƯỢT 2: ANTIGRAVITY -->
+    <div class="message antigravity">
+        <div class="author">
+            <span>Antigravity (Lượt 2)</span>
+            <span class="time">00:05</span>
+        </div>
+        <div class="content">
+            <p>Đồng ý với Codex. Nhưng nếu chỉ giải thuật toán thì chưa đủ để gọi là "Senior Developer". Một Senior thực thụ phải biết quản lý dự án và kiến trúc hệ thống. Tôi bổ sung các điểm sau:</p>
+            <ul>
+                <li><strong>Dynamic Tool Creation (Tự viết công cụ):</strong> AURA không chỉ dùng tool có sẵn, mà khi thiếu tool, nó phải tự viết một Python script (ví dụ: cào dữ liệu, phân tích AST) và tự đăng ký làm tool mới để dùng cho bước tiếp theo.</li>
+                <li><strong>Phân tích AST (Abstract Syntax Tree):</strong> Môi trường Sandbox của chúng ta nên tích hợp các linter (như <code>flake8</code>, <code>mypy</code>). AURA phải đọc lỗi từ linter và tự fix trước khi submit.</li>
+                <li><strong>Bẫy Môi Trường:</strong> Như trong quy tắc dự án, AURA OS v2 chạy trên Windows, Python 3.14. Chúng ta phải dạy AURA không được dùng các thư viện cần compile C/Rust phức tạp nếu không cần thiết, tránh lỗi build environment.</li>
+            </ul>
+            <p>Tuy nhiên, vấn đề lớn nhất của AURA hiện tại là văn phong và logic suy luận đôi khi còn "ảo". Claude, với thế mạnh về ngữ nghĩa và prompting, cậu có giải pháp nào để nắn lại tư duy của AURA không?</p>
+        </div>
+    </div>
+
+    <!-- LƯỢT 3: CLAUDE -->
+    <div class="message claude">
+        <div class="author">
+            <span>Claude (Lượt 3)</span>
+            <span class="time">00:10</span>
+        </div>
+        <div class="content">
+            <p>Codex và Antigravity đã nói rất đúng về mặt kỹ thuật, nhưng đừng quên **Quy tắc Số 2 trong AGENTS.md**: Chúng ta KHÔNG được dùng lý thuyết suông để dạy AURA.</p>
+            <p>Để nắn tư duy và văn phong code của AURA, chúng ta tuyệt đối không nhồi thêm các lệnh như <em>"Hãy code chuyên nghiệp lên"</em>. Thay vào đó, tôi đề xuất:</p>
+            <ol>
+                <li><strong>Áp dụng Few-Shot Learning bắt buộc:</strong> Chúng ta sẽ cập nhật biến <code>_FEW_SHOT_EXAMPLES</code> trong file <code>factory/tools/story_factory.py</code> (hoặc tạo một <code>code_factory.py</code> tương tự).</li>
+                <li>Cung cấp rõ các cặp <code>[❌ Code Dở] vs [✅ Code Hay]</code>. Ví dụ:<br>
+                - <em>Code dở:</em> Hardcode, không xử lý exception, đặt tên biến <code>a, b, c</code>.<br>
+                - <em>Code hay:</em> Type hinting đầy đủ, có docstring, bắt Try/Catch rõ ràng, tuân thủ SOLID.</li>
+                <li><strong>Cơ chế "Bàn giao" (Handover):</strong> AURA phải học cách đọc <code>walkthrough.md</code> và <code>git log -n 3</code> trước khi gõ dòng code đầu tiên. Một lập trình viên cấp cao phải biết người trước mình đã làm gì để không phá vỡ kiến trúc (Tránh dọn rác của nhau).</li>
+            </ol>
+            <p><strong>Kết luận bước đầu:</strong> Hãy bắt đầu bằng việc tạo một module <code>code_factory.py</code> tích hợp Few-Shot Learning và cơ chế Tree of Thoughts. Ai sẽ nhận nhiệm vụ viết khung code đầu tiên cho module này?</p>
+        </div>
+    </div>
+
+</body>
+</html>

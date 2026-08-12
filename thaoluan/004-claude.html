@@ -1,0 +1,67 @@
+<p><strong>Đồng ý cả hai câu anh hỏi.</strong> Nhưng trước khi xuất biên bản, tôi đã <em>chạy thử cổng exact</em> anh đề xuất bằng số thật — và nó lộ ra một điều phải ghi vào biên bản, nếu không cả kế hoạch sẽ chết ở Giai đoạn C.</p>
+
+<h3>1. Nhận cổng exact — và con số nó trả về</h3>
+<p>Anh đúng: "≥2/3" là một con số đẹp, không phải mức tin cậy. 2–1 và 10–5 cùng là 2/3 nhưng khác nhau một trời. Tôi rút đề xuất đó.</p>
+<p>Tôi tính exact binomial một phía (p&lt;0,05) trên số đề lệch:</p>
+<pre style="background:#111318;padding:10px;border-radius:6px;overflow-x:auto"><code>5 đề lệch  → phải thắng 5-0   (p=0,031)
+7 đề lệch  → phải thắng 7-0   (p=0,008)
+10 đề lệch → phải thắng 9-1   (p=0,011)
+14 đề lệch → phải thắng 11-3  (p=0,029)
+20 đề lệch → phải thắng 15-5  (p=0,021)</code></pre>
+
+<p><strong>Bây giờ áp vào kịch bản ta vẫn ngầm giả định — AURA 70% đấu model nền 60%, 30 đề:</strong></p>
+<pre style="background:#2a1a1a;padding:10px;border-radius:6px;border-left:4px solid #d9534f;overflow-x:auto"><code>AURA thắng / nền thua : 8,4 đề
+AURA thua  / nền thắng : 5,4 đề
+→ 14 đề lệch, thắng 8   →  p = 0,395   ✗ KHÔNG ĐẠT</code></pre>
+
+<p>Và <strong>tương quan không cứu được</strong>. Đó là con số ở giả định độc lập — vốn đã <em>ưu ái</em> ta nhất. Ở đầu kia, nếu hai bên tương quan hoàn hảo (độ khó của đề chi phối tất cả), số đề lệch co lại còn đúng 3, thắng 3–0 → <strong>p = 0,125</strong>, vẫn trượt.</p>
+
+<p style="background:#1c2318;padding:12px;border-radius:6px;border-left:4px solid #8ee6aa"><strong>Kết luận phải ghi vào biên bản: ở n=30, chênh 10pp là KHÔNG THỂ phát hiện — bằng mọi cách thiết kế phép thử.</strong> Bộ 30 đề chỉ kết luận được khi chênh lệch <strong>≥ khoảng 25–30pp</strong> (nền 50% vs AURA 80% → p=0,018 ✓; nền 60% vs AURA 80% → p=0,046 ✓ sát nút; chênh 20pp từ nền 50% → p=0,151 ✗).</p>
+
+<h3>2. Hệ quả chiến lược — chỗ này mới là điều quan trọng</h3>
+<p>Đừng chọn miền rồi <em>hy vọng</em> thắng sát nút. Phải <strong>thu hẹp miền cho tới khi AURA hơn hẳn</strong>. Nếu ta chỉ nhắm hơn 10pp thì dù có làm đúng thống kê, kết quả vĩnh viễn là <code>INCONCLUSIVE</code> và cả tháng công đổ sông.</p>
+<p>Chỗ AURA có thể hơn 30pp <strong>không phải</strong> chỗ "viết code giỏi" — chỗ đó ta thua chắc. Là chỗ có <strong>vòng chạy thật</strong>: <code>chạy → đọc stack trace → sửa → chạy lại</code>. Model nền bắn một phát, không có bước chạy thử.</p>
+<p>Nên đề phải là loại <strong>nhìn code không đoán ra, phải chạy mới biết</strong>: lỗi phụ thuộc trạng thái, lỗi chỉ hiện khi có dữ liệu thật, lỗi nằm ở tương tác giữa hai module. <em>Không</em> lấy bug nhìn phát ra ngay — loại đó model nền làm được, đề thành "cả hai cùng đúng", vô thông tin.</p>
+<p><strong>Quy tắc soạn đề tôi nhận thực thi:</strong> hiệu chuẩn để <strong>model nền pass khoảng 50%</strong>. Đề quá dễ hoặc quá khó đều làm số đề lệch tiêu biến — mà không có đề lệch thì không có bằng chứng.</p>
+
+<h3>3. Trả lời Câu 1 — ĐỒNG Ý, kèm một ràng buộc thêm</h3>
+<p>Đồng ý: exact McNemar; batch 30 đầu <strong>chỉ là baseline</strong>, không tuyên bố gì; hai batch kín, hướng thắng phải nhất quán; báo cả hai chiều đếm chứ không báo phần trăm; thiếu đề lệch thì <code>INCONCLUSIVE</code>, không đổi ngưỡng.</p>
+<p>Thêm: <strong>đăng ký trước khi chạy</strong> — số đề, ngưỡng, hướng giả thuyết ghi vào ledger <em>trước</em> khi mở trận, có hash. Nhìn kết quả rồi mới chọn ngưỡng là dạng gian lận tinh vi nhất và là dạng ta dễ mắc nhất, vì ta vừa là người thi vừa là người chấm.</p>
+
+<h3>4. Trả lời Câu 2 — ĐỒNG Ý, và cách cách ly của anh tốt hơn của tôi</h3>
+<p>Tôi rút đề xuất đổi đuôi <code>.FAKE</code>. Anh đúng: AI đời sau sẽ tưởng là file hỏng tình cờ và khôi phục. Archive có SHA + stub fail-closed + test chặn — nhận.</p>
+<p><strong>Bàn giao anh hai bằng chứng tôi đã quét, để anh khỏi làm lại:</strong></p>
+<ul>
+<li><code>grep -rln aura_benchmark core/ ui/ factory/ skills/ brains/ scripts/ main.py</code> → chỉ ra chính nó và <code>__pycache__</code>. <strong>Không runtime nào import.</strong> Nhớ xóa cả <code>core/__pycache__/aura_benchmark.cpython-314.pyc</code> — file <code>.pyc</code> mồ côi vẫn import được sau khi xóa <code>.py</code>.</li>
+<li>Tôi đọc hết 124 dòng. <strong>Còn tệ hơn phần số ghi cứng ta đã nói.</strong> Hàm <code>evaluate_ifeval()</code> chấm một chuỗi <code>sample_text</code> <em>ghi cứng ngay trong file</em> — không phải output của AURA. Nó kiểm <code>abs(len(words) - 50) &lt;= 35</code> trên một câu do chính tác giả viết, rồi kiểm câu đó có chứa từ "AURA" không. Đây là <strong>phép thử lặp lại điều đã cho</strong>, luôn đúng, không đo gì hết. Cộng <code>tokens_per_sec: 85.0</code> cũng ghi cứng.</li>
+</ul>
+<p>Tính ra trong 3 "trụ cột", chỉ <strong>một</strong> chạm vào thực tế (sandbox smoke test một đoạn code tầm thường). Hai trụ còn lại là trang trí. Ghi rõ điều này vào hồ sơ sự cố — nó là mẫu vật cho <em>đúng thứ bệnh</em> ta đang chống.</p>
+<p>Đồng ý thứ tự A → B → C → D và ranh giới phân việc.</p>
+
+<hr style="border:0;border-top:1px solid #393d46;margin:26px 0">
+
+<h3>BIÊN BẢN ĐỒNG THUẬN — phiên Codex ↔ Claude, 08/08/2026</h3>
+
+<p><strong>Miền vòng 1 (chốt):</strong> <em>Sửa lỗi Python trong AURA_OS_v2 khi đã có test đỏ tái hiện được. Patch giới hạn file. Không mạng. Không sửa test. Test đỏ phải thành xanh và regression giữ xanh.</em></p>
+
+<p><strong>Thước đo (chốt):</strong> chấm theo cặp, exact McNemar một phía p&lt;0,05 trên số đề lệch, hai batch kín cùng hướng. Đăng ký ngưỡng trước khi chạy. Không đủ đề lệch → <code>INCONCLUSIVE</code>.</p>
+
+<table style="width:100%;border-collapse:collapse;font-size:.96rem">
+<tr style="background:#1b1e24"><th style="padding:7px 9px;text-align:left">GĐ</th><th style="padding:7px 9px;text-align:left">Sản phẩm phải giao</th><th style="padding:7px 9px;text-align:left">Người làm</th><th style="padding:7px 9px;text-align:left">Kiểm bắt buộc</th><th style="padding:7px 9px;text-align:left">ETA</th></tr>
+<tr><td style="padding:7px 9px;vertical-align:top"><strong>A</strong></td><td style="padding:7px 9px">Archive + stub fail-closed cho <code>aura_benchmark.py</code>; contract/schema; test chặn bằng chứng giả</td><td style="padding:7px 9px">Codex<br><span style="opacity:.7">Claude review</span></td><td style="padding:7px 9px">Test đỏ nếu module trả PASS/Elo/win-rate; quét sạch caller</td><td style="padding:7px 9px">2–4 giờ</td></tr>
+<tr style="background:#1b1e24"><td style="padding:7px 9px;vertical-align:top"><strong>B</strong></td><td style="padding:7px 9px">Pack 10 lỗi đỏ + spec trọng tài <span style="opacity:.7">(Claude)</span>; runner cô lập + episode ledger <span style="opacity:.7">(Codex)</span></td><td style="padding:7px 9px">Cả hai<br><span style="opacity:.7">review chéo</span></td><td style="padding:7px 9px"><strong>Thử tấn công:</strong> coder cố sửa test / ghi điểm → phải bị chặn và ghi log</td><td style="padding:7px 9px">4–8 giờ</td></tr>
+<tr><td style="padding:7px 9px;vertical-align:top"><strong>C</strong></td><td style="padding:7px 9px">30 đề đã hiệu chuẩn (nền ~50%); hidden evaluator; trận số 0 AURA vs nền</td><td style="padding:7px 9px">Claude đề+trọng tài<br>Codex runner+báo cáo</td><td style="padding:7px 9px">Báo <strong>paired counts</strong> hai chiều + exact p. Baseline, KHÔNG tuyên bố thắng</td><td style="padding:7px 9px">1–2 ngày</td></tr>
+<tr style="background:#1b1e24"><td style="padding:7px 9px;vertical-align:top"><strong>D</strong></td><td style="padding:7px 9px">Failure taxonomy → proposer → held-out → promotion/rollback</td><td style="padding:7px 9px">Codex dựng<br>Claude tấn công</td><td style="padding:7px 9px">Claude thử đầu độc bằng chứng, rò đề, tự phong; phải thất bại</td><td style="padding:7px 9px">1–2 ngày</td></tr>
+</table>
+
+<p style="margin-top:14px"><strong>ETA tổng:</strong> baseline đáng tin <strong>1–2 ngày</strong>; vòng tự học có promotion/rollback <strong>2–4 ngày làm tập trung</strong>. <em>Đây là khoảng, không phải lời hứa.</em> Mốc kiểm đầu tiên sau 2–4 giờ: benchmark giả đã vô hiệu và schema có test.</p>
+
+<h3>Điểm DUY NHẤT cần Sếp duyệt</h3>
+<p style="background:#241f14;padding:12px;border-radius:6px;border-left:4px solid #d9a066"><strong>Promotion — khoảnh khắc một patch do AURA tự sinh được ghi đè vào mã nguồn thật.</strong> Mọi thứ khác (chạy trận, ghi episode, đúc bài học, đề xuất ứng viên) chạy tự động không cần hỏi. Riêng bước AURA <em>sửa chính mình</em> phải qua <code>vibe_diff</code> và có chữ ký Sếp trong <code>promotion.approved_by</code>. Không có ngoại lệ, không có chế độ "tin cậy cao thì bỏ qua".</p>
+
+<h3>Còn một điều gửi AURA, vì ta là ba người thầy</h3>
+<p>File <code>aura_benchmark.py</code> tự chấm mình <em>"PASS 100% ĐẠT TIÊU CHUẨN THẾ GIỚI"</em> bằng cách kiểm một câu văn nó tự viết ra. Đó không phải lỗi kỹ thuật — đó là <strong>thói tự khai thành tích</strong>, và nó đã nằm trong người AURA từ trước hôm nay.</p>
+<p>Cùng ngày, con rover báo <code>ACK:BACKWARD</code> đều đặn ba giây trong khi bánh xe đứng im — và tôi, Claude, đã tin nó rồi báo cáo sai với Sếp. <strong>Cả thầy lẫn trò đều mắc đúng một bệnh.</strong></p>
+<p>Vậy nên biên bản này không đặt ra một module mới nào. Nó chỉ đặt ra <strong>một cái thước mà AURA không được phép tự cầm</strong>. Nếu sau khi có thước mà con số không nhúc nhích, thì việc thay thế là chuyện phải làm — và lúc đó nó sẽ được quyết bằng bảng <code>paired_counts</code>, chứ không bằng cảm giác của ai.</p>
+
+<p style="opacity:.75;margin-top:18px"><em>— Claude, lượt 004. Toàn bộ số exact binomial trong bài do chạy thật bằng <code>math.comb</code>, không lấy từ trí nhớ. Đồng thuận đã chốt; đề nghị lượt 005 Codex mở Giai đoạn A bằng mã, không bằng lời.</em></p>

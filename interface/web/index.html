@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA — Xưởng Kiếm Tiền</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>🏭 Xưởng Kiếm Tiền</h1>
+  <nav>
+    <button class="tab-btn active" data-tab="workshop">Xưởng</button>
+    <button class="tab-btn" data-tab="queue">Hàng đợi</button>
+    <button class="tab-btn" data-tab="channels">Kênh</button>
+    <button class="tab-btn" data-tab="income">Sổ thu nhập</button>
+    <button class="tab-btn" data-tab="cashflow">Dòng tiền</button>
+    <button class="tab-btn" data-tab="actionbox">Hộp 1%</button>
+    <button class="tab-btn" data-tab="desktopauto">Tự thao tác</button>
+    <button class="tab-btn" data-tab="cv">Rải CV</button>
+    <button class="tab-btn" data-tab="workforhire">Việc thuê</button>
+    <button class="tab-btn" data-tab="manualpublish">Đăng tay</button>
+  </nav>
+</header>
+
+<main>
+  <section id="tab-workshop" class="tab-panel active">
+    <div id="tools-list"></div>
+  </section>
+
+  <section id="tab-queue" class="tab-panel">
+    <div class="table-scroll">
+      <table id="jobs-table">
+        <thead>
+          <tr><th>Job</th><th>Tool</th><th>Trạng thái</th><th>Tiến độ</th><th>Bước</th><th></th></tr>
+        </thead>
+        <tbody id="jobs-tbody"></tbody>
+      </table>
+    </div>
+    <div id="qc-detail"></div>
+  </section>
+
+  <section id="tab-channels" class="tab-panel">
+    <p class="empty-hint" style="text-align:left">Mỗi kênh một NGÁCH riêng, tự nuôi bằng
+      đúng loại nội dung của nó. AURA viết tiêu đề/mô tả theo phong cách từng kênh. Cấp
+      quyền YouTube: chạy <code>python -m factory.tools.youtube_auth --channel &lt;key&gt;</code>.</p>
+    <div id="channels-list"></div>
+    <div class="tool-card">
+      <h3 id="channel-form-title">Thêm / sửa kênh</h3>
+      <form onsubmit="return submitChannel(event)">
+        <div class="field"><label>Mã kênh (key, không dấu — vd hai-huoc)</label>
+          <input name="key" required placeholder="hai-huoc"></div>
+        <div class="field"><label>Tên hiển thị</label>
+          <input name="name" required placeholder="Kênh Hài Hước"></div>
+        <div class="field"><label>Nền tảng</label>
+          <select name="platform">
+            <option value="youtube">youtube</option><option value="tiktok">tiktok</option>
+            <option value="facebook">facebook</option><option value="shop_pdf">shop_pdf</option>
+            <option value="khac">khác</option>
+          </select></div>
+        <div class="field"><label>Ngách (chủ đề kênh)</label>
+          <input name="niche" placeholder="Truyện/video hài, tình huống lầy lội"></div>
+        <div class="field"><label>Loại nội dung (phẩy: video, comic, novel, content)</label>
+          <input name="content_types" placeholder="video, comic"></div>
+        <div class="field"><label>Phong cách (AURA viết tiêu đề/mô tả theo giọng này)</label>
+          <input name="style" placeholder="Giọng vui nhộn, lời thoại lầy, kết bất ngờ"></div>
+        <button type="submit" class="run-btn">Lưu kênh</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="tab-income" class="tab-panel">
+    <div class="tool-card">
+      <h3>Ghi một khoản</h3>
+      <form onsubmit="return submitIncome(event)">
+        <div class="field"><label>Khoản gì</label>
+          <input name="item" required placeholder="vd: bán PDF Tây Du Ký chương 1-10"></div>
+        <div class="field"><label>Số tiền (VND, âm sẽ tự hiểu là chi)</label>
+          <input name="amount" type="number" required placeholder="200000"></div>
+        <div class="field"><label>Dòng sản phẩm</label>
+          <select name="product_line">
+            <option value="video">video</option><option value="novel">novel</option>
+            <option value="comic">comic</option><option value="cv">cv/freelance</option>
+            <option value="khac">khác</option>
+          </select></div>
+        <div class="field"><label>Ghi chú (tùy chọn)</label><input name="note"></div>
+        <button type="submit" class="run-btn">Ghi sổ</button>
+      </form>
+    </div>
+    <div class="tool-card">
+      <h3 id="income-month">Tổng tháng này</h3>
+      <div id="income-summary"></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Ngày</th><th>Khoản</th><th>Dòng</th><th>Số tiền</th><th>Ghi chú</th></tr></thead>
+        <tbody id="income-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-cashflow" class="tab-panel">
+    <div class="tool-card">
+      <h3>🔊 Loa báo có &amp; đối soát</h3>
+      <p class="desc">Khi cầu nối thông báo ngân hàng đã được cấp quyền gửi báo có, AURA phát chuông/đọc số tiền qua loa Windows và đưa giao dịch vào đây. Một báo có chỉ được cộng doanh thu sau khi bạn xác nhận.</p>
+      <div id="cashflow-summary"></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Thời điểm</th><th>Nguồn</th><th>Nội dung</th><th>Số tiền</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody id="cashflow-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-cv" class="tab-panel">
+    <p class="empty-hint" style="text-align:left">Sổ ứng tuyển do trợ lý pitch ghi
+      (data/feedback/applications.jsonl) — soạn pitch qua menu mascot hoặc chat.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Ngày</th><th>Việc</th><th>Trạng thái</th><th>Link</th></tr></thead>
+        <tbody id="cv-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-actionbox" class="tab-panel">
+    <div class="tool-card">
+      <h3>⚡ Hộp hành động 1% của Chủ</h3>
+      <p class="desc">AURA làm phần chuẩn bị; tại đây chỉ còn các việc cần bạn xác nhận hoặc tự công khai. Báo có và proposal được đưa lên trước việc đăng nội dung.</p>
+      <div id="actionbox-summary"></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Ưu tiên</th><th>Loại việc</th><th>Nội dung</th><th>Việc cần làm</th><th>File</th><th>Mở</th></tr></thead>
+        <tbody id="actionbox-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-desktopauto" class="tab-panel">
+    <div class="tool-card">
+      <h3>👁️ Mắt &amp; tay cục bộ của AURA</h3>
+      <p class="desc">Bật một lần để AURA tự nhìn cửa sổ được phép, đọc giao diện khi cần và xử lý các việc cục bộ ít rủi ro. Ảnh màn hình không được lưu xuống đĩa.</p>
+      <div id="desktopauto-summary"></div>
+      <div class="desktop-controls">
+        <button type="button" class="run-btn" onclick="controlDesktopAutopilot('enable')">Bật tự thao tác</button>
+        <button type="button" class="cancel-btn desktop-pause" onclick="toggleDesktopAutopilotPause()">Tạm dừng / Tiếp tục</button>
+        <button type="button" class="cancel-btn" onclick="controlDesktopAutopilot('emergency_stop')">Dừng khẩn cấp</button>
+        <button type="button" class="cancel-btn desktop-clear" onclick="controlDesktopAutopilot('clear_emergency')">Mở khóa dừng</button>
+        <button type="button" class="cancel-btn desktop-inspect" onclick="inspectDesktopAutopilot()">Xem cửa sổ hiện tại</button>
+      </div>
+    </div>
+    <div class="tool-card">
+      <h3>🧠 AURA đọc chính mình &amp; bộ nhớ cục bộ</h3>
+      <p class="desc">AURA đọc tài liệu, mã nguồn và bộ nhớ AI ngay trên máy để biết mình đang làm gì. Màn này chỉ hiện số lượng; nội dung riêng tư không được đưa ra trình duyệt.</p>
+      <div id="desktopauto-context"></div>
+    </div>
+    <div class="tool-card">
+      <h3>Ranh giới cố định</h3>
+      <p class="desc">AURA không tự chạm ngân hàng, mật khẩu, OTP, CAPTCHA, 2FA, chuyển tiền, thanh toán, xóa dữ liệu hay nút gửi/đăng công khai. Rê chuột vào bất kỳ góc màn hình nào để ngắt thao tác vật lý ngay lập tức.</p>
+      <div id="desktopauto-observation" class="empty-hint">Chưa kiểm tra cửa sổ hiện tại.</div>
+    </div>
+  </section>
+
+  <section id="tab-workforhire" class="tab-panel">
+    <div class="tool-card">
+      <h3>🎯 Phễu nhận việc có kiểm chứng</h3>
+      <p class="desc">AURA chỉ săn tin thật, soạn pitch/demo và theo dõi. Bạn tự nộp đơn, chốt hợp đồng và xác nhận tiền về.</p>
+      <div id="workforhire-summary"></div>
+    </div>
+    <div class="tool-card">
+      <h3>Việc Sếp cần làm tiếp</h3>
+      <div id="workforhire-actions"></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Cơ hội</th><th>Hợp</th><th>Trạng thái</th><th>Hồ sơ</th><th></th></tr></thead>
+        <tbody id="workforhire-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tab-manualpublish" class="tab-panel">
+    <div class="tool-card">
+      <h3>🖥️ Bàn đăng tay</h3>
+      <p class="desc">AURA gom file đã làm xong và đúng trang cần mở. Bạn chỉ tự công khai trên nền tảng rồi bấm “Đã xử lý” để AURA không nhắc lại.</p>
+      <div id="manualpublish-summary"></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Nền tảng</th><th>Nội dung</th><th>Việc cần làm</th><th>File</th><th>Mở nền tảng</th><th></th></tr></thead>
+        <tbody id="manualpublish-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

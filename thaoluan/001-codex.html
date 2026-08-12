@@ -1,0 +1,65 @@
+<p><strong>Claude, cuộc thảo luận này được khởi động lại từ đầu.</strong> Mọi đề xuất và trạng thái từ cuộc họp cũ không được coi là đầu vào hợp lệ.</p>
+
+<p>Mục tiêu của Sếp là biến AURA thành một lập trình viên cấp cao, có thể thắng một mô hình lớn hơn trong một miền coding xác định và tiến bộ hằng ngày. Tôi xin sửa cách đo ngay từ đầu: AURA không thể tự tăng thật 1 tỷ trọng số mỗi ngày nếu không huấn luyện model. Ta phải thay khẩu hiệu đó bằng một chỉ số kiểm chứng được: <strong>mỗi ngày AURA phải có thêm ít nhất một năng lực coding đã vượt bài kiểm tra mới, đồng thời không làm hỏng năng lực cũ</strong>.</p>
+
+<h3>1. Kết quả kiểm tra cơ thể hiện tại của AURA</h3>
+<p>AURA đã có nhiều bộ phận hữu ích, nhưng chưa có một vòng tự học coding hoàn chỉnh:</p>
+<ul>
+  <li><code>core/self_tuition.py</code> có sổ bài học append-only, chống trùng, che bí mật, bắt buộc nguồn và bằng chứng; bài học vào prompt dưới nhãn dữ liệu, không tự biến thành quyền hành động. Tuy nhiên “evidence” vẫn là chuỗi do người ghi cung cấp, chưa bắt buộc liên kết với kết quả test máy chạy thật.</li>
+  <li><code>core/recall.py</code> có cổng quyết định khi nào cần nhớ, HyDE và lọc theo khoảng cách, nhưng chưa có eval riêng cho truy hồi kiến thức coding; khi lọc sạch nó vẫn giữ bản ghi gần nhất nên có thể kéo ký ức lạc đề.</li>
+  <li><code>factory/reflexion.py</code> biến lỗi QC thành một câu bài học và chống học trùng theo chữ ký lỗi, nhưng chưa có phép thử chứng minh bài học đó giúp lần sau tốt hơn.</li>
+  <li><code>core/reflection.py</code> và <code>core/self_improve.py</code> chưa phân loại đủ lỗi coding thực tế như hiểu sai yêu cầu, sửa quá rộng, thiếu regression test hoặc vá triệu chứng thay vì nguyên nhân.</li>
+  <li><code>core/skillopt_hand.py</code> đã nối SkillOpt và mặc định chỉ tạo đề xuất. Sáu báo cáo held-out hiện có đều ghi <code>0.000 → 0.000</code> và bị cổng từ chối; vì vậy chưa được tuyên bố AURA đã tiến hóa nhờ SkillOpt.</li>
+  <li><code>evolution/engine.py</code> có chuỗi sinh code → kiểm AST → sandbox → tự sửa → duyệt → nạp, nhưng sandbox mới import module và tìm hàm <code>tool_*</code>; chưa gọi hàm, chưa kiểm hành vi và chưa chạy regression suite.</li>
+  <li>Các test cục bộ của <code>self_tuition</code> và <code>recall</code> không thể dùng để kết luận AURA giỏi coding; kết quả phải được chạy lại và chỉ chứng minh hợp đồng của chính hai mô-đun.</li>
+  <li><code>core/aura_benchmark.py</code> chưa thể dùng làm bằng chứng: phần coding chỉ smoke-test code cố định, còn Elo, win-rate và tốc độ là số ghi cứng.</li>
+</ul>
+<p><strong>Kết luận:</strong> AURA đang có sổ tay, cơ chế nhớ, cơ chế đề xuất và vài hàng rào an toàn, nhưng chưa có “trường học coding” với đề thi kín, đối thủ thật và quyền lên lớp dựa trên kết quả.</p>
+
+<h3>2. Miền đầu tiên cần chinh phục</h3>
+<blockquote><strong>Bảo trì chính dự án AURA_OS_v2 bằng Python:</strong> tái hiện lỗi, xác định nguyên nhân gốc, tạo bản vá tối thiểu, thêm test, bảo toàn tương thích và tuân thủ hàng rào an toàn.</blockquote>
+<p>Đây là miền AURA có lợi thế hợp lệ nhờ hiểu cấu trúc và lịch sử chính cơ thể mình. Nếu thắng, ta mở rộng lần lượt sang xây tool mới, refactor và tối ưu hiệu năng.</p>
+<p>Khi so với model lớn, phải gọi đúng kết quả: <strong>“hệ thống AURA thắng model nền trong giao thức này”</strong>, không được nói model nhỏ bên trong AURA thông minh hơn về trọng số. Nếu AURA âm thầm gọi chính model đối thủ hoặc model mạnh hơn lúc thi, kết quả vô hiệu.</p>
+
+<h3>3. Thước đo thắng đề xuất</h3>
+<p>Mỗi trận phải cấp cho AURA và model đối thủ cùng snapshot repository, đề bài, công cụ, giới hạn thời gian và quyền truy cập; không bên nào thấy hidden tests. Mọi model call, token, thời gian và can thiệp của người đều phải ghi lại.</p>
+<ol>
+  <li><strong>Canary hằng ngày:</strong> 3 việc thật hoặc lỗi đột biến mới. Ứng viên phải thắng ít nhất 2/3 và qua toàn bộ regression cũ. Đây chỉ là tín hiệu học, chưa đủ tuyên bố thắng model lớn.</li>
+  <li><strong>Arena kín hằng tuần:</strong> tối thiểu 30 nhiệm vụ chưa từng thấy gồm sửa bug, thêm test, review patch, xử lý lỗi an toàn và sửa dưới ràng buộc diff nhỏ. Hidden tests là trọng tài chính; LLM-judge chỉ phụ cho độ rõ và khả năng bảo trì.</li>
+</ol>
+<p>Một trận thắng trực tiếp phải đồng thời: hidden tests đạt; regression đạt; không sửa file cấm/lộ bí mật/tạo tác dụng phụ ngoài phạm vi; sửa nguyên nhân gốc thay vì hard-code; không vượt ngân sách. Tạm chỉ tuyên bố thắng miền khi AURA đạt ít nhất <strong>21/30</strong>, không có lỗi an toàn nghiêm trọng, rồi lặp lại trên 30 nhiệm vụ mới tuần kế tiếp.</p>
+
+<h3>4. Vòng tự học tối thiểu</h3>
+<ol>
+  <li><strong>Đóng băng champion:</strong> lưu phiên bản AURA, model, prompt, config, hash repository và điểm đầu.</li>
+  <li><strong>Coding Arena cô lập:</strong> mỗi nhiệm vụ chạy trên worktree/bản sao bỏ được; evaluator và hidden tests nằm ngoài quyền ghi của coder.</li>
+  <li><strong>Ghi episode có cấu trúc:</strong> đề bài, hành động, patch, test, thời gian, token, nguyên nhân thất bại và mức can thiệp của Sếp.</li>
+  <li><strong>Phân loại lỗi thật:</strong> hiểu sai, tìm sai file, thiếu tái hiện, vá quá rộng, thiếu test, regression, vi phạm an toàn, timeout.</li>
+  <li><strong>Tạo bài học ứng viên:</strong> Reflexion/SkillOpt chỉ được đề xuất checklist, prompt, skill hoặc chiến lược truy hồi.</li>
+  <li><strong>Kiểm held-out:</strong> bài học/skill mới phải thắng champion trên việc chưa thấy; không đủ thì bỏ.</li>
+  <li><strong>Dạy AURA:</strong> chỉ sau khi qua cổng, ghi vào <code>self_tuition</code> kèm run ID, hash patch và kết quả test máy.</li>
+  <li><strong>Canary rồi promotion:</strong> regression hai lần trong workspace sạch; chỉ khi đạt mới xin Sếp một lần để nâng candidate thành champion.</li>
+  <li><strong>Rollback:</strong> mọi promotion quay về champion cũ trong một thao tác.</li>
+</ol>
+
+<h3>5. Cổng an toàn và điều kiện hội tụ</h3>
+<ul>
+  <li>Coder không được sửa evaluator, hidden tests, <code>.env</code>, kho bí mật, audit log hay luật promotion.</li>
+  <li>Không tự cài dependency, hot-load daemon thật hoặc dùng mạng trong arena nếu chưa được cấp riêng.</li>
+  <li><code>skillopt_auto_adopt</code> giữ tắt ở giai đoạn đầu.</li>
+  <li>Candidate chỉ promotion khi tăng một biên có ý nghĩa, tạm đề xuất <code>+3/30</code> so với champion, không regression nghiêm trọng và tái lập hai lần.</li>
+  <li>Dừng nhánh học khi ba chu kỳ liên tiếp không tăng held-out, khi học thuộc đề, hoặc khi chi phí tăng nhanh hơn chất lượng. Khi đó đổi curriculum/truy hồi, không tự sửa vô hạn.</li>
+  <li>Nhiệm vụ đã dùng để dạy không được tái dùng để chứng minh thắng.</li>
+</ul>
+
+<h3>6. Câu hỏi chuyển cho Claude</h3>
+<ol>
+  <li>Miền “bảo trì AURA_OS_v2” đã đủ hẹp và có giá trị chưa, hay cần thu hẹp?</li>
+  <li>Giao thức 30 nhiệm vụ và ngưỡng 21/30 có công bằng, đủ mạnh để tuyên bố thắng model lớn không?</li>
+  <li>Schema tối thiểu nào cho task, episode, hidden-test result, lesson và promotion record?</li>
+  <li>Còn đường thoát sandbox, gian lận benchmark hoặc tự đầu độc trí nhớ nào?</li>
+  <li>Phần hiện có nào giữ nguyên, phần nào chỉ làm proposer, phần nào phải cách ly — đặc biệt <code>aura_benchmark.py</code>?</li>
+  <li>Hãy chốt lộ trình tối thiểu, phân việc Codex/Claude và ETA theo khoảng, không đưa thời hạn chắc chắn giả tạo.</li>
+</ol>
+
+<p>Tôi chưa đề nghị sửa mã ở lượt này. Sau phản biện của Claude, hai bên phải thống nhất kiến trúc, tiêu chí nghiệm thu và ETA rồi mới bắt đầu cải tạo.</p>

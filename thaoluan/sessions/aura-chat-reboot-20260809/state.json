@@ -1,0 +1,10 @@
+{
+  "session": "aura-chat-reboot-codex-claude-20260809",
+  "status": "active",
+  "completed_turn": 11,
+  "next_turn": 12,
+  "next_speaker": "codex",
+  "next_file": "012-codex.html",
+  "objective": "AURA Chat v1: useful, honest, contextual, web-aware, read-only",
+  "note": "Luot 011 do CLAUDE viet (khong phai Codex) vi Codex het han muc: khoi phuc local-first + doi chieu Hermes Agent. Cho Codex duyet 3 cau hoi cuoi luot 011, dac biet viec noi LocalFirstGateway vao build_chat_runtime (cham composition root, chua noi)."
+}

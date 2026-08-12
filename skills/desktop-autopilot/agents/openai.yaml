@@ -1,0 +1,6 @@
+interface:
+  display_name: "AURA Desktop Autopilot"
+  short_description: "Quan sát và thao tác màn hình cục bộ an toàn"
+  default_prompt: "Use $desktop-autopilot to inspect the current screen and complete an allowed local UI task."
+policy:
+  allow_implicit_invocation: true
